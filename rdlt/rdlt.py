@@ -171,20 +171,9 @@ def main():
 
     #Build rdkit molecule from smiles and generate a conformer
     m = AllChem.AddHs(Chem.MolFromSmiles(args.smi))
-    # optimize
-    while True:
-        cids = rdDistGeom.EmbedMultipleConfs(m, numConfs=1,maxAttempts=9999,useRandomCoords=True)
-        if len(cids) !=0:
-            break
-    #cids = rdDistGeom.EmbedMultipleConfs(m, 1000, pm)
-    prop = AllChem.MMFFGetMoleculeProperties(m)
-    energy=[]
-    for cid in cids:
-        mmff = AllChem.MMFFGetMoleculeForceField(m, prop, confId=cid)
-        mmff.Minimize()
-        energy.append(mmff.CalcEnergy())
-    #AllChem.EmbedMolecule(m,AllChem.ETKDG())
-
+    AllChem.EmbedMolecule(m,AllChem.ETKDG())
+    # Optimize
+    AllChem.MMFFOptimizeMolecule(m)
     # WARNING: This part is dumb. Will update the lopls definitions ONLY
     # if the lopls flag is used. If a path is passed with the refresh command
     #
