@@ -258,23 +258,28 @@ def plot_vasp_band(fvaspxml):
 def plot_vasp_dos(fvaspxml):
     from pymatgen.io.vasp import Vasprun
     from pymatgen.electronic_structure.plotter import DosPlotter
+    import sys
     v = Vasprun(fvaspxml)
     tdos = v.tdos
+    #print(tdos)
     cdos = v.complete_dos
     pdos = cdos.pdos
     plotter = DosPlotter()
+    plotter2 = DosPlotter()
     element_dos = cdos.get_element_dos()
-    plotter.add_dos("Total DOS", tdos)
-    plotter.add_dos_dict(element_dos)
+    #for el in element_dos:
+    #    el_spd = cdos.get_element_spd_dos(el)
+    #    for spd in el_spd:
+    #        print(el,spd,el_spd[spd])
     merged = {}
     for site in pdos:
         orbitals = pdos[site]
         site0 = str(site)
         atom = site0[site0.index(']') + 2:]
         for orbital in orbitals:
-            print(site)
-            print(orbital)
-            print(atom)
+            #print(site)
+            #print(orbital)
+            #print(atom)
             orb_dos = cdos.get_site_orbital_dos(site,orbital)
             mkey = str(atom)+'_'+str(orbital)
             if mkey not in merged.keys():
@@ -283,16 +288,17 @@ def plot_vasp_dos(fvaspxml):
                 merged[mkey] += orb_dos
     for mkey in merged:
         orb_dos = merged[mkey]
-        plotter.add_dos(mkey,orb_dos)
-    plt = plotter.get_plot()
+        plotter2.add_dos(mkey,orb_dos)
+    plotter.add_dos_dict(element_dos)
+    plotter.add_dos("Total DOS", tdos)
+    plt = plotter2.get_plot(xlim=[-5.0,5.0],ylim=[0,20.0])
     plt.xlabel("xlabel", fontsize=16)
     plt.ylabel("ylabel", fontsize=16)
     plt.tick_params(labelsize=14)
-    plt.savefig('band.png')
-    plt.legend(loc='upper left')
-    plt.xlim(-5.0,5.0)
-    plt.ylim(0,20.0)
+    plt.legend(loc='upper right')
+    plt.savefig('dos.png',dpi=500)
     plt.show()
+
 
 
 

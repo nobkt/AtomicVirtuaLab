@@ -4,12 +4,12 @@ from AtomicVirtuaLab.io import rd_cif, rd_contcar
 import AtomicVirtuaLab.globalv as g
 import os
 
-g.vasppot = '/home/A23321P/modules/applications/vasp/6.4.0/vasppot'
-g.cifs = '/home/A23321P/work/myPython/AtomicVirtuaLab/cifs'
-g.contcars = '/home/A23321P/work/myVASP/CuI/zincblende/cellopt'
+g.vasppot = '/media/sf_nanoVM/myVASP/potpaw'
+g.cifs = '/media/sf_nanoVM/myPython/AtomicVirtuaLab/cifs'
+g.contcars = '/media/sf_nanoVM/myVASP/CuI/cellopt'
 
 #cell = rd_cif(g.cifs+'/'+'CuI_zincblende.cif',primitive_cell=True)
-#cell = rd_contcar(g.contcars+'/CONTCAR') 
+cell = rd_contcar(g.contcars+'/CONTCAR') 
 
 """
 os.makedirs('./vasp/cellopt',exist_ok=True)
@@ -35,6 +35,7 @@ mk_band_incar(cell)
 mk_kpoints(10,10,10,band=True)
 os.chdir('../..')
 """
-#plot_vasp_band('/home/A23321P/work/myVASP/CuI/zincblende/band/vasprun.xml')
-plot_vasp_dos('/home/A23321P/work/myVASP/CuI/zincblende/dos/vasprun.xml')
+
+#plot_vasp_band('/media/sf_nanoVM/myVASP/CuI/band/vasprun.xml')
+plot_vasp_dos('/media/sf_nanoVM/myVASP/CuI/dos/vasprun.xml')
 

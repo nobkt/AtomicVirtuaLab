@@ -5,7 +5,7 @@ from AtomicVirtuaLab.lammps import mk_nvt_input_fr_moltemplate, mk_npt_input_fr_
 import os
 
 smiles={
-    'PR176':'SC1=CC=CC=C1'
+    'PR176':'CCCCN1C=C[N+](C)=C1'
 }
 
 mollist={
