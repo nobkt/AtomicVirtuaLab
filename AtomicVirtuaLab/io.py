@@ -1,10 +1,13 @@
-def smiles2xyz(smiles,molname,addH):
+def smiles2xyz(smiles,molname,addH,smarts=False):
     from rdkit import Chem
     from rdkit.Chem import AllChem, rdDistGeom
     from ase.io import read, write
     import codecs
     # SMILES式をMOL形式に変換
-    m = Chem.MolFromSmiles(smiles)
+    if smarts:
+        m = Chem.MolFromSmarts(smiles)
+    else:
+        m = Chem.MolFromSmiles(smiles)
     # 水素を付加
     if addH:
         m = Chem.AddHs(m)
@@ -45,6 +48,22 @@ def cell2atomlist(cell):
     #symbols = [l for l in symbols if l != '']
     return symbols
 
+def mk_lammpsdata(cell,charge):
+    from ase.io import write
+    if charge:
+        cell.write('lammps.data',format='lammps-data',force_skew=True,atom_style='charge')
+    else:
+        cell.write('lammps.data',format='lammps-data',force_skew=True)
+
+def rd_lammpsdata(cell,fdata,charge):
+    from ase.io import read
+    symbols = cell.get_chemical_symbols()
+    if charge:
+        cell0 = read(fdata,format='lammps-data',style='charge',sort_by_id=True)
+    else:
+        cell0 = read(fdata,format='lammps-data',style='atomic',sort_by_id=True)
+    cell0.set_chemical_symbols(symbols)
+    return cell0
 
 
 

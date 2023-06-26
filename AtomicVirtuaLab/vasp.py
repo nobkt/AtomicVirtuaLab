@@ -253,15 +253,93 @@ def plot_vasp_band(fvaspxml):
     plt.ylabel("ylabel", fontsize=16)
     plt.tick_params(labelsize=14)
     plt.savefig('band.png')
-    plt.show()
+    #plt.show()
 
 def plot_vasp_dos(fvaspxml):
     from pymatgen.io.vasp import Vasprun
     from pymatgen.electronic_structure.plotter import DosPlotter
+    from matplotlib import pyplot as plt
     import sys
     v = Vasprun(fvaspxml)
     tdos = v.tdos
-    #print(tdos)
+    x = list(tdos.energies-tdos.efermi)
+    for spin in tdos.densities:
+        if spin == spin.up:
+            y = list(tdos.densities[spin])
+            plt.plot(x,y,label='Total DOS(UP)', linewidth = 0.8)
+        elif spin == spin.down:
+            y = list(tdos.densities[spin])
+            plt.plot(x,y,label='Total DOS(DOWN)', linewidth = 0.8)
+    plt.xlabel('E-Efermi(eV)', fontsize=16)
+    plt.ylabel('DOS', fontsize=16)
+    plt.axvline(x=0.0, ymin=0.0, ymax=1.0,ls="dashed", color="black", linewidth = 0.6)
+    plt.xlim(-5.0,5.0)
+    plt.ylim(0,20.0)
+    plt.tick_params(labelsize=14)
+    plt.legend(loc='upper right',fontsize=9)
+    plt.savefig('total_dos.png',dpi=500)
+    #plt.show()
+    plt.clf()
+    
+    cdos = v.complete_dos
+    element_dos = cdos.get_element_dos()
+    for el in element_dos:
+        el_spd = cdos.get_element_spd_dos(el)
+        for spd in el_spd:
+            x = list(el_spd[spd].energies-el_spd[spd].efermi)
+            for spin in el_spd[spd].densities:
+                if spin == spin.up:
+                    y = list(el_spd[spd].densities[spin])
+                    plt.plot(x,y,label=str(el)+'_'+str(spd)+'(UP)', linewidth = 0.8)
+                elif spin == spin.down:
+                    y = list(el_spd[spd].densities[spin])
+                    plt.plot(x,y,label=str(el)+'_'+str(spd)+'(DOWN)', linewidth = 0.8)
+    plt.xlabel('E-Efermi(eV)', fontsize=16)
+    plt.ylabel('DOS', fontsize=16)
+    plt.axvline(x=0.0, ymin=0.0, ymax=1.0,ls="dashed", color="black", linewidth = 0.6)
+    plt.xlim(-5.0,5.0)
+    plt.ylim(0,20.0)
+    plt.tick_params(labelsize=14)
+    plt.legend(loc='upper right',fontsize=9)
+    plt.savefig('pdos.png',dpi=500)
+    #plt.show()
+    plt.clf()
+    
+    pdos = cdos.pdos
+    merged = {}
+    for site in pdos:
+        orbitals = pdos[site]
+        site0 = str(site)
+        atom = site0[site0.index(']') + 2:]
+        for orbital in orbitals:
+            orb_dos = cdos.get_site_orbital_dos(site,orbital)
+            for spin in orb_dos.densities:
+                if spin == spin.up:
+                    mkey = str(atom)+'_'+str(orbital)+'(UP)'
+                elif spin == spin.down:
+                    mkey = str(atom)+'_'+str(orbital)+'(DOWN)'
+                if mkey not in merged.keys():
+                    merged[mkey] = orb_dos
+                else:
+                    merged[mkey] += orb_dos
+    for mkey in merged:
+        orb_dos = merged[mkey]
+        x = list(orb_dos.energies-orb_dos.efermi)
+        for spin in orb_dos.densities:
+            y = list(orb_dos.densities[spin])
+            plt.plot(x,y,label=mkey, linewidth = 0.8)
+        plt.xlabel('E-Efermi(eV)', fontsize=16)
+    plt.ylabel('DOS', fontsize=16)
+    plt.axvline(x=0.0, ymin=0.0, ymax=1.0,ls="dashed", color="black", linewidth = 0.6)
+    plt.xlim(-5.0,5.0)
+    plt.ylim(0,20.0)
+    plt.tick_params(labelsize=14)
+    plt.legend(loc='upper right',ncols=2,fontsize=9)
+    plt.savefig('orbital_dos.png',dpi=500)
+    #plt.show()
+    plt.clf()
+
+    """
     cdos = v.complete_dos
     pdos = cdos.pdos
     plotter = DosPlotter()
@@ -298,6 +376,7 @@ def plot_vasp_dos(fvaspxml):
     plt.legend(loc='upper right')
     plt.savefig('dos.png',dpi=500)
     plt.show()
+    """
 
 
 

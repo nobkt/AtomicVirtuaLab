@@ -421,72 +421,6 @@ def mk_qe_input_nvt(cell,xc,pot,tempw,tolp,dt=0.5,level='low',estep=1000,nstep=1
         'diagonalization'  : 'david',\
         'mixing_beta'      : mixing_beta,\
         'nosym'            : True,\
-        'cell_dofree'      : 'all',\
-        'electron_maxstep' : estep,\
-        'ecutwfc'          : ecutwfc_,\
-        'ecutrho'          : ecutrho_,\
-        'ion_dynamics'     : 'verlet',\
-        'ion_temperature'  : 'rescaling',\
-        'tempw'            : tempw,\
-        'tolp'             : tolp,\
-        'pot_extrapolation' : 'second_order',\
-        'wfc_extrapolation' : 'second_order'\
-    }
-    if nspin == True:
-        input_data['nspin'] = 2
-        valence, magmom = get_valence(cell,pseudo,level)
-        cell.set_initial_magnetic_moments(magmom)
-        nbnd = int(valence/2.0*2.0)
-        input_data['nbnd'] = nbnd
-    cell.write('qe_vc-relax.pwi',input_data=input_data,pseudopotentials=pseudo,kpts=kpts,crystal_coordinates=False)
-
-def mk_qe_input_nvt(cell,xc,pot,tempw,tolp,dt=0.5,level='low',estep=1000,nstep=1000,ecutwfc=25,ecutrho=225,mixing_beta=0.2,kpts=None,ecut='manual',nspin=False):
-    from ase.io import write
-    import AtomicVirtuaLab.globalv as g
-    import shutil
-    import os
-    level0 = level
-    pseudo = set_qepot(cell,xc,pot,level0)
-    if ecut == 'manual':
-        ecutwfc_ = ecutwfc
-        ecutrho_ = ecutrho
-    elif ecut == 'auto':
-        ecutwfc_ = 0.0
-        ecutrho_ = 0.0
-        for symbol in pseudo:
-            fpot = g.qepot+'/'+str(level)+'/'+str(pseudo[symbol])
-            f = open(fpot,'r')
-            lines = f.readlines()
-            f.close()
-            for line in lines:
-                if 'Suggested minimum cutoff for wavefunctions:' in line:
-                    line = line.split()
-                    if ecutwfc_ <= float(line[5]):
-                        ecutwfc_ = float(line[5])
-                if 'Suggested minimum cutoff for charge density:' in line:
-                    line = line.split()
-                    if ecutrho_ <= float(line[6]):
-                        ecutrho_ = float(line[6])
-    os.makedirs('./pseudo',exist_ok=True)
-    for symbol in pseudo:
-        shutil.copy(g.qepot+'/'+str(level)+'/'+str(pseudo[symbol]),'./pseudo')
-    input_data={\
-        'calculation'      : 'md',\
-        'dt'               : dt*1.0e-15/4.8378e-17,\
-        'restart_mode'     : 'from_scratch',\
-        'wf_collect'       : True,\
-        'pseudo_dir'       : './pseudo',\
-        'tstress'          : True,\
-        'tprnfor'          : True,\
-        'outdir'           : './outdir',\
-        'nstep'            : nstep,\
-        'occupations'      : 'smearing',\
-        'smearing'         : 'gaussian',\
-        'degauss'          : 0.01,\
-        'conv_thr'         : 1.0e-6,\
-        'diagonalization'  : 'david',\
-        'mixing_beta'      : mixing_beta,\
-        'nosym'            : True,\
         'electron_maxstep' : estep,\
         'ecutwfc'          : ecutwfc_,\
         'ecutrho'          : ecutrho_,\
@@ -505,7 +439,7 @@ def mk_qe_input_nvt(cell,xc,pot,tempw,tolp,dt=0.5,level='low',estep=1000,nstep=1
         input_data['nbnd'] = nbnd
     cell.write('qe_nvt.pwi',input_data=input_data,pseudopotentials=pseudo,kpts=kpts,crystal_coordinates=False)
 
-def mk_qe_input_npt(cell,xc,pot,tempw,tolp,press,dt=0.5,level='low',estep=1000,nstep=1000,ecutwfc=25,ecutrho=225,mixing_beta=0.2,kpts=None,ecut='manual',nspin=False):
+def mk_qe_input_npt(cell,xc,pot,tempw,tolp,press,dt=0.5,level='low',estep=1000,nstep=1000,ecutwfc=25,ecutrho=225,mixing_beta=0.2,kpts=None,ecut='manual',options={},nspin=False):
     from ase.io import write
     import AtomicVirtuaLab.globalv as g
     import shutil
@@ -536,7 +470,7 @@ def mk_qe_input_npt(cell,xc,pot,tempw,tolp,press,dt=0.5,level='low',estep=1000,n
     for symbol in pseudo:
         shutil.copy(g.qepot+'/'+str(level)+'/'+str(pseudo[symbol]),'./pseudo')
     input_data={\
-        'calculation'      : 'md',\
+        'calculation'      : 'vc-md',\
         'dt'               : dt*1.0e-15/4.8378e-17,\
         'restart_mode'     : 'from_scratch',\
         'wf_collect'       : True,\
@@ -565,6 +499,9 @@ def mk_qe_input_npt(cell,xc,pot,tempw,tolp,press,dt=0.5,level='low',estep=1000,n
         'pot_extrapolation' : 'second_order',\
         'wfc_extrapolation' : 'second_order'\
     }
+    if len(options) != 0:
+        for option in options:
+            input_data[option] = options[option]
     if nspin == True:
         input_data['nspin'] = 2
         valence, magmom = get_valence(cell,pseudo,level)
