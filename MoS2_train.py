@@ -51,10 +51,10 @@ for T0 in T:
     os.chdir('./tmp')
     mk_nvt_input_uff(cell_liquid,0.0005,200,200,20000,200000.0,12345)
     os.system('lmp -in lammps.lmp 1> log_lmp 2> err_lmp')
-    rd_lammpsdata(cell_liquid,'./result.data',True)
+    cell_liquid = rd_lammpsdata(cell_liquid,'./result.data',True)
     os.chdir('../')
     os.system('rm -rf tmp')
-    mk_qe_input_npt(cell_solid,'pbe','paw',float(T0),100.0,float(P0),dt=4.0,level='high',estep=9999,nstep=500,ecut='auto',options={'vdw_corr':'dft-d3','dftd3_version':4})
+    mk_qe_input_npt(cell_liquid,'pbe','paw',float(T0),100.0,float(P0),dt=4.0,level='high',estep=9999,nstep=500,ecut='auto',options={'vdw_corr':'dft-d3','dftd3_version':4})
     os.chdir('../')
 
     

@@ -248,12 +248,14 @@ def plot_vasp_band(fvaspxml):
     ax = plt.gca()
     xlim = ax.get_xlim()
     ax.hlines(0,xlim[0],xlim[1], linestyles="dashed", color="black", linewidth = 0.6)
-    ax.legend(loc="upper left")
-    plt.xlabel("xlabel", fontsize=16)
-    plt.ylabel("ylabel", fontsize=16)
+    ax.get_legend().remove()
+    #ax.legend(loc="upper right")
+    plt.xlabel("Wave vector", fontsize=16)
+    plt.ylabel("E-Efermi(eV)", fontsize=16)
     plt.tick_params(labelsize=14)
-    plt.savefig('band.png')
+    plt.savefig('vasp_band.png')
     #plt.show()
+    plt.clf()
 
 def plot_vasp_dos(fvaspxml):
     from pymatgen.io.vasp import Vasprun
@@ -277,7 +279,7 @@ def plot_vasp_dos(fvaspxml):
     plt.ylim(0,20.0)
     plt.tick_params(labelsize=14)
     plt.legend(loc='upper right',fontsize=9)
-    plt.savefig('total_dos.png',dpi=500)
+    plt.savefig('vasp_total_dos.png',dpi=500)
     #plt.show()
     plt.clf()
     
@@ -301,7 +303,7 @@ def plot_vasp_dos(fvaspxml):
     plt.ylim(0,20.0)
     plt.tick_params(labelsize=14)
     plt.legend(loc='upper right',fontsize=9)
-    plt.savefig('pdos.png',dpi=500)
+    plt.savefig('vasp_pdos.png',dpi=500)
     #plt.show()
     plt.clf()
     
@@ -334,8 +336,8 @@ def plot_vasp_dos(fvaspxml):
     plt.xlim(-5.0,5.0)
     plt.ylim(0,20.0)
     plt.tick_params(labelsize=14)
-    plt.legend(loc='upper right',ncols=2,fontsize=9)
-    plt.savefig('orbital_dos.png',dpi=500)
+    plt.legend(loc='upper right',fontsize=9)
+    plt.savefig('vasp_orbital_dos.png',dpi=500)
     #plt.show()
     plt.clf()
 

@@ -59,11 +59,11 @@ def rd_lammpsdata(cell,fdata,charge):
     from ase.io import read
     symbols = cell.get_chemical_symbols()
     if charge:
-        cell0 = read(fdata,format='lammps-data',style='charge',sort_by_id=True)
+        cell = read(fdata,format='lammps-data',style='charge',sort_by_id=True)
     else:
-        cell0 = read(fdata,format='lammps-data',style='atomic',sort_by_id=True)
-    cell0.set_chemical_symbols(symbols)
-    return cell0
+        cell = read(fdata,format='lammps-data',style='atomic',sort_by_id=True)
+    cell.set_chemical_symbols(symbols)
+    return cell
 
 
 
