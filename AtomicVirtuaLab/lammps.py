@@ -270,6 +270,48 @@ def mk_nvt_input_uff(cell,dt,dmp_step,thermo_step,md_step,T,seed):
     f.write('write_data result.data'+'\n')
     f.close()
 
+def mk_nvt_input_ilp_friction(cell,dt,dmp_step,thermo_step,md_step,T,seed):
+    from AtomicVirtuaLab.io import cell2atomlist, mk_lammpsdata
+    from ase import Atom
+    import random
+    mk_lammpsdata(cell,True)
+    symbols = cell2atomlist(cell)
+    f = open('lammps.lmp','w')
+    mk_qeqfile(symbols)
+    f.write('units metal'+'\n')
+    f.write('boundary p p f'+'\n')
+    f.write('atom_style full'+'\n')
+    f.write('read_data lammps.data'+'\n')
+    i = 1
+    for symbol in symbols:
+        a = Atom(symbol)
+        f.write('mass '+str(i)+' '+str(a.mass)+'\n')
+        i = i + 1
+    f.write('pair_style hybrid/overlay sw/mol ilp/tmp 16.0'+'\n')
+    for symbol in symbols:
+        f.write('pair_coeff * * sw/mod tmd.sw.mod')
+        f.write(' '+str(symbol))
+    f.write('\n')
+    f.write('pair_coeff * * ilp/tmd MoS2.ILP')
+    for symbol in symbols:
+        f.write('pair_coeff * * sw/mod tmd.sw.mod')
+        f.write(' '+str(symbol))
+    f.write('\n')    
+    f.write('dump dmp all custom '+str(dmp_step)+' traj_nvt.lammpstrj id type element x y z ix iy iz'+'\n')
+    f.write('dump_modify dmp element')
+    for symbol in symbols:
+        f.write(' '+str(symbol))
+    f.write('\n')
+    f.write('thermo_style custom step etotal enthalpy pe ke temp press vol density cella cellb cellc cellalpha cellbeta cellgamma'+'\n')
+    f.write('thermo '+str(thermo_step)+'\n')
+    f.write('\n')
+    f.write('timestep '+str(dt)+'\n')
+    f.write('velocity all create '+str(T)+' '+str(seed)+'\n')
+    f.write('fix fxnvt all nvt temp '+str(T)+' '+str(T)+' $(dt*100.0)'+'\n')
+    f.write('run '+str(md_step)+'\n')
+    f.write('write_data result_nvt.data'+'\n')
+    f.close()
+
 def mk_qeqfile(symbols):
     from pymatgen.core.periodic_table import Element
     f = open('my_qeq','w')
