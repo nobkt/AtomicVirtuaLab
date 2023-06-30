@@ -2,9 +2,9 @@ from AtomicVirtuaLab.deepmd import qe2dp, get_deepmd_list, wt_deepmd_json
 import AtomicVirtuaLab.globalv as g
 import sys
 
-g.traindata = "/home/A23321P/work/myDeepMD/MoS2/train/deepmd"
+g.traindata = "/home/A23321P/work/myQE/MoS2/data"
 
-#qe2dp(g.traindata,'pwo')
+qe2dp(g.traindata,'pwo')
 dp_list=get_deepmd_list(g.traindata)
 #print(dp_list)
 #sys.exit()
