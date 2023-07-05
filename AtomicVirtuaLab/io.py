@@ -20,6 +20,29 @@ def smiles2xyz(smiles,molname,addH,smarts=False):
     xyz = Chem.MolToXYZBlock(m)
     print(xyz, file=codecs.open(molname+'.xyz', 'w', 'utf-8'))
 
+def smiles2molandxyz(smiles,molname,addH,smarts=False):
+    from rdkit import Chem
+    from rdkit.Chem import AllChem, rdDistGeom
+    from ase.io import read, write
+    import codecs
+    # SMILES式をMOL形式に変換
+    if smarts:
+        m = Chem.MolFromSmarts(smiles)
+    else:
+        m = Chem.MolFromSmiles(smiles)
+    # 水素を付加
+    if addH:
+        m = Chem.AddHs(m)
+    # 構造最適化
+    AllChem.EmbedMolecule(m)
+    AllChem.MMFFOptimizeMolecule(m)
+    # molファイルとして出力
+    Chem.MolToMolFile(m,molname+'.mol')
+    # xyzファイルとして出力
+    xyz = Chem.MolToXYZBlock(m)
+    print(xyz, file=codecs.open(molname+'.xyz', 'w', 'utf-8'))
+    return m
+
 def rd_cif(fcif,primitive_cell=False):
     from ase.io import read
     if primitive_cell:

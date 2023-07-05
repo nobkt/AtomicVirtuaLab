@@ -5,11 +5,11 @@ from AtomicVirtuaLab.lammps import mk_nvt_input_fr_moltemplate, mk_npt_input_fr_
 import os
 
 smiles={
-    'PR176':'CCCCN1C=C[N+](C)=C1'
+    'test2mer':'OCC1OC(OC2C(O)C(O)COC2CO)C(O)C(O)C1O'
 }
 
 mollist={
-    'PR176':10
+    'test2mer':1
 }
 
 x_box=1000.0
