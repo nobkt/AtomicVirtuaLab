@@ -52,6 +52,10 @@ def mk_qe_input_scf(cell,xc,pot,level='low',estep=1000,ecutwfc=25,ecutrho=225,mi
         cell.set_initial_magnetic_moments(magmom)
         nbnd = int(valence/2.0*2.0)
         input_data['nbnd'] = nbnd
+    else:
+        valence, magmom = get_valence(cell,pseudo,level)
+        nbnd = int(valence/2.0)
+        print('valence/2 = ', nbnd)
     cell.write('qe_scf.pwi',input_data=input_data,pseudopotentials=pseudo,kpts=kpts,crystal_coordinates=False)
 
 def mk_qe_input_dos(cell,xc,pot,level='low',estep=1000,ecutwfc=25,ecutrho=225,mixing_beta=0.2,kpts=None,ecut='manual',nspin=False):
@@ -752,8 +756,9 @@ def plot_qe_dos(result_dir,efermi,nspin=False):
     import re
     import sys
     from matplotlib import pyplot as plt
+    import pandas as pd
 
-    symbols = ['Cu','I']
+    symbols = ['Si','O']
 
     files = os.listdir(result_dir+'/')
     fpdos = []
@@ -1213,6 +1218,11 @@ def plot_qe_dos(result_dir,efermi,nspin=False):
                             tot_dos_down['tot'][1] = [x+y for x,y in zip(tot_dos_down['tot'][1],pdos_down[pdos][1])]
     
     # orbital DOS
+    data = pd.DataFrame(pdos_up,index=('energy','pdos'))
+    print(data.columns.values)
+    for orb in data.columns.values:
+        data2 = pd.DataFrame(data[orb]['pdos'],index=data[orb]['energy'],columns=[orb])
+        data2.to_csv(orb+'.csv')
     if nspin == False:
         for pdos in pdos_up:
             plt.plot(pdos_up[pdos][0],pdos_up[pdos][1],label=pdos+'(UP)', linewidth = 0.6)
@@ -1227,7 +1237,7 @@ def plot_qe_dos(result_dir,efermi,nspin=False):
     #plt.legend(loc='upper left',bbox_to_anchor=(1,1))
     plt.legend(loc='upper right',fontsize=8)
     plt.ylim(0.0,20.0)
-    plt.xlim(-5.0,5.0)
+    plt.xlim(-10.0,50.0)
     if nspin == False:
         plt.gca().set_ylim(bottom=0)
     plt.tick_params(labelsize=10)
