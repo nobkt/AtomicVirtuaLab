@@ -10,6 +10,13 @@ smiles={
 
 mollist={
     'test2mer':1
+=======
+    'test':'CCCCN1C=C[N+](C)=C1'
+}
+
+mollist={
+    'test':10
+>>>>>>> d359ceb (continue)
 }
 
 x_box=1000.0
