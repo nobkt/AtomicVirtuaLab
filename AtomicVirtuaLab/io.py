@@ -1,4 +1,4 @@
-def smiles2xyz(smiles,molname,addH,smarts=False):
+def smiles2xyz(smiles,molname,addH,smarts=False,userandom=False):
     from rdkit import Chem
     from rdkit.Chem import AllChem, rdDistGeom
     from ase.io import read, write
@@ -12,7 +12,10 @@ def smiles2xyz(smiles,molname,addH,smarts=False):
     if addH:
         m = Chem.AddHs(m)
     # 構造最適化
-    AllChem.EmbedMolecule(m)
+    if userandom:
+        AllChem.EmbedMolecule(m,useRandomCoords=True)
+    else:
+        AllChem.EmbedMolecule(m)
     AllChem.MMFFOptimizeMolecule(m)
     # molファイルとして出力
     Chem.MolToMolFile(m,molname+'.mol')
