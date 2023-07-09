@@ -103,6 +103,6 @@ cell = read('system.xyz')
 cell.set_cell(lat)
 
 #view(cell)
-#print(len(cell))
+print(len(cell))
 mk_qe_input_npt(cell,'pbe','paw',400,100,0,dt=0.5,level='high',estep=1000,nstep=200000,kpts=None,ecut='auto',options={'vdw_corr':'dft-d3','dftd3_version':4},nspin=False)
 mk_siesta_input_npt(cell,'PBE','SZ',25.0,[1,1,1],473.0,0.0,20000,pseudo_path=g.siesta_pot,MixingWeight=0.1,MaxSCFIterations=2000,dt=0.5,spin='non-polarized')
