@@ -3,13 +3,15 @@ from AtomicVirtuaLab.io import rd_cif, smiles2xyz
 from AtomicVirtuaLab.build import slabgen
 from AtomicVirtuaLab.packmol import mk_packmol_slab_random
 from AtomicVirtuaLab.espresso import mk_qe_input_npt
+from AtomicVirtuaLab.siesta import mk_siesta_input_npt
 from ase.io import read
 from ase.build import make_supercell
 from ase.visualize import view
 import os
 import sys
 
-g.qepot = '/home/A23321P/work/myPython/AtomicVirtuaLab/qe_pseudo'
+g.qepot = '/media/sf_nanoVM/myPython/AtomicVirtuaLab/qe_pseudo'
+g.siesta_pot = '/media/sf_nanoVM/myPython/AtomicVirtuaLab/siesta_pseudo'
 
 g.cifdir='./cifs'
 cell = rd_cif(g.cifdir+'/MoS2_mp2815.cif')
@@ -100,7 +102,7 @@ os.system('packmol < packmol.inp')
 cell = read('system.xyz')
 cell.set_cell(lat)
 
-view(cell)
-print(len(cell))
+#view(cell)
+#print(len(cell))
 mk_qe_input_npt(cell,'pbe','paw',400,100,0,dt=0.5,level='high',estep=1000,nstep=200000,kpts=None,ecut='auto',options={'vdw_corr':'dft-d3','dftd3_version':4},nspin=False)
-
+mk_siesta_input_npt(cell,'PBE','SZ',25.0,[1,1,1],473.0,0.0,20000,pseudo_path=g.siesta_pot,MixingWeight=0.1,MaxSCFIterations=2000,dt=0.5,spin='non-polarized')
