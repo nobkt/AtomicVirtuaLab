@@ -21,8 +21,8 @@ cell2 = rd_cif(g.cifdir+'/MoS2_mp2815.cif')
 
 nx=9
 ny=5
-nz1=2
-nz2=3
+nz1=7
+nz2=10
 
 cell1 = slabgen(cell1,0,0,1,1,1,nz1,10.0,10.0)
 os.system('atomsk slab_3.cif -orthogonal-cell MoS2_mp1434_slab_3_ortho.cfg')
@@ -47,6 +47,7 @@ os.chdir('./MoS2/mp1434')
 shutil.copy(g.forcedir+'/MoS2_graph.pb','./graph.pb')
 cell1 = make_supercell(cell1,([nx,0,0],[0,ny,0],[0,0,1]),wrap=True)
 view(cell1)
+cell1.write('cell1.cif')
 mk_nvt_input_deepmd_friction(cell1,0.0005,100,100,20000,300,12345)
 os.chdir('../../')
 
@@ -57,4 +58,8 @@ os.chdir('./MoS2/mp2815')
 shutil.copy(g.forcedir+'/MoS2_graph.pb','./graph.pb')
 cell2 = make_supercell(cell2,([nx,0,0],[0,ny,0],[0,0,1]),wrap=True)
 view(cell2)
+cell2.write('cell2.cif')
 mk_nvt_input_deepmd_friction(cell2,0.0005,100,100,20000,300,12345)
+
+print(len(cell1))
+print(len(cell2))
