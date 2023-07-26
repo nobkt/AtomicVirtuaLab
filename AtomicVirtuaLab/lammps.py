@@ -270,7 +270,7 @@ def mk_nvt_input_uff(cell,dt,dmp_step,thermo_step,md_step,T,seed):
     f.write('write_data result.data'+'\n')
     f.close()
 
-def mk_nvt_input_deepmd_friction(cell,dt,dmp_step,thermo_step,md_step,T,seed):
+def mk_nvt_input_deepmd_friction(cell,dt,dmp_step,thermo_step,eq_step,md_step,nave,T,seed,nlayer=0,vdirec='y'):
     from AtomicVirtuaLab.io import cell2atomlist, mk_lammpsdata
     from ase import Atom
     import random
@@ -283,9 +283,41 @@ def mk_nvt_input_deepmd_friction(cell,dt,dmp_step,thermo_step,md_step,T,seed):
     f.write('read_data lammps.data'+'\n')
     f.write('region upper block INF INF INF INF ${z1} INF'+'\n')
     f.write('region lower block INF INF INF INF INF ${z0}'+'\n')
+    f.write('group Mo type 1'+'\n')
     f.write('group upper region upper'+'\n')
     f.write('group lower region lower'+'\n')
+    f.write('group upperMo intersect upper Mo'+'\n')
+    f.write('group lowerMo intersect lower Mo'+'\n')
+    
+    if nlayer != 0:
+        for nl in range(nlayer-2):
+            if nl == 0:
+                f.write('region layer'+str(nl+1)+' block INF INF INF INF ${zm'+str(nl+1)+'} ${z1}'+'\n')
+                f.write('group layer'+str(nl+1)+' region layer'+str(nl+1)+'\n')
+                f.write('group layer'+str(nl+1)+'Mo intersect layer'+str(nl+1)+' Mo'+'\n')
+            elif nl == nlayer-2-1:
+                f.write('region layer'+str(nl+1)+' block INF INF INF INF ${z0} ${zm'+str(nl)+'}'+'\n')
+                f.write('group layer'+str(nl+1)+' region layer'+str(nl+1)+'\n')
+                f.write('group layer'+str(nl+1)+'Mo intersect layer'+str(nl+1)+' Mo'+'\n')
+            else:
+                f.write('region layer'+str(nl+1)+' block INF INF INF INF ${zm'+str(nl+1)+'} ${zm'+str(nl)+'}'+'\n')
+                f.write('group layer'+str(nl+1)+' region layer'+str(nl+1)+'\n')
+                f.write('group layer'+str(nl+1)+'Mo intersect layer'+str(nl+1)+' Mo'+'\n')
+    
     f.write('group middle subtract all upper lower'+'\n')
+    
+    f.write('compute mype all pe/atom'+'\n')
+    f.write('compute myke all ke/atom'+'\n')
+    #f.write('compute sig all centroid/stress/atom NULL virial'+'\n')
+    #if nlayer != 0:
+    #    for nl in range(nlayer-2):
+    #        if nl == 0:
+    #            f.write('compute uptol'+str(nl+1)+' upper group/group layer'+str(nl+1)+'\n')
+    #        elif nl == nlayer-2-1:
+    #            f.write('compute l'+str(nl+1)+'tolow layer'+str(nl+1)+' group/group lower'+'\n')
+    #        else:
+    #            f.write('compute l'+str(nl)+'tol'+str(nl+1)+' layer'+str(nl)+' group/group layer'+str(nl+1)+'\n')
+    
     i = 1
     for symbol in symbols:
         a = Atom(symbol)
@@ -296,42 +328,128 @@ def mk_nvt_input_deepmd_friction(cell,dt,dmp_step,thermo_step,md_step,T,seed):
     for symbol in symbols:
         f.write(' '+str(symbol))
     f.write('\n')
-    f.write('dump dmp all custom '+str(dmp_step)+' traj_nvt.lammpstrj id type element x y z ix iy iz'+'\n')
+    #f.write('dump dmp all custom '+str(dmp_step)+' traj_nvt_load.lammpstrj id type element x y z vx vy vz fx fy fz c_sig[1] c_sig[2] c_sig[3] c_sig[4] c_sig[5] c_sig[6] c_sig[7] c_sig[8] c_sig[9] ix iy iz'+'\n')
+    f.write('dump dmp all custom '+str(dmp_step)+' traj_nvt_load.lammpstrj id type element x y z vx vy vz fx fy fz c_mype c_myke ix iy iz'+'\n')
     f.write('dump_modify dmp element')
     for symbol in symbols:
         f.write(' '+str(symbol))
     f.write('\n')
     f.write('timestep '+str(dt)+'\n')
-    f.write('fix rigid1 lower rigid single'+'\n')
-    f.write('fix rigid2 upper rigid single'+'\n')
+    f.write('fix rigid1 lower rigid single torque * off off off'+'\n')
+    f.write('fix rigid2 upper rigid single torque * off off off'+'\n')
     f.write('variable S equal lx*ly'+'\n')
     f.write('variable P equal v_P0*1.0e-6/1.602176634'+'\n')
     f.write('variable N equal count(upper)'+'\n')
-    f.write('variable Fz equal v_P*v_S/v_N'+'\n')
-    f.write('compute Fy upper reduce sum fy'+'\n')
-    f.write('compute Fz upper reduce sum fz'+'\n')
-    f.write('thermo_style custom step etotal enthalpy pe ke temp press vol density cella cellb cellc cellalpha cellbeta cellgamma c_Fy c_Fz'+'\n')
-    f.write('thermo '+str(thermo_step)+'\n')
-    f.write('\n')
+    f.write('variable Pz0 equal v_P*v_S'+'\n')
+    f.write('variable Pz equal v_P*v_S/v_N'+'\n')
     f.write('fix freeze1 lower setforce 0.0 0.0 0.0'+'\n')
     f.write('fix freeze2 upper setforce 0.0 0.0 NULL'+'\n')
-    f.write('fix addf upper addforce 0 0 v_Fz'+'\n')
+    f.write('fix addf upper addforce 0 0 v_Pz'+'\n')
     f.write('velocity middle create '+str(T)+' '+str(seed)+'\n')
+    f.write('variable Fric equal f_freeze2[2]/v_Pz0'+'\n')
+    f.write('thermo_style custom step etotal enthalpy pe ke temp press vol density cella cellb cellc cellalpha cellbeta cellgamma f_freeze2[1] f_freeze2[2] f_freeze2[3] v_Pz0 v_Fric'+'\n')
+    f.write('thermo '+str(thermo_step)+'\n')
+    f.write('\n')
     f.write('fix fxnvt middle nvt temp '+str(T)+' '+str(T)+' $(dt*100.0)'+'\n')
-    f.write('fix fxnve1 lower nve'+'\n')
-    f.write('fix fxnve2 upper nve'+'\n')
-    f.write('run '+str(md_step)+'\n')
-    f.write('write_data result_nvt.data'+'\n')
+    f.write('run '+str(eq_step)+'\n')
     f.write('unfix freeze1'+'\n')
     f.write('unfix freeze2'+'\n')
-    f.write('unfix fxnve1'+'\n')
-    f.write('unfix fxnve2'+'\n')
-    f.write('fix freeze1 lower setforce 0.0 NULL 0.0'+'\n')
-    f.write('fix freeze2 upper setforce 0.0 NULL NULL'+'\n')
-    f.write('fix move1 lower move linear 0 0.2 0 units box'+'\n')
-    f.write('fix move2 upper move linear 0 -0.2 NULL units box'+'\n')
-    f.write('fix fxnve1 lower nve'+'\n')
-    f.write('fix fxnve2 upper nve'+'\n')
+    f.write('unfix rigid1'+'\n')
+    f.write('unfix rigid2'+'\n')
+    f.write('unfix fxnvt'+'\n')
+    f.write('unfix addf'+'\n')
+    f.write('undump dmp'+'\n')
+    f.write('\n')
+
+    f.write('dump dmp all custom '+str(dmp_step)+' traj_nvt_fric.lammpstrj id type element x y z vx vy vz fx fy fz c_mype c_myke ix iy iz'+'\n')
+    f.write('dump_modify dmp element')
+    for symbol in symbols:
+        f.write(' '+str(symbol))
+    f.write('\n')
+    
+    f.write('reset_timestep 0'+'\n')
+    
+    if nlayer != 0:
+        f.write('compute uppermsd upper msd average yes'+'\n')
+        f.write('compute lowermsd lower msd average yes'+'\n')
+        f.write('compute upperpeperatom upper pe/atom'+'\n')
+        f.write('compute lowerpeperatom lower pe/atom'+'\n')
+        f.write('compute upperpe upper reduce sum c_upperpeperatom'+'\n')
+        f.write('compute lowerpe lower reduce sum c_lowerpeperatom'+'\n')
+        f.write('compute upperpropperatom upper property/atom vx vy vz fx fy fz'+'\n')
+        f.write('compute lowerpropperatom lower property/atom vx vy vz fx fy fz'+'\n')
+        f.write('compute upperprop upper reduce ave c_upperpropperatom[*]'+'\n')
+        f.write('compute lowerprop lower reduce ave c_lowerpropperatom[*]'+'\n')
+        f.write('compute upperMopropperatom upper property/atom z'+'\n')
+        f.write('compute lowerMopropperatom lower property/atom z'+'\n')
+        f.write('compute upperMomaxz upperMo reduce max c_upperMopropperatom'+'\n')
+        f.write('compute lowerMomaxz lowerMo reduce max c_lowerMopropperatom'+'\n')
+        f.write('compute upperMominz upperMo reduce min c_upperMopropperatom'+'\n')
+        f.write('compute lowerMominz lowerMo reduce min c_lowerMopropperatom'+'\n')
+
+    if nlayer != 0:
+        for nl in range(nlayer-2):
+            if nl == 0:
+                f.write('compute layer'+str(nl+1)+'msd layer'+str(nl+1)+' msd average yes'+'\n')
+                f.write('compute layer'+str(nl+1)+'peperatom layer'+str(nl+1)+' pe/atom'+'\n')
+                f.write('compute layer'+str(nl+1)+'pe layer'+str(nl+1)+' reduce sum c_layer'+str(nl+1)+'peperatom'+'\n')
+                f.write('compute layer'+str(nl+1)+'propperatom layer'+str(nl+1)+' property/atom vx vy vz fx fy fz'+'\n')
+                f.write('compute layer'+str(nl+1)+'prop layer'+str(nl+1)+' reduce ave c_layer'+str(nl+1)+'propperatom[*]'+'\n')
+                f.write('compute layerMo'+str(nl+1)+'propperatom layer'+str(nl+1)+' property/atom z'+'\n')
+                f.write('compute layerMo'+str(nl+1)+'maxz layer'+str(nl+1)+' reduce max c_layerMo'+str(nl+1)+'propperatom'+'\n')
+                f.write('compute layerMo'+str(nl+1)+'minz layer'+str(nl+1)+' reduce min c_layerMo'+str(nl+1)+'propperatom'+'\n')
+            elif nl == nlayer-2-1:
+                f.write('compute layer'+str(nl+1)+'msd layer'+str(nl+1)+' msd average yes'+'\n')
+                f.write('compute layer'+str(nl+1)+'peperatom layer'+str(nl+1)+' pe/atom'+'\n')
+                f.write('compute layer'+str(nl+1)+'pe layer'+str(nl+1)+' reduce sum c_layer'+str(nl+1)+'peperatom'+'\n')
+                f.write('compute layer'+str(nl+1)+'propperatom layer'+str(nl+1)+' property/atom vx vy vz fx fy fz'+'\n')
+                f.write('compute layer'+str(nl+1)+'prop layer'+str(nl+1)+' reduce ave c_layer'+str(nl+1)+'propperatom[*]'+'\n')
+                f.write('compute layerMo'+str(nl+1)+'propperatom layer'+str(nl+1)+' property/atom z'+'\n')
+                f.write('compute layerMo'+str(nl+1)+'maxz layer'+str(nl+1)+' reduce max c_layerMo'+str(nl+1)+'propperatom'+'\n')
+                f.write('compute layerMo'+str(nl+1)+'minz layer'+str(nl+1)+' reduce min c_layerMo'+str(nl+1)+'propperatom'+'\n')
+            else:
+                f.write('compute layer'+str(nl+1)+'msd layer'+str(nl+1)+' msd average yes'+'\n')
+                f.write('compute layer'+str(nl+1)+'peperatom layer'+str(nl+1)+' pe/atom'+'\n')
+                f.write('compute layer'+str(nl+1)+'pe layer'+str(nl+1)+' reduce sum c_layer'+str(nl+1)+'peperatom'+'\n')
+                f.write('compute layer'+str(nl+1)+'propperatom layer'+str(nl+1)+' property/atom vx vy vz fx fy fz'+'\n')
+                f.write('compute layer'+str(nl+1)+'prop layer'+str(nl+1)+' reduce ave c_layer'+str(nl+1)+'propperatom[*]'+'\n')
+                f.write('compute layerMo'+str(nl+1)+'propperatom layer'+str(nl+1)+' property/atom z'+'\n')
+                f.write('compute layerMo'+str(nl+1)+'maxz layer'+str(nl+1)+' reduce max c_layerMo'+str(nl+1)+'propperatom'+'\n')
+                f.write('compute layerMo'+str(nl+1)+'minz layer'+str(nl+1)+' reduce min c_layerMo'+str(nl+1)+'propperatom'+'\n')
+
+    f.write('fix freeze1 lower setforce NULL 0.0 0.0'+'\n')
+    f.write('fix freeze2 upper setforce NULL 0.0 NULL'+'\n')
+    f.write('fix rigid1 lower rigid single torque * off off off'+'\n')
+    f.write('fix rigid2 upper rigid single torque * off off off'+'\n')
+    f.write('fix addf upper addforce 0 0 v_Pz'+'\n')
+    f.write('variable vp equal ${vfric}'+'\n')
+    f.write('variable vm equal -1.0*${vfric}'+'\n')
+    if vdirec == 'y':
+        f.write('velocity lower set NULL v_vm 0.0 units box'+'\n')
+        f.write('velocity upper set NULL v_vp NULL units box'+'\n')
+    elif vdirec == 'x':
+        f.write('velocity lower set v_vm NULL 0.0 units box'+'\n')
+        f.write('velocity upper set v_vp NULL NULL units box'+'\n')
+    f.write('fix th all ave/time 1 '+str(int(md_step/nave))+' '+str(int(md_step/nave))+' f_freeze2[1] f_freeze2[2] f_freeze2[3] v_Pz0 v_Fric file friction.profile'+'\n')
+    
+    if nlayer != 0:
+        f.write('fix thmsdupper all ave/time 1 '+str(int(md_step/nave))+' '+str(int(md_step/nave))+' c_uppermsd[1] c_uppermsd[2] c_uppermsd[3] file msdupper.profile'+'\n')
+        f.write('fix thmsdlower all ave/time 1 '+str(int(md_step/nave))+' '+str(int(md_step/nave))+' c_lowermsd[1] c_lowermsd[2] c_lowermsd[3] file msdlower.profile'+'\n')
+        f.write('fix thpeupper all ave/time 1 '+str(int(md_step/nave))+' '+str(int(md_step/nave))+' c_upperpe file peupper.profile'+'\n')
+        f.write('fix thpelower all ave/time 1 '+str(int(md_step/nave))+' '+str(int(md_step/nave))+' c_lowerpe file pelower.profile'+'\n')
+        f.write('fix thpropupper all ave/time 1 '+str(int(md_step/nave))+' '+str(int(md_step/nave))+' c_upperprop[1] c_upperprop[2] c_upperprop[3] c_upperprop[4] c_upperprop[5] c_upperprop[6] c_upperMomaxz c_upperMominz file propupper.profile'+'\n')
+        f.write('fix thproplower all ave/time 1 '+str(int(md_step/nave))+' '+str(int(md_step/nave))+' c_lowerprop[1] c_lowerprop[2] c_lowerprop[3] c_lowerprop[4] c_lowerprop[5] c_lowerprop[6] c_lowerMomaxz c_lowerMominz file proplower.profile'+'\n')
+        for nl in range(nlayer-2):
+            f.write('fix thmsdlayer'+str(nl+1)+' all ave/time 1 '+str(int(md_step/nave))+' '+str(int(md_step/nave))+' c_layer'+str(nl+1)+'msd[1] c_layer'+str(nl+1)+'msd[2] c_layer'+str(nl+1)+'msd[3] file msdlayer'+str(nl+1)+'.profile'+'\n')
+            f.write('fix thpelayer'+str(nl+1)+' all ave/time 1 '+str(int(md_step/nave))+' '+str(int(md_step/nave))+' c_layer'+str(nl+1)+'pe file pelayer'+str(nl+1)+'.profile'+'\n')
+            f.write('fix thproplayer'+str(nl+1)+' all ave/time 1 '+str(int(md_step/nave))+' '+str(int(md_step/nave))+' c_layer'+str(nl+1)+'prop[1] c_layer'+str(nl+1)+'prop[2] c_layer'+str(nl+1)+'prop[3] c_layer'+str(nl+1)+'prop[4] c_layer'+str(nl+1)+'prop[5] c_layer'+str(nl+1)+'prop[6] c_layerMo'+str(nl+1)+'maxz c_layerMo'+str(nl+1)+'minz file proplayer'+str(nl+1)+'.profile'+'\n')
+            #if nl == 0:
+            #    f.write('fix thuptol'+str(nl+1)+' all ave/time '+str(dmp_step)+' '+str(dmp_step)+' '+str(md_step)+' c_uptol'+str(nl+1)+' c_uptol'+str(nl+1)+'[1] c_uptol'+str(nl+1)+'[2] c_uptol'+str(nl+1)+'[3] file uptol'+str(nl+1)+'.profile'+'\n')
+            #elif nl == nlayer-2-1:
+            #    f.write('fix thl'+str(nl+1)+'tolow all ave/time '+str(dmp_step)+' '+str(dmp_step)+' '+str(md_step)+' c_l'+str(nl+1)+'tolow c_l'+str(nl+1)+'tolow[1] c_l'+str(nl+1)+'tolow[2] c_l'+str(nl+1)+'tolow[3] file l'+str(nl+1)+'tolow.profile'+'\n')
+            #else:
+            #    f.write('fix thl'+str(nl)+'tol'+str(nl+1)+' all ave/time '+str(dmp_step)+' '+str(dmp_step)+' '+str(md_step)+' c_l'+str(nl)+'tol'+str(nl+1)+' c_l'+str(nl)+'tol'+str(nl+1)+'[1] c_l'+str(nl)+'tol'+str(nl+1)+'[2] c_l'+str(nl)+'tol'+str(nl+1)+'[3] file l'+str(nl)+'tol'+str(nl+1)+'.profile'+'\n')
+    f.write('fix fxnvt middle nvt temp '+str(T)+' '+str(T)+' $(dt*100.0)'+'\n')
     f.write('run '+str(md_step)+'\n')
     f.close()
 

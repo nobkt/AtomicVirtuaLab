@@ -1,4 +1,4 @@
-def mk_qe_input_scf(cell,xc,pot,level='low',estep=1000,ecutwfc=25,ecutrho=225,mixing_beta=0.2,kpts=None,ecut='manual',nspin=False):
+def mk_qe_input_scf(cell,xc,pot,level='low',estep=1000,ecutwfc=25,ecutrho=225,mixing_beta=0.2,kpts=None,ecut='manual',options={},nspin=False):
     from ase.io import write
     import AtomicVirtuaLab.globalv as g
     import shutil
@@ -46,6 +46,9 @@ def mk_qe_input_scf(cell,xc,pot,level='low',estep=1000,ecutwfc=25,ecutrho=225,mi
         'ecutwfc'          : ecutwfc_,\
         'ecutrho'          : ecutrho_\
     }
+    if len(options) != 0:
+        for option in options:
+            input_data[option] = options[option]
     if nspin == True:
         input_data['nspin'] = 2
         valence, magmom = get_valence(cell,pseudo,level)
@@ -58,7 +61,7 @@ def mk_qe_input_scf(cell,xc,pot,level='low',estep=1000,ecutwfc=25,ecutrho=225,mi
         print('valence/2 = ', nbnd)
     cell.write('qe_scf.pwi',input_data=input_data,pseudopotentials=pseudo,kpts=kpts,crystal_coordinates=False)
 
-def mk_qe_input_dos(cell,xc,pot,level='low',estep=1000,ecutwfc=25,ecutrho=225,mixing_beta=0.2,kpts=None,ecut='manual',nspin=False):
+def mk_qe_input_dos(cell,xc,pot,level='low',estep=1000,ecutwfc=25,ecutrho=225,mixing_beta=0.2,kpts=None,ecut='manual',options={},nspin=False):
     from ase.io import write
     import AtomicVirtuaLab.globalv as g
     import shutil
@@ -108,6 +111,9 @@ def mk_qe_input_dos(cell,xc,pot,level='low',estep=1000,ecutwfc=25,ecutrho=225,mi
         'ecutwfc'          : ecutwfc_,\
         'ecutrho'          : ecutrho_\
     }
+    if len(options) != 0:
+        for option in options:
+            input_data[option] = options[option]
     if nspin == True:
         input_data['nspin'] = 2
         valence, magmom = get_valence(cell,pseudo,level)
@@ -140,7 +146,7 @@ def mk_qe_input_dos(cell,xc,pot,level='low',estep=1000,ecutwfc=25,ecutrho=225,mi
     f.write('/'+'\n')
     f.close()
 
-def mk_qe_input_band(cell,xc,pot,level='low',estep=1000,ecutwfc=25,ecutrho=225,mixing_beta=0.2,kpts=None,ecut='manual',nspin=False):
+def mk_qe_input_band(cell,xc,pot,level='low',estep=1000,ecutwfc=25,ecutrho=225,mixing_beta=0.2,kpts=None,ecut='manual',options={},nspin=False):
     from ase.io import write
     import AtomicVirtuaLab.globalv as g
     import shutil
@@ -190,6 +196,9 @@ def mk_qe_input_band(cell,xc,pot,level='low',estep=1000,ecutwfc=25,ecutrho=225,m
         'ecutwfc'          : ecutwfc_,\
         'ecutrho'          : ecutrho_\
     }
+    if len(options) != 0:
+        for option in options:
+            input_data[option] = options[option]
     if nspin == True:
         input_data['nspin'] = 2
         valence, magmom = get_valence(cell,pseudo,level)
@@ -384,7 +393,7 @@ def mk_qe_input_vcrelax(cell,xc,pot,level='low',estep=1000,nstep=1000,nosym=Fals
         input_data['nbnd'] = nbnd
     cell.write('qe_vc-relax.pwi',input_data=input_data,pseudopotentials=pseudo,kpts=kpts,crystal_coordinates=False)
 
-def mk_qe_input_nvt(cell,xc,pot,tempw,tolp,dt=0.5,level='low',estep=1000,nstep=1000,ecutwfc=25,ecutrho=225,mixing_beta=0.2,kpts=None,ecut='manual',nspin=False):
+def mk_qe_input_nvt(cell,xc,pot,tempw,tolp,dt=0.5,level='low',estep=1000,nstep=1000,ecutwfc=25,ecutrho=225,mixing_beta=0.2,kpts=None,ecut='manual',options={},nspin=False):
     from ase.io import write
     import AtomicVirtuaLab.globalv as g
     import shutil
@@ -441,6 +450,9 @@ def mk_qe_input_nvt(cell,xc,pot,tempw,tolp,dt=0.5,level='low',estep=1000,nstep=1
         'pot_extrapolation' : 'second_order',\
         'wfc_extrapolation' : 'second_order'\
     }
+    if len(options) != 0:
+        for option in options:
+            input_data[option] = options[option]
     if nspin == True:
         input_data['nspin'] = 2
         valence, magmom = get_valence(cell,pseudo,level)

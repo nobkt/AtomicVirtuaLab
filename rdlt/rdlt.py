@@ -171,9 +171,10 @@ def main():
 
     #Build rdkit molecule from smiles and generate a conformer
     m = AllChem.AddHs(Chem.MolFromSmiles(args.smi))
-    AllChem.EmbedMolecule(m,useRandomCoords=True)
+    AllChem.EmbedMolecule(m)
+    #AllChem.EmbedMolecule(m,useRandomCoords=True)
     # Optimize
-    AllChem.MMFFOptimizeMolecule(m)
+    #AllChem.MMFFOptimizeMolecule(m)
     # WARNING: This part is dumb. Will update the lopls definitions ONLY
     # if the lopls flag is used. If a path is passed with the refresh command
     #

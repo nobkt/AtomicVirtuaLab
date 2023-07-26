@@ -2,7 +2,7 @@ import AtomicVirtuaLab.globalv as g
 from AtomicVirtuaLab.io import rd_cif, smiles2xyz
 from AtomicVirtuaLab.build import slabgen
 from AtomicVirtuaLab.packmol import mk_packmol_slab_random
-from AtomicVirtuaLab.espresso import mk_qe_input_npt, mk_qe_input_relax
+from AtomicVirtuaLab.espresso import mk_qe_input_npt, mk_qe_input_relax, mk_qe_input_vcrelax, mk_qe_input_dos, mk_qe_input_band
 from AtomicVirtuaLab.siesta import mk_siesta_input_npt
 from ase.io import read, write
 from ase.build import make_supercell, add_adsorbate
@@ -16,11 +16,58 @@ g.qepot = '/home/A23321P/work/myPython/AtomicVirtuaLab/qe_pseudo'
 g.siesta_pot = '/home/A23321P/work/myPython/AtomicVirtuaLab/siesta_pseudo'
 
 g.cifdir='./cifs'
-cell = rd_cif(g.cifdir+'/MoS2_mp2815.cif')
+
+"""
+ecutwfc0=77.0
+ecutrho0=539.0
+kpoints=[2,4,8]
+
+scales=[1.0,1.05,1.1,1.15,1.2,1.25,1.3,1.35,1.4,1.45,1.5]
+
+# bulk
+#mpid = 1434
+mpid = 2815
+cell = rd_cif(g.cifdir+'/MoS2_mp'+str(mpid)+'.cif')
 
 os.makedirs('./MoS2_catalysis',exist_ok=True)
 os.chdir('./MoS2_catalysis')
 
+os.makedirs('./bulk',exist_ok=True)
+os.chdir('./bulk')
+
+os.makedirs('./mp'+str(mpid),exist_ok=True)
+os.chdir('./mp'+str(mpid))
+
+for scale in scales:
+    os.makedirs('./scale_'+str(scale),exist_ok=True)
+    os.chdir('./scale_'+str(scale))
+    for k0 in kpoints:
+        os.makedirs('./k_'+str(k0),exist_ok=True)
+        os.chdir('./k_'+str(k0))
+        ecutwfc=ecutwfc0*scale
+        ecutrho=ecutrho0*scale
+        os.makedirs('./opt',exist_ok=True)
+        os.chdir('./opt')
+        mk_qe_input_vcrelax(cell,'pbe','paw',level='high',nosym=True,ecutwfc=ecutwfc,ecutrho=ecutrho,mixing_beta=0.2,kpts=(k0,k0,k0),ecut='manual',options={'vdw_corr':'dft-d3','dftd3_version':4},nspin=False)
+        os.chdir('../')
+        #os.makedirs('./dos',exist_ok=True)
+        #os.chdir('./dos')
+        #mk_qe_input_dos(cell,'pbe','paw',level='high',ecutwfc=ecutwfc,ecutrho=ecutrho,mixing_beta=0.2,kpts=(12,12,12),ecut='manual',options={'vdw_corr':'dft-d3','dftd3_version':4})
+        #os.chdir('../')
+        #os.makedirs('./band',exist_ok=True)
+        #os.chdir('./band')
+        #mk_qe_input_band(cell,'pbe','paw',level='high',ecutwfc=ecutwfc,ecutrho=ecutrho,mixing_beta=0.2,ecut='manual',options={'vdw_corr':'dft-d3','dftd3_version':4})
+        #os.chdir('../')        
+        os.chdir('../')
+    os.chdir('../')
+os.chdir('../')
+os.chdir('../')
+os.chdir('../')
+"""
+
+
+
+"""
 # <001> surface
 os.makedirs('./001',exist_ok=True)
 os.chdir('./001')
@@ -122,6 +169,22 @@ mk_qe_input_relax(Pt1_hcp,'pbe','paw',level='high',ecutwfc=77.0,ecutrho=539.0,kp
 os.chdir('../')
 
 """
+
+# SIESTA
+mpid = 2815
+cell = rd_cif(g.cifdir+'/MoS2_mp'+str(mpid)+'.cif')
+
+os.makedirs('./MoS2_catalysis',exist_ok=True)
+os.chdir('./MoS2_catalysis')
+
+os.makedirs('./siesta',exist_ok=True)
+os.chdir('./siesta')
+
+slab001 = slabgen(cell,0,0,1,1,1,1,7.5,7.5)
+id = 0
+
+#view(slab001[id])
+
 os.system('atomsk slab_1.cif -orthogonal-cell slab_1_ortho.cfg')
 slab001 = read('slab_1_ortho.cfg')
 slab001 = make_supercell(slab001,([5,0,0],[0,3,0],[0,0,1]),wrap=True)
@@ -136,12 +199,17 @@ zmin=min(z)
 smiles2xyz('Cl[Pd]Cl','PdCl2',False,userandom=True)
 smiles2xyz('O','H2O',True)
 smiles2xyz('CCO','CH3CH2OH',True)
+smiles2xyz('[Cl-]','Cl',False)
+smiles2xyz('[H+]','H',False)
 mol_PdCl2 = read('PdCl2.xyz')
 mol_H2O = read('H2O.xyz')
 mol_CH3CH2OH = read('CH3CH2OH.xyz')
+mol_Cl = read('Cl.xyz')
+mol_H = read('H.xyz')
 #view(mol_PdCl2)
 #view(mol_H2O)
 #view(mol_CH3CH2OH)
+#view(mol_HCl)
 buffer=2.0
 slab_top=zmax+buffer
 slab_bottom=zmin-buffer
@@ -172,13 +240,29 @@ molboxlist={
         },
     'mol4':
         {
+            'mol':'Cl',
+            'num':2,
+            'lx':[0.0,lat[0][0]],
+            'ly':[0.0,lat[1][1]],
+            'lz':[slab_top,lat[2][2]]
+        },
+    'mol5':
+        {
+            'mol':'H',
+            'num':2,
+            'lx':[0.0,lat[0][0]],
+            'ly':[0.0,lat[1][1]],
+            'lz':[slab_top,lat[2][2]]
+        },
+    'mol6':
+        {
             'mol':'PdCl2',
             'num':1,
             'lx':[0.0,lat[0][0]],
             'ly':[0.0,lat[1][1]],
             'lz':[0.0,slab_bottom]
         },
-    'mol5':
+    'mol7':
         {
             'mol':'H2O',
             'num':10,
@@ -186,10 +270,26 @@ molboxlist={
             'ly':[0.0,lat[1][1]],
             'lz':[0.0,slab_bottom]
         },
-    'mol6':
+    'mol8':
         {
             'mol':'CH3CH2OH',
             'num':10,
+            'lx':[0.0,lat[0][0]],
+            'ly':[0.0,lat[1][1]],
+            'lz':[0.0,slab_bottom]
+        },
+    'mol9':
+        {
+            'mol':'Cl',
+            'num':2,
+            'lx':[0.0,lat[0][0]],
+            'ly':[0.0,lat[1][1]],
+            'lz':[0.0,slab_bottom]
+        },
+    'mol10':
+        {
+            'mol':'H',
+            'num':2,
             'lx':[0.0,lat[0][0]],
             'ly':[0.0,lat[1][1]],
             'lz':[0.0,slab_bottom]
@@ -201,8 +301,7 @@ os.system('packmol < packmol.inp')
 cell = read('system.xyz')
 cell.set_cell(lat)
 
-#view(cell)
+view(cell)
 #print(len(cell))
-mk_qe_input_npt(cell,'pbe','paw',400,100,0,dt=0.5,level='high',estep=1000,nstep=200000,kpts=None,ecut='auto',options={'vdw_corr':'dft-d3','dftd3_version':4},nspin=False)
-mk_siesta_input_npt(cell,'VDW','SZP',50.0,[1,1,1],573.0,0.0,200000,pseudo_path=g.siesta_pot,SolutionMethod='diagon',MixingWeight=0.1,MaxSCFIterations=2000,dt=0.5,spin='non-polarized')
-"""
+#mk_qe_input_npt(cell,'pbe','paw',400,100,0,dt=0.5,level='high',estep=1000,nstep=200000,kpts=None,ecut='auto',options={'vdw_corr':'dft-d3','dftd3_version':4},nspin=False)
+mk_siesta_input_npt(cell,'VDW','DZP',100.0,[1,1,1],343.0,0.0,200000,pseudo_path=g.siesta_pot,SolutionMethod='diagon',MixingWeight=0.1,MaxSCFIterations=2000,dt=0.5,spin='non-polarized')
