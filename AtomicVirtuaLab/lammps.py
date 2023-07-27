@@ -346,7 +346,10 @@ def mk_nvt_input_deepmd_friction(cell,dt,dmp_step,thermo_step,eq_step,md_step,na
     f.write('fix freeze2 upper setforce 0.0 0.0 NULL'+'\n')
     f.write('fix addf upper addforce 0 0 v_Pz'+'\n')
     f.write('velocity middle create '+str(T)+' '+str(seed)+'\n')
-    f.write('variable Fric equal f_freeze2[2]/v_Pz0'+'\n')
+    if vdirec == 'y':
+        f.write('variable Fric equal f_freeze2[2]/v_Pz0'+'\n')
+    elif vdirec == 'x':
+        f.write('variable Fric equal f_freeze2[1]/v_Pz0'+'\n')
     f.write('thermo_style custom step etotal enthalpy pe ke temp press vol density cella cellb cellc cellalpha cellbeta cellgamma f_freeze2[1] f_freeze2[2] f_freeze2[3] v_Pz0 v_Fric'+'\n')
     f.write('thermo '+str(thermo_step)+'\n')
     f.write('\n')
@@ -417,17 +420,19 @@ def mk_nvt_input_deepmd_friction(cell,dt,dmp_step,thermo_step,eq_step,md_step,na
                 f.write('compute layerMo'+str(nl+1)+'maxz layer'+str(nl+1)+' reduce max c_layerMo'+str(nl+1)+'propperatom'+'\n')
                 f.write('compute layerMo'+str(nl+1)+'minz layer'+str(nl+1)+' reduce min c_layerMo'+str(nl+1)+'propperatom'+'\n')
 
-    f.write('fix freeze1 lower setforce NULL 0.0 0.0'+'\n')
-    f.write('fix freeze2 upper setforce NULL 0.0 NULL'+'\n')
     f.write('fix rigid1 lower rigid single torque * off off off'+'\n')
     f.write('fix rigid2 upper rigid single torque * off off off'+'\n')
     f.write('fix addf upper addforce 0 0 v_Pz'+'\n')
     f.write('variable vp equal ${vfric}'+'\n')
     f.write('variable vm equal -1.0*${vfric}'+'\n')
     if vdirec == 'y':
+        f.write('fix freeze1 lower setforce NULL 0.0 0.0'+'\n')
+        f.write('fix freeze2 upper setforce NULL 0.0 NULL'+'\n')
         f.write('velocity lower set NULL v_vm 0.0 units box'+'\n')
         f.write('velocity upper set NULL v_vp NULL units box'+'\n')
     elif vdirec == 'x':
+        f.write('fix freeze1 lower setforce 0.0 NULL 0.0'+'\n')
+        f.write('fix freeze2 upper setforce 0.0 NULL NULL'+'\n')
         f.write('velocity lower set v_vm NULL 0.0 units box'+'\n')
         f.write('velocity upper set v_vp NULL NULL units box'+'\n')
     f.write('fix th all ave/time 1 '+str(int(md_step/nave))+' '+str(int(md_step/nave))+' f_freeze2[1] f_freeze2[2] f_freeze2[3] v_Pz0 v_Fric file friction.profile'+'\n')

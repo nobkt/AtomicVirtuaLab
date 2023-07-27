@@ -17,12 +17,12 @@ g.siesta_pot = '/home/A23321P/work/myPython/AtomicVirtuaLab/siesta_pseudo'
 
 g.cifdir='./cifs'
 
-"""
+
 ecutwfc0=77.0
 ecutrho0=539.0
 kpoints=[2,4,8]
 
-scales=[1.0,1.05,1.1,1.15,1.2,1.25,1.3,1.35,1.4,1.45,1.5]
+scales=[1.55,1.6,1.65,1.7,1.75,1.8,1.85,1.9,1.95,2.0]
 
 # bulk
 #mpid = 1434
@@ -63,7 +63,7 @@ for scale in scales:
 os.chdir('../')
 os.chdir('../')
 os.chdir('../')
-"""
+
 
 
 
@@ -169,7 +169,7 @@ mk_qe_input_relax(Pt1_hcp,'pbe','paw',level='high',ecutwfc=77.0,ecutrho=539.0,kp
 os.chdir('../')
 
 """
-
+"""
 # SIESTA
 mpid = 2815
 cell = rd_cif(g.cifdir+'/MoS2_mp'+str(mpid)+'.cif')
@@ -305,3 +305,4 @@ view(cell)
 #print(len(cell))
 #mk_qe_input_npt(cell,'pbe','paw',400,100,0,dt=0.5,level='high',estep=1000,nstep=200000,kpts=None,ecut='auto',options={'vdw_corr':'dft-d3','dftd3_version':4},nspin=False)
 mk_siesta_input_npt(cell,'VDW','DZP',100.0,[1,1,1],343.0,0.0,200000,pseudo_path=g.siesta_pot,SolutionMethod='diagon',MixingWeight=0.1,MaxSCFIterations=2000,dt=0.5,spin='non-polarized')
+"""
