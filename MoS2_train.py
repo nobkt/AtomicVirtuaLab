@@ -1,6 +1,7 @@
 from AtomicVirtuaLab.espresso import mk_qe_input_npt
 from AtomicVirtuaLab.lammps import mk_nvt_input_uff
 from AtomicVirtuaLab.io import rd_cif, rd_lammpsdata
+from AtomicVirtuaLab.build import slabgen
 from ase.build import make_supercell
 from ase.visualize import view
 import AtomicVirtuaLab.globalv as g
@@ -11,6 +12,121 @@ import sys
 g.qepot = '/home/A23321P/work/myPython/AtomicVirtuaLab/qe_pseudo'
 g.cifs = '/home/A23321P/work/myPython/AtomicVirtuaLab/cifs'
 
+P = [0.0, 50.0, -50.0]
+T=[300,1000,2000,3000]
+
+"""
+# slab
+mpid = 1434
+nx001 = 3
+ny001 = 3
+nz001 = 1
+nx100 = 5
+ny100 = 1
+nz100 = 4
+
+
+cell = rd_cif(g.cifs+'/MoS2_mp1434.cif')
+
+os.makedirs('./MoS2/data/mp-1434/slab',exist_ok=True)
+os.chdir('./MoS2/data/mp-1434/slab')
+
+os.makedirs('./001',exist_ok=True)
+os.chdir('./001')
+#slab = slabgen(cell,0,0,1,1,1,1,7.5,7.5)
+#view(slab)
+slab = slabgen(cell,0,0,1,nx001,ny001,nz001,7.5,7.5)
+id = 2
+#view(slab[id])
+
+for P0 in P:
+    for T0 in T:
+        slab0 = slab[id].copy()
+        slab0 = add_displacement(slab0,0.05)
+        os.makedirs('./solid_T'+str(T0)+'_P'+str(P0),exist_ok=True)
+        os.chdir('./solid_T'+str(T0)+'_P'+str(P0))
+        mk_qe_input_npt(slab0,'pbe','paw',float(T0),100.0,float(P0),dt=4.0,level='high',estep=9999,nstep=500,ecut='auto',cell_dofree='c',options={'vdw_corr':'dft-d3','dftd3_version':4})
+        os.chdir('../')
+os.chdir('../')
+
+os.makedirs('./100',exist_ok=True)
+os.chdir('./100')
+slab = slabgen(cell,1,0,0,1,1,1,7.5,7.5)
+#view(slab)
+#sys.exit()
+slab = slabgen(cell,1,0,0,nx100,ny100,nz100,7.5,7.5)
+id = 0
+#view(slab[id])
+
+for P0 in P:
+    for T0 in T:
+        slab0 = slab[id].copy()
+        slab0 = add_displacement(slab0,0.05)
+        os.makedirs('./solid_T'+str(T0)+'_P'+str(P0),exist_ok=True)
+        os.chdir('./solid_T'+str(T0)+'_P'+str(P0))
+        mk_qe_input_npt(slab0,'pbe','paw',float(T0),100.0,float(P0),dt=4.0,level='high',estep=9999,nstep=500,ecut='auto',cell_dofree='c',options={'vdw_corr':'dft-d3','dftd3_version':4})
+        os.chdir('../')
+os.chdir('../')
+os.chdir('../')
+"""
+
+mpid = 2815
+nx001 = 3
+ny001 = 3
+nz001 = 2
+nx100 = 5
+ny100 = 2
+nz100 = 4
+
+cell = rd_cif(g.cifs+'/MoS2_mp2815.cif')
+
+os.makedirs('./MoS2/data/mp-2815/slab',exist_ok=True)
+os.chdir('./MoS2/data/mp-2815/slab')
+
+os.makedirs('./001',exist_ok=True)
+os.chdir('./001')
+#slab = slabgen(cell,0,0,1,1,1,1,7.5,7.5)
+#view(slab)
+#exit()
+slab = slabgen(cell,0,0,1,nx001,ny001,nz001,7.5,7.5)
+id = 0
+#view(slab[id])
+
+for P0 in P:
+    for T0 in T:
+        slab0 = slab[id].copy()
+        slab0 = add_displacement(slab0,0.05)
+        os.makedirs('./solid_T'+str(T0)+'_P'+str(P0),exist_ok=True)
+        os.chdir('./solid_T'+str(T0)+'_P'+str(P0))
+        mk_qe_input_npt(slab0,'pbe','paw',float(T0),100.0,float(P0),dt=4.0,level='high',estep=9999,nstep=500,ecut='auto',cell_dofree='c',options={'vdw_corr':'dft-d3','dftd3_version':4})
+        os.chdir('../')
+os.chdir('../')
+
+os.makedirs('./100',exist_ok=True)
+os.chdir('./100')
+#slab = slabgen(cell,1,0,0,1,1,1,7.5,7.5)
+#view(slab)
+#sys.exit()
+slab = slabgen(cell,1,0,0,nx100,ny100,nz100,7.5,7.5)
+id = 0
+#view(slab[id])
+#print(len(slab[0]))
+#sys.exit()
+
+for P0 in P:
+    for T0 in T:
+        slab0 = slab[id].copy()
+        slab0 = add_displacement(slab0,0.05)
+        os.makedirs('./solid_T'+str(T0)+'_P'+str(P0),exist_ok=True)
+        os.chdir('./solid_T'+str(T0)+'_P'+str(P0))
+        mk_qe_input_npt(slab0,'pbe','paw',float(T0),100.0,float(P0),dt=4.0,level='high',estep=9999,nstep=500,ecut='auto',cell_dofree='c',options={'vdw_corr':'dft-d3','dftd3_version':4})
+        os.chdir('../')
+os.chdir('../')
+os.chdir('../')
+
+
+"""
+#bulk
 # mp2815
 os.makedirs('./MoS2/data/mp-2815/bulk',exist_ok=True)
 os.chdir('./MoS2/data/mp-2815/bulk')
@@ -57,6 +173,7 @@ for P0 in P:
         os.system('rm -rf tmp')
         mk_qe_input_npt(cell_liquid,'pbe','paw',float(T0),100.0,float(P0),dt=4.0,level='high',estep=9999,nstep=500,ecut='auto',options={'vdw_corr':'dft-d3','dftd3_version':4})
         os.chdir('../')
+"""
 
     
     

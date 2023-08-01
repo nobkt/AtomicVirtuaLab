@@ -1,0 +1,50 @@
+&CONTROL
+   calculation      = 'nscf'
+   verbosity        = 'high'
+   restart_mode     = 'from_scratch'
+   wf_collect       = .true.
+   outdir           = './outdir'
+   pseudo_dir       = './pseudo'
+/
+&SYSTEM
+   nbnd             = 52
+   ecutwfc          = 123.2
+   ecutrho          = 862.4000000000001
+   occupations      = 'tetrahedra'
+   vdw_corr         = 'dft-d3'
+   dftd3_version    = 4
+   ntyp             = 2
+   nat              = 6
+   ibrav            = 0
+/
+&ELECTRONS
+   electron_maxstep = 1000
+   conv_thr         = 1e-06
+   mixing_beta      = 0.2
+   diagonalization  = 'david'
+/
+&IONS
+/
+&CELL
+/
+
+ATOMIC_SPECIES
+Mo 95.95 Mo.pbe-spn-kjpaw_psl.1.0.0.UPF
+S 32.06 S.pbe-n-kjpaw_psl.1.0.0.UPF
+
+K_POINTS automatic
+12 12 12  0 0 0
+
+CELL_PARAMETERS angstrom
+3.15144874200000 0.00000140700000 -0.00000730700000
+-1.57572315200000 2.72923602100000 0.00000458300000
+-0.00003047900000 0.00000509900000 12.22408763900000
+
+ATOMIC_POSITIONS angstrom
+Mo -0.0000141701 1.8195087488 9.1680120998 
+Mo 1.5757096405 0.9097340064 3.0560731696 
+S -0.0000165242 1.8194789646 1.4902902929 
+S 1.5757152988 0.9097604144 10.7337970887 
+S 1.5757047806 0.9097661484 7.6022141867 
+S -0.0000136937 1.8194792979 4.6218679091 
+

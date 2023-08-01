@@ -2,7 +2,7 @@ import AtomicVirtuaLab.globalv as g
 from AtomicVirtuaLab.io import rd_cif, smiles2xyz
 from AtomicVirtuaLab.build import slabgen
 from AtomicVirtuaLab.packmol import mk_packmol_slab_random
-from AtomicVirtuaLab.espresso import mk_qe_input_npt, mk_qe_input_relax, mk_qe_input_vcrelax, mk_qe_input_dos, mk_qe_input_band
+from AtomicVirtuaLab.espresso import mk_qe_input_npt, mk_qe_input_relax, mk_qe_input_vcrelax, mk_qe_input_dos, mk_qe_input_band,mk_qe_input_scf,plot_qe_dos
 from AtomicVirtuaLab.siesta import mk_siesta_input_npt
 from ase.io import read, write
 from ase.build import make_supercell, add_adsorbate
@@ -17,14 +17,96 @@ g.siesta_pot = '/home/A23321P/work/myPython/AtomicVirtuaLab/siesta_pseudo'
 
 g.cifdir='./cifs'
 
+# plot dos
+#mpid='mp1434'
+mpid='mp2815'
+g.dos_rusult_dir = '/home/A23321P/work/myPython/AtomicVirtuaLab/pwos/MoS2_catalysis/bulk/dos/'+str(mpid)
+os.makedirs('./MoS2_catalysis/bulk/plot_dos/'+str(mpid),exist_ok=True)
+os.chdir('./MoS2_catalysis/bulk/plot_dos/'+str(mpid))
+plot_qe_dos(g.dos_rusult_dir,11.8780,['Mo','S'],nspin=False)
 
+
+
+"""
+#単体
+# DOS
+ecutwfc0=77.0
+ecutrho0=539.0
+kpoint=4
+scale=1.6
+
+ecutwfc=77.0*scale
+ecutrho=539.0*scale
+k0 = kpoint
+
+#mpid='S'
+mpid='Mo'
+
+cell = rd_cif(g.cifdir+'/'+str(mpid)+'.cif')
+
+os.makedirs('./MoS2_catalysis',exist_ok=True)
+os.chdir('./MoS2_catalysis')
+
+os.makedirs('./bulk',exist_ok=True)
+os.chdir('./bulk')
+
+os.makedirs('./optimize',exist_ok=True)
+os.chdir('./optimize')
+
+os.makedirs('./'+str(mpid),exist_ok=True)
+os.chdir('./'+str(mpid))
+
+mk_qe_input_vcrelax(cell,'pbe','paw',level='high',nosym=True,ecutwfc=ecutwfc,ecutrho=ecutrho,mixing_beta=0.2,kpts=(k0,k0,k0),ecut='manual',options={'vdw_corr':'dft-d3','dftd3_version':4},nspin=False)
+"""
+
+"""
+# DOS
+ecutwfc0=77.0
+ecutrho0=539.0
+kpoint=4
+scale=1.6
+
+ecutwfc=77.0*scale
+ecutrho=539.0*scale
+k0 = kpoint
+
+mpid = 1434
+#mpid = 2815
+
+cell = read('/home/A23321P/work/myPython/AtomicVirtuaLab/pwos/MoS2_catalysis/bulk/optimize/mp'+str(mpid)+'/qe_vc-relax.pwo')
+
+os.makedirs('./MoS2_catalysis',exist_ok=True)
+os.chdir('./MoS2_catalysis')
+
+os.makedirs('./bulk',exist_ok=True)
+os.chdir('./bulk')
+
+os.makedirs('./dos',exist_ok=True)
+os.chdir('./dos')
+
+os.makedirs('./mp'+str(mpid),exist_ok=True)
+os.chdir('./mp'+str(mpid))
+
+os.makedirs('./scf',exist_ok=True)
+os.chdir('./scf')
+mk_qe_input_scf(cell,'pbe','paw',level='high',ecutwfc=ecutwfc,ecutrho=ecutrho,mixing_beta=0.2,kpts=(k0,k0,k0),ecut='manual',options={'vdw_corr':'dft-d3','dftd3_version':4},nspin=False)
+mk_qe_input_dos(cell,'pbe','paw',level='high',ecutwfc=ecutwfc,ecutrho=ecutrho,mixing_beta=0.2,kpts=(k0,k0,k0),ecut='manual',options={'vdw_corr':'dft-d3','dftd3_version':4})
+os.chdir('../')
+
+os.makedirs('./dos',exist_ok=True)
+os.chdir('./dos')
+mk_qe_input_dos(cell,'pbe','paw',level='high',ecutwfc=ecutwfc,ecutrho=ecutrho,mixing_beta=0.2,kpts=(12,12,12),ecut='manual',options={'vdw_corr':'dft-d3','dftd3_version':4})
+"""
+
+
+"""
+# bulk
 ecutwfc0=77.0
 ecutrho0=539.0
 kpoints=[2,4,8]
 
 scales=[1.55,1.6,1.65,1.7,1.75,1.8,1.85,1.9,1.95,2.0]
 
-# bulk
 #mpid = 1434
 mpid = 2815
 cell = rd_cif(g.cifdir+'/MoS2_mp'+str(mpid)+'.cif')
@@ -63,9 +145,7 @@ for scale in scales:
 os.chdir('../')
 os.chdir('../')
 os.chdir('../')
-
-
-
+"""
 
 """
 # <001> surface
@@ -169,9 +249,11 @@ mk_qe_input_relax(Pt1_hcp,'pbe','paw',level='high',ecutwfc=77.0,ecutrho=539.0,kp
 os.chdir('../')
 
 """
+
 """
 # SIESTA
-mpid = 2815
+mpid = 1434
+#mpid = 2815
 cell = rd_cif(g.cifdir+'/MoS2_mp'+str(mpid)+'.cif')
 
 os.makedirs('./MoS2_catalysis',exist_ok=True)
@@ -181,21 +263,23 @@ os.makedirs('./siesta',exist_ok=True)
 os.chdir('./siesta')
 
 slab001 = slabgen(cell,0,0,1,1,1,1,7.5,7.5)
-id = 0
+id = 2
 
+#view(slab001)
 #view(slab001[id])
 
-os.system('atomsk slab_1.cif -orthogonal-cell slab_1_ortho.cfg')
+os.system('atomsk slab_3.cif -orthogonal-cell slab_3_ortho.cfg')
 slab001 = read('slab_1_ortho.cfg')
 slab001 = make_supercell(slab001,([5,0,0],[0,3,0],[0,0,1]),wrap=True)
-slab001.write('slab.xyz')
 lat = slab001.get_cell()
 z=[]
 for atom in slab001:
     z.append(atom.position[2])
 zmax=max(z)
 zmin=min(z)
-#view(slab001)
+del slab001[[atom.index for atom in slab001 if atom.position[1] < 8.0 and atom.position[2] > 11.0]]
+slab001.write('slab.xyz')
+view(slab001)
 smiles2xyz('Cl[Pd]Cl','PdCl2',False,userandom=True)
 smiles2xyz('O','H2O',True)
 smiles2xyz('CCO','CH3CH2OH',True)

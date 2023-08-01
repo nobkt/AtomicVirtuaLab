@@ -461,7 +461,7 @@ def mk_qe_input_nvt(cell,xc,pot,tempw,tolp,dt=0.5,level='low',estep=1000,nstep=1
         input_data['nbnd'] = nbnd
     cell.write('qe_nvt.pwi',input_data=input_data,pseudopotentials=pseudo,kpts=kpts,crystal_coordinates=False)
 
-def mk_qe_input_npt(cell,xc,pot,tempw,tolp,press,dt=0.5,level='low',estep=1000,nstep=1000,ecutwfc=25,ecutrho=225,mixing_beta=0.2,kpts=None,ecut='manual',options={},nspin=False):
+def mk_qe_input_npt(cell,xc,pot,tempw,tolp,press,dt=0.5,level='low',estep=1000,nstep=1000,ecutwfc=25,ecutrho=225,mixing_beta=0.2,kpts=None,ecut='manual',cell_dofree='all',options={},nspin=False):
     from ase.io import write
     import AtomicVirtuaLab.globalv as g
     import shutil
@@ -508,7 +508,7 @@ def mk_qe_input_npt(cell,xc,pot,tempw,tolp,press,dt=0.5,level='low',estep=1000,n
         'diagonalization'  : 'david',\
         'mixing_beta'      : mixing_beta,\
         'nosym'            : True,\
-        'cell_dofree'      : 'all',\
+        'cell_dofree'      : str(cell_dofree),\
         'electron_maxstep' : estep,\
         'ecutwfc'          : ecutwfc_,\
         'ecutrho'          : ecutrho_,\
@@ -769,14 +769,14 @@ def plot_qe_band(result_dir,efermi,nspin=False):
     #plt.show()
     plt.clf()
 
-def plot_qe_dos(result_dir,efermi,nspin=False):
+def plot_qe_dos(result_dir,efermi,symbols,nspin=False):
     import os
     import re
     import sys
     from matplotlib import pyplot as plt
     import pandas as pd
 
-    symbols = ['Si','O']
+    #symbols = ['Si','O']
 
     files = os.listdir(result_dir+'/')
     fpdos = []
@@ -1255,7 +1255,7 @@ def plot_qe_dos(result_dir,efermi,nspin=False):
     #plt.legend(loc='upper left',bbox_to_anchor=(1,1))
     plt.legend(loc='upper right',fontsize=8)
     plt.ylim(0.0,20.0)
-    plt.xlim(-10.0,50.0)
+    plt.xlim(-10.0,10.0)
     if nspin == False:
         plt.gca().set_ylim(bottom=0)
     plt.tick_params(labelsize=10)
@@ -1321,7 +1321,7 @@ def plot_qe_dos(result_dir,efermi,nspin=False):
     #plt.legend(loc='upper left',bbox_to_anchor=(1,1))
     plt.legend(loc='upper right',fontsize=8)
     plt.ylim(0.0,20.0)
-    plt.xlim(-5.0,5.0)
+    plt.xlim(-10.0,10.0)
     if nspin == False:
         plt.gca().set_ylim(bottom=0)
     plt.tick_params(labelsize=10)

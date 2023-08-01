@@ -42,9 +42,7 @@ fix freeze1 lower setforce 0.0 0.0 0.0
 fix freeze2 upper setforce 0.0 0.0 NULL
 fix addf upper addforce 0 0 v_Pz
 velocity middle create 300 12345
-variable Fric equal f_freeze2[2]/v_Pz0
-thermo_style custom step etotal enthalpy pe ke temp press vol density cella cellb cellc cellalpha cellbeta cellgamma f_freeze2[1] f_freeze2[2] f_freeze2[3] v_Pz0 v_Fric
-thermo 100
+variable Fric equal f_freeze2[1]/v_Pz0
 
 fix fxnvt middle nvt temp 300 300 $(dt*100.0)
 run 200000
@@ -65,10 +63,6 @@ compute upperpeperatom upper pe/atom
 compute lowerpeperatom lower pe/atom
 compute upperpe upper reduce sum c_upperpeperatom
 compute lowerpe lower reduce sum c_lowerpeperatom
-compute upperpropperatom upper property/atom vx vy vz fx fy fz
-compute lowerpropperatom lower property/atom vx vy vz fx fy fz
-compute upperprop upper reduce ave c_upperpropperatom[*]
-compute lowerprop lower reduce ave c_lowerpropperatom[*]
 compute upperMopropperatom upper property/atom z
 compute lowerMopropperatom lower property/atom z
 compute upperMomaxz upperMo reduce max c_upperMopropperatom
@@ -78,62 +72,76 @@ compute lowerMominz lowerMo reduce min c_lowerMopropperatom
 compute layer1msd layer1 msd average yes
 compute layer1peperatom layer1 pe/atom
 compute layer1pe layer1 reduce sum c_layer1peperatom
-compute layer1propperatom layer1 property/atom vx vy vz fx fy fz
-compute layer1prop layer1 reduce ave c_layer1propperatom[*]
+compute layer1propperatom layer1 property/atom fx fy fz
+compute layer1prop layer1 reduce sum c_layer1propperatom[*]
 compute layerMo1propperatom layer1 property/atom z
 compute layerMo1maxz layer1 reduce max c_layerMo1propperatom
 compute layerMo1minz layer1 reduce min c_layerMo1propperatom
 compute layer2msd layer2 msd average yes
 compute layer2peperatom layer2 pe/atom
 compute layer2pe layer2 reduce sum c_layer2peperatom
-compute layer2propperatom layer2 property/atom vx vy vz fx fy fz
-compute layer2prop layer2 reduce ave c_layer2propperatom[*]
+compute layer2propperatom layer2 property/atom fx fy fz
+compute layer2prop layer2 reduce sum c_layer2propperatom[*]
 compute layerMo2propperatom layer2 property/atom z
 compute layerMo2maxz layer2 reduce max c_layerMo2propperatom
 compute layerMo2minz layer2 reduce min c_layerMo2propperatom
 compute layer3msd layer3 msd average yes
 compute layer3peperatom layer3 pe/atom
 compute layer3pe layer3 reduce sum c_layer3peperatom
-compute layer3propperatom layer3 property/atom vx vy vz fx fy fz
-compute layer3prop layer3 reduce ave c_layer3propperatom[*]
+compute layer3propperatom layer3 property/atom fx fy fz
+compute layer3prop layer3 reduce sum c_layer3propperatom[*]
 compute layerMo3propperatom layer3 property/atom z
 compute layerMo3maxz layer3 reduce max c_layerMo3propperatom
 compute layerMo3minz layer3 reduce min c_layerMo3propperatom
 compute layer4msd layer4 msd average yes
 compute layer4peperatom layer4 pe/atom
 compute layer4pe layer4 reduce sum c_layer4peperatom
-compute layer4propperatom layer4 property/atom vx vy vz fx fy fz
-compute layer4prop layer4 reduce ave c_layer4propperatom[*]
+compute layer4propperatom layer4 property/atom fx fy fz
+compute layer4prop layer4 reduce sum c_layer4propperatom[*]
 compute layerMo4propperatom layer4 property/atom z
 compute layerMo4maxz layer4 reduce max c_layerMo4propperatom
 compute layerMo4minz layer4 reduce min c_layerMo4propperatom
-fix freeze1 lower setforce NULL 0.0 0.0
-fix freeze2 upper setforce NULL 0.0 NULL
 fix rigid1 lower rigid single torque * off off off
 fix rigid2 upper rigid single torque * off off off
 fix addf upper addforce 0 0 v_Pz
 variable vp equal ${vfric}
 variable vm equal -1.0*${vfric}
+fix freeze1 lower setforce 0.0 NULL 0.0
+fix freeze2 upper setforce 0.0 NULL NULL
 velocity lower set v_vm NULL 0.0 units box
 velocity upper set v_vp NULL NULL units box
 fix th all ave/time 1 200000 200000 f_freeze2[1] f_freeze2[2] f_freeze2[3] v_Pz0 v_Fric file friction.profile
+variable layF1 equal f_freeze2[1]+c_layer1prop[1]
+variable layFric1 equal v_layF1/v_Pz0
+variable layF2 equal c_layer1prop[1]+c_layer2prop[1]
+variable layFric2 equal v_layF2/v_Pz0
+variable layF3 equal c_layer2prop[1]+c_layer3prop[1]
+variable layFric3 equal v_layF3/v_Pz0
+variable layF4 equal c_layer3prop[1]+c_layer4prop[1]
+variable layFric4 equal v_layF4/v_Pz0
 fix thmsdupper all ave/time 1 200000 200000 c_uppermsd[1] c_uppermsd[2] c_uppermsd[3] file msdupper.profile
 fix thmsdlower all ave/time 1 200000 200000 c_lowermsd[1] c_lowermsd[2] c_lowermsd[3] file msdlower.profile
 fix thpeupper all ave/time 1 200000 200000 c_upperpe file peupper.profile
 fix thpelower all ave/time 1 200000 200000 c_lowerpe file pelower.profile
-fix thpropupper all ave/time 1 200000 200000 c_upperprop[1] c_upperprop[2] c_upperprop[3] c_upperprop[4] c_upperprop[5] c_upperprop[6] c_upperMomaxz c_upperMominz file propupper.profile
-fix thproplower all ave/time 1 200000 200000 c_lowerprop[1] c_lowerprop[2] c_lowerprop[3] c_lowerprop[4] c_lowerprop[5] c_lowerprop[6] c_lowerMomaxz c_lowerMominz file proplower.profile
+fix thpropupper all ave/time 1 200000 200000 c_upperMomaxz c_upperMominz file propupper.profile
+fix thproplower all ave/time 1 200000 200000 c_lowerMomaxz c_lowerMominz file proplower.profile
 fix thmsdlayer1 all ave/time 1 200000 200000 c_layer1msd[1] c_layer1msd[2] c_layer1msd[3] file msdlayer1.profile
 fix thpelayer1 all ave/time 1 200000 200000 c_layer1pe file pelayer1.profile
-fix thproplayer1 all ave/time 1 200000 200000 c_layer1prop[1] c_layer1prop[2] c_layer1prop[3] c_layer1prop[4] c_layer1prop[5] c_layer1prop[6] c_layerMo1maxz c_layerMo1minz file proplayer1.profile
+fix thproplayer1 all ave/time 1 200000 200000 c_layerMo1maxz c_layerMo1minz file proplayer1.profile
+fix thlayfric1 all ave/time 1 200000 200000 v_layFric1 file friclay1.profile
 fix thmsdlayer2 all ave/time 1 200000 200000 c_layer2msd[1] c_layer2msd[2] c_layer2msd[3] file msdlayer2.profile
 fix thpelayer2 all ave/time 1 200000 200000 c_layer2pe file pelayer2.profile
-fix thproplayer2 all ave/time 1 200000 200000 c_layer2prop[1] c_layer2prop[2] c_layer2prop[3] c_layer2prop[4] c_layer2prop[5] c_layer2prop[6] c_layerMo2maxz c_layerMo2minz file proplayer2.profile
+fix thproplayer2 all ave/time 1 200000 200000 c_layerMo2maxz c_layerMo2minz file proplayer2.profile
+fix thlayfric2 all ave/time 1 200000 200000 v_layFric2 file friclay2.profile
 fix thmsdlayer3 all ave/time 1 200000 200000 c_layer3msd[1] c_layer3msd[2] c_layer3msd[3] file msdlayer3.profile
 fix thpelayer3 all ave/time 1 200000 200000 c_layer3pe file pelayer3.profile
-fix thproplayer3 all ave/time 1 200000 200000 c_layer3prop[1] c_layer3prop[2] c_layer3prop[3] c_layer3prop[4] c_layer3prop[5] c_layer3prop[6] c_layerMo3maxz c_layerMo3minz file proplayer3.profile
+fix thproplayer3 all ave/time 1 200000 200000 c_layerMo3maxz c_layerMo3minz file proplayer3.profile
+fix thlayfric3 all ave/time 1 200000 200000 v_layFric3 file friclay3.profile
 fix thmsdlayer4 all ave/time 1 200000 200000 c_layer4msd[1] c_layer4msd[2] c_layer4msd[3] file msdlayer4.profile
 fix thpelayer4 all ave/time 1 200000 200000 c_layer4pe file pelayer4.profile
-fix thproplayer4 all ave/time 1 200000 200000 c_layer4prop[1] c_layer4prop[2] c_layer4prop[3] c_layer4prop[4] c_layer4prop[5] c_layer4prop[6] c_layerMo4maxz c_layerMo4minz file proplayer4.profile
+fix thproplayer4 all ave/time 1 200000 200000 c_layerMo4maxz c_layerMo4minz file proplayer4.profile
+fix thlayfric4 all ave/time 1 200000 200000 v_layFric4 file friclay4.profile
+thermo_style custom step etotal enthalpy pe ke temp press vol density cella cellb cellc cellalpha cellbeta cellgamma f_freeze2[1] f_freeze2[2] f_freeze2[3] v_Pz0 v_Fric v_layFric1 v_layFric2 v_layFric3 v_layFric4
+thermo 100
 fix fxnvt middle nvt temp 300 300 $(dt*100.0)
 run 2000000
