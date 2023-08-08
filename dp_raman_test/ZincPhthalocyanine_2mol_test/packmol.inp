@@ -1,0 +1,9 @@
+tolerance 2.0
+filetype xyz
+output system.xyz
+
+structure test.xyz
+  number 2
+  inside box 0.0 0.0 0.0 50.0 50.0 50.0
+end structure
+

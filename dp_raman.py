@@ -1,20 +1,80 @@
 from ase.build import molecule
 from ase.io import read, write
 from ase.visualize import view
+from ase.build import sort
 from AtomicVirtuaLab.espresso import mk_qe_input_relax
+from AtomicVirtuaLab.siesta import mk_siesta_input_optimize,mk_siesta_input_nvt
+from AtomicVirtuaLab.packmol import mk_packmol_random
 import AtomicVirtuaLab.globalv as g
 import os
 
 g.qepot = '/home/A23321P/work/myPython/AtomicVirtuaLab/qe_pseudo'
+g.siesta_pot = '/home/A23321P/work/myPython/AtomicVirtuaLab/siesta_pseudo'
+g.cifdir = '/home/A23321P/work/myPython/AtomicVirtuaLab/cifs'
 
-# H2O test
+"""
+# Zn-フタロシアニンのパッキングモデル作成
 os.makedirs('./dp_raman_test',exist_ok=True)
 os.chdir('./dp_raman_test')
+os.makedirs('./ZincPhthalocyanine_2mol_test',exist_ok=True)
+os.chdir('./ZincPhthalocyanine_2mol_test')
+allBr = read(g.cifdir+'/ZincPhthalocyanine_allBr.xyz')
+allBr_sorted = sort(allBr)
+
+allBr_sorted.write('./test.xyz')
+
+mollist={
+    'test':2
+}
+
+x_box=50.0
+y_box=50.0
+z_box=50.0
+
+mk_packmol_random(mollist,x_box,y_box,z_box)
+os.system('packmol < packmol.inp 1> log_packmol 2> err_packmol')
+
+cell = read('./system.xyz')
+cell.set_cell([x_box,y_box,z_box])
+cell.write('test.cif')
+
+mk_siesta_input_optimize(cell,'VDW','SZ',50.0,[1,1,1],2000,g.siesta_pot,SolutionMethod='diagon',MaxSCFIterations=2000,spin='non-polarized')
+mk_qe_input_relax(cell,'pbe','us',level='high',estep=1000,nstep=1000,nosym=True,ecutwfc=36,ecutrho=400,mixing_beta=0.2,kpts=None,ecut='manual',tstress=False,options={'vdw_corr':'dft-d3','dftd3_version':4},nspin=False)
+view(cell)
+
+# Zn-フタロシアニンのパッキングモデル作成終了
+"""
+
+"""
+# Zn-フタロシアニン単分子構造最適化
+os.makedirs('./dp_raman_test',exist_ok=True)
+os.chdir('./dp_raman_test')
+os.makedirs('./ZincPhthalocyanine_test',exist_ok=True)
+os.chdir('./ZincPhthalocyanine_test')
+allBr = read(g.cifdir+'/ZincPhthalocyanine_allBr.xyz')
+allBr_sorted = sort(allBr)
+com = allBr_sorted.get_center_of_mass()
+lat = [30,30,30]
+shift = [15,15,15]-com
+allBr_sorted.translate(shift)
+allBr_sorted.set_cell(lat)
+mk_siesta_input_optimize(allBr_sorted,'VDW','DZP',50.0,[1,1,1],2000,g.siesta_pot,SolutionMethod='diagon',MaxSCFIterations=2000,spin='non-polarized')
+#view(allBr)
+# Zn-フタロシアニン単分子構造最適化終了
+"""
+
+
+# H2O 単分子テスト
+os.makedirs('./dp_raman_test',exist_ok=True)
+os.chdir('./dp_raman_test')
+os.makedirs('./h2o_monomer',exist_ok=True)
+os.chdir('./h2o_monomer')
 h2o_mol = molecule('H2O')
 com = h2o_mol.get_center_of_mass()
 shift = [5.0,5.0,5.0] - com
 h2o_mol.translate(shift)
 h2o_mol.set_cell([10.0,10.0,10.0])
-#view(h2o_mol)
-
-mk_qe_input_relax(h2o_mol,'pbe','paw',level='high',estep=1000,nstep=1000,nosym=False,mixing_beta=0.2,kpts=None,ecut='auto',options={'vdw_corr':'dft-d3','dftd3_version':4},nspin=False)
+view(h2o_mol)
+#mk_siesta_input_optimize(h2o_mol,'VDW','SZ',50.0,[1,1,1],2000,g.siesta_pot,SolutionMethod='diagon',MaxSCFIterations=2000,spin='non-polarized')
+mk_siesta_input_nvt(h2o_mol,'VDW','SZ',50.0,[1,1,1],300.0,10,g.siesta_pot,SolutionMethod='diagon',MaxSCFIterations=2000,dt=0.5,spin='non-polarized')
+# H2O 単分子テスト終了

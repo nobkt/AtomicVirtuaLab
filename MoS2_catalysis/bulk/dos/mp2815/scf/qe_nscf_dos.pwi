@@ -8,8 +8,8 @@
 /
 &SYSTEM
    nbnd             = 52
-   ecutwfc          = 123.2
-   ecutrho          = 862.4000000000001
+   ecutwfc          = 77.0
+   ecutrho          = 539.0
    occupations      = 'tetrahedra'
    vdw_corr         = 'dft-d3'
    dftd3_version    = 4

@@ -8,8 +8,8 @@
    pseudo_dir       = './pseudo'
 /
 &SYSTEM
-   ecutwfc          = 123.2
-   ecutrho          = 862.4000000000001
+   ecutwfc          = 77.0
+   ecutrho          = 539.0
    occupations      = 'smearing'
    degauss          = 0.01
    smearing         = 'gaussian'

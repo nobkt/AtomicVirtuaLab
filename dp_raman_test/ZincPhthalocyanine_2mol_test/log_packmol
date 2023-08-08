@@ -1,0 +1,134 @@
+
+################################################################################
+
+ PACKMOL - Packing optimization for the automated generation of
+ starting configurations for molecular dynamics simulations.
+ 
+                                                              Version 20.14.2 
+
+################################################################################
+
+  Packmol must be run with: packmol < inputfile.inp 
+
+  Userguide at: http://m3g.iqm.unicamp.br/packmol 
+
+  Reading input file... (Control-C aborts)
+  Types of coordinate files specified: xyz
+  Seed for random number generator:      1234567
+  Output file: system.xyz
+  Reading coordinate file: test.xyz
+  Number of independent structures:            1
+  The structures are: 
+  Structure            1 :Properties=species:S:1:pos:R:3 pbc="F F F"(          57  atoms)
+  Maximum number of GENCAN loops for all molecule packing:          200
+  Total number of restrictions:            1
+  Distance tolerance:    2.0000000000000000     
+  Number of molecules of type            1 :            2
+  Total number of atoms:          114
+  Total number of molecules:            2
+  Number of fixed molecules:            0
+  Number of free molecules:            2
+  Number of variables:           12
+  Total number of fixed atoms:            0
+  Maximum internal distance of type            1 :    14.843347905358176     
+  All atoms must be within these coordinates: 
+   x: [   -988.31890118802391      ,    1011.6810988119761       ] 
+   y: [   -988.47944558413985      ,    1011.5205544158601       ] 
+   z: [   -987.20000000000005      ,    1012.8000000000000       ] 
+  If the system is larger than this, increase the sidemax parameter. 
+
+################################################################################
+
+  Building initial approximation ... 
+
+################################################################################
+
+  Adjusting initial point to fit the constraints 
+
+--------------------------------------------------------------------------------
+
+--------------------------------------------------------------------------------
+
+  Molecules of type:            1
+
+  Packing:|0                                                             100%|
+          |**************
+
+  Restraint-only function value:    0.0000000000000000     
+  Maximum violation of the restraints:    0.0000000000000000     
+
+--------------------------------------------------------------------------------
+
+  Rescaling maximum and minimum coordinates... 
+  Computing size of patches... 
+  Add fixed molecules to permanent arrays... 
+  Reseting center of mass... 
+
+--------------------------------------------------------------------------------
+
+  Setting initial trial coordinates ... 
+
+--------------------------------------------------------------------------------
+
+--------------------------------------------------------------------------------
+
+  Molecules of type:            1
+  Adjusting random positions to fit the constraints. 
+  Restraint-only function value:    0.0000000000000000     
+  Maximum violation of the restraints:    0.0000000000000000     
+
+################################################################################
+
+  Objective function at initial point:    0.0000000000000000     
+
+################################################################################
+
+  Packing molecules of type:            1
+
+################################################################################
+
+
+  Initial approximation is a solution. Nothing to do. 
+
+  Current point written to file: system.xyz
+--------------------------------------------------------------------------------
+  Packing solved for molecules of type           1
+  Objective function value:    0.0000000000000000     
+  Maximum violation of target distance:    0.0000000000000000     
+  Max. constraint violation:    0.0000000000000000     
+--------------------------------------------------------------------------------
+
+################################################################################
+
+  Packing all molecules together 
+
+################################################################################
+
+
+  Initial approximation is a solution. Nothing to do. 
+
+  Solution written to file: system.xyz
+
+################################################################################
+
+                                 Success! 
+              Final objective function value: .00000E+00
+              Maximum violation of target distance:   0.000000
+              Maximum violation of the constraints: .00000E+00
+
+--------------------------------------------------------------------------------
+
+              Please cite this work if Packmol was useful: 
+
+           L. Martinez, R. Andrade, E. G. Birgin, J. M. Martinez, 
+         PACKMOL: A package for building initial configurations for
+                   molecular dynamics simulations. 
+          Journal of Computational Chemistry, 30:2157-2164,2009.
+
+################################################################################
+
+   Running time:    1.65200001E-03  seconds. 
+
+--------------------------------------------------------------------------------
+
+

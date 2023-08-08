@@ -1,0 +1,59 @@
+tolerance 2.0
+filetype xyz
+output system.xyz
+
+structure slab.xyz
+ number 1
+ fixed 0. 0. 0. 0. 0. 0.
+end structure
+
+structure PdCl2.xyz
+  number 1
+  inside box 0.5 0.5 26.068564100000007 15.4215 16.04610817 30.5685
+end structure
+
+structure H2O.xyz
+  number 10
+  inside box 0.5 0.5 26.068564100000007 15.4215 16.04610817 30.5685
+end structure
+
+structure CH3CH2OH.xyz
+  number 10
+  inside box 0.5 0.5 26.068564100000007 15.4215 16.04610817 30.5685
+end structure
+
+structure Cl.xyz
+  number 2
+  inside box 0.5 0.5 26.068564100000007 15.4215 16.04610817 30.5685
+end structure
+
+structure H.xyz
+  number 2
+  inside box 0.5 0.5 26.068564100000007 15.4215 16.04610817 30.5685
+end structure
+
+structure PdCl2.xyz
+  number 1
+  inside box 0.5 0.5 0.5 15.4215 16.04610817 4.999935900000001
+end structure
+
+structure H2O.xyz
+  number 10
+  inside box 0.5 0.5 0.5 15.4215 16.04610817 4.999935900000001
+end structure
+
+structure CH3CH2OH.xyz
+  number 10
+  inside box 0.5 0.5 0.5 15.4215 16.04610817 4.999935900000001
+end structure
+
+structure Cl.xyz
+  number 2
+  inside box 0.5 0.5 0.5 15.4215 16.04610817 4.999935900000001
+end structure
+
+structure H.xyz
+  number 2
+  inside box 0.5 0.5 0.5 15.4215 16.04610817 4.999935900000001
+end structure
+

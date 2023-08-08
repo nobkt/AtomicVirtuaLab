@@ -1,4 +1,4 @@
-def mk_qe_input_scf(cell,xc,pot,level='low',estep=1000,ecutwfc=25,ecutrho=225,mixing_beta=0.2,kpts=None,ecut='manual',options={},nspin=False):
+def mk_qe_input_scf(cell,xc,pot,level='low',estep=1000,ecutwfc=25,ecutrho=225,mixing_beta=0.2,kpts=None,ecut='manual',tstress=True,options={},nspin=False):
     from ase.io import write
     import AtomicVirtuaLab.globalv as g
     import shutil
@@ -33,7 +33,7 @@ def mk_qe_input_scf(cell,xc,pot,level='low',estep=1000,ecutwfc=25,ecutrho=225,mi
         'restart_mode'     : 'from_scratch',\
         'wf_collect'       : True,\
         'pseudo_dir'       : './pseudo',\
-        'tstress'          : True,\
+        'tstress'          : tstress,\
         'tprnfor'          : True,\
         'outdir'           : './outdir',\
         'occupations'      : 'smearing',\
@@ -270,7 +270,7 @@ def mk_qe_input_band(cell,xc,pot,level='low',estep=1000,ecutwfc=25,ecutrho=225,m
         f.write('/'+'\n')
         f.close()
 
-def mk_qe_input_relax(cell,xc,pot,level='low',estep=1000,nstep=1000,nosym=False,ecutwfc=25,ecutrho=225,mixing_beta=0.2,kpts=None,ecut='manual',options={},nspin=False):
+def mk_qe_input_relax(cell,xc,pot,level='low',estep=1000,nstep=1000,nosym=False,ecutwfc=25,ecutrho=225,mixing_beta=0.2,kpts=None,ecut='manual',tstress=True,options={},nspin=False):
     from ase.io import write
     import AtomicVirtuaLab.globalv as g
     import shutil
@@ -305,7 +305,7 @@ def mk_qe_input_relax(cell,xc,pot,level='low',estep=1000,nstep=1000,nosym=False,
         'restart_mode'     : 'from_scratch',\
         'wf_collect'       : True,\
         'pseudo_dir'       : './pseudo',\
-        'tstress'          : True,\
+        'tstress'          : tstress,\
         'tprnfor'          : True,\
         'outdir'           : './outdir',\
         'nstep'            : nstep,\

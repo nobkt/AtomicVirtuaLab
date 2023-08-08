@@ -1,0 +1,79 @@
+SystemName	siesta
+SystemLabel	siesta
+
+MD.Final.Time.Step	10
+MD.Initial-temperature	300.0 K
+MD.Initial.Time.Step	1
+MD.Length.Time.Step	0.5 fs
+MD.Target-temperature	300.0 K
+MD.TypeOfRun	Nose
+MD.UseSaveXV	True
+MaxSCFIterations	2000
+PartialChargesAtEveryGeometry	True
+%block SCF.Mixer.broyden
+method	broyden
+weight	0.01
+weight.linear	0.005
+%endblock SCF.Mixer.broyden
+%block SCF.Mixers
+broyden
+%endblock SCF.Mixers
+SCFMustConverge	False
+SolutionMethod	diagon
+WriteCoorCerius	True
+WriteCoorStep	True
+WriteCoorXmol	True
+WriteForces	True
+WriteHirshfeldPop	True
+WriteMDHistory	True
+WriteMDXmol	True
+WriteMullikenPop	1
+WriteVoronoiPop	True
+
+Spin     	non-polarized
+XC.functional	VDW
+XC.authors	DRSLL
+
+MeshCutoff	680.2846506091811	eV
+PAO.EnergyShift	0.1	eV
+
+NumberOfSpecies	2
+NumberOfAtoms	3
+%block ChemicalSpecieslabel
+    1 8 O.vdw.1
+    2 1 H.vdw.2
+%endblock ChemicalSpecieslabel
+
+%block PAO.BasisSizes
+    O.vdw.1	SZ
+    H.vdw.2	SZ
+%endblock PAO.BasisSizes
+
+
+LatticeConstant	1.0 Ang
+%block LatticeVectors
+    10.000000000000000     0.000000000000000     0.000000000000000 
+    0.000000000000000     10.000000000000000     0.000000000000000 
+    0.000000000000000     0.000000000000000     10.000000000000000 
+%endblock LatticeVectors
+
+
+AtomicCoordinatesFormat  Ang
+%block AtomicCoordinatesAndAtomicSpecies
+     5.000000000      5.000000000      5.066730999 1
+     5.000000000      5.763239000      4.470421999 2
+     5.000000000      4.236761000      4.470421999 2
+%endblock AtomicCoordinatesAndAtomicSpecies
+
+%block DM.InitSpin
+%endblock DM.InitSpin
+
+DM.UseSaveDM	True
+
+#KPoint grid
+%block kgrid_Monkhorst_Pack
+     1       0       0  0.0
+     0       1       0  0.0
+     0       0       1  0.0
+%endblock kgrid_Monkhorst_Pack
+
