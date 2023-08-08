@@ -65,6 +65,7 @@ mk_siesta_input_optimize(allBr_sorted,'VDW','DZP',50.0,[1,1,1],2000,g.siesta_pot
 
 
 # H2O 単分子テスト
+print('test')
 os.makedirs('./dp_raman_test',exist_ok=True)
 os.chdir('./dp_raman_test')
 os.makedirs('./h2o_monomer',exist_ok=True)
