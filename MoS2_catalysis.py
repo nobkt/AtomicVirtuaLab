@@ -117,7 +117,7 @@ for r in rlist:
 os.chdir('../')
 
 # bridge
-rlist = [1.0,1.1,1.2,1.3,1.4]
+rlist = [1.6,1.7,1.8,1.9]
 adtype = 'bridge'
 x0 = (1.577+4.731)/2.0
 y0 = 4.552

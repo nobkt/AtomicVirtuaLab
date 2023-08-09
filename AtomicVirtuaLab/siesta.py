@@ -167,4 +167,37 @@ def mk_siesta_input_scf_withEfield(cell,xc,basis_set,mesh_cutoff,kpts,pseudo_pat
                              }
               ).write_input(cell,'siesta')
 
-
+def mk_siesta_input_scf_withEfield_wannier(cell,xc,basis_set,mesh_cutoff,kpts,pseudo_path,ex=0.0,ey=0.0,ez=0.0,SolutionMethod='diagon',MaxSCFIterations=2000,spin='non-polarized'):
+    from ase.calculators.siesta import Siesta
+    from ase.units import Ry
+    
+    calc = Siesta(label='siesta',
+              xc=str(xc),
+              mesh_cutoff=float(mesh_cutoff)*Ry,
+              basis_set=str(basis_set),
+              kpts=kpts,
+              spin=spin,
+              pseudo_path=pseudo_path,
+              fdf_arguments={
+                             'MaxSCFIterations':int(MaxSCFIterations),
+                             'WriteCoorStep':True,
+                             'WriteForces':True,
+                             'WriteMDHistory':True,
+                             'WriteCoorXmol':True,
+                             'WriteCoorCerius':True,
+                             'WriteMDXmol':True,
+                             'SolutionMethod':str(SolutionMethod),
+                             'SCFMustConverge':False,
+                             'WriteMullikenPop':1,
+                             'WriteHirshfeldPop':True,
+                             'WriteVoronoiPop':True,
+                             'PartialChargesAtEveryGeometry':True,
+                             'ExternalElectricField':[str(ex)+' '+str(ey)+' '+str(ez)+' V/Ang'],
+                             'SCF.Mixers':['broyden'],
+                             'SCF.Mixer.broyden':[('method','broyden'),('weight',0.01),('weight.linear',0.005)],
+                             'siesta2Wannier90.WriteMmn':True,
+                             'siesta2Wannier90.WriteAmn':True,
+                             'siesta2Wannier90.WriteEig':True,
+                             'siesta2Wannier90.WriteUnk':False
+                             }
+              ).write_input(cell,'siesta')
