@@ -1,0 +1,28 @@
+num_wann            = 4
+translate_home_cell = true
+guiding_centres     = true
+write_xyz           = True
+conv_tol            = 1e-10
+conv_window         = 5
+iprint              = 2
+num_iter            = 10000
+mp_grid             : 1 1 1
+gamma_only          = true
+begin kpoints
+  0.0000  0.0000  0.0000
+end kpoints
+begin atoms_cart
+Ang
+  H      14.579389708576187   14.14919703580351   14.830272606161543
+  H      14.401789708576189   15.73339703580352   15.181272606161542
+  O      15.06418970857618   15.007397035803507   14.99927260616154
+end atoms_cart
+begin projections
+  random
+end projections
+begin unit_cell_cart
+Ang
+  30.0     0.0     0.0
+  0.0     30.0     0.0
+  0.0     0.0     30.0
+end_unit_cell_cart

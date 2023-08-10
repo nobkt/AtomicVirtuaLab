@@ -1,0 +1,80 @@
+SystemName	siesta
+SystemLabel	siesta
+
+%block ExternalElectricField
+0.0 0.0 0.0514220632 V/Ang
+%endblock ExternalElectricField
+MaxSCFIterations	2000
+PartialChargesAtEveryGeometry	True
+SCF.DM.Tolerance	1e-08
+%block SCF.Mixer.broyden
+method	broyden
+weight	0.01
+weight.linear	0.005
+%endblock SCF.Mixer.broyden
+%block SCF.Mixers
+broyden
+%endblock SCF.Mixers
+SCFMustConverge	False
+SolutionMethod	diagon
+WriteCoorCerius	True
+WriteCoorStep	True
+WriteCoorXmol	True
+WriteForces	True
+WriteHirshfeldPop	True
+WriteMDHistory	True
+WriteMDXmol	True
+WriteMullikenPop	1
+WriteVoronoiPop	True
+siesta2Wannier90.WriteAmn	True
+siesta2Wannier90.WriteEig	True
+siesta2Wannier90.WriteMmn	True
+siesta2Wannier90.WriteUnk	False
+
+Spin     	non-polarized
+XC.functional	GGA
+XC.authors	PBE
+
+MeshCutoff	1102.0611339868733	eV
+PAO.EnergyShift	0.1	eV
+
+NumberOfSpecies	2
+NumberOfAtoms	3
+%block ChemicalSpecieslabel
+    1 1 H.gga.1
+    2 8 O.gga.2
+%endblock ChemicalSpecieslabel
+
+%block PAO.BasisSizes
+    H.gga.1	DZP
+    O.gga.2	DZP
+%endblock PAO.BasisSizes
+
+
+LatticeConstant	1.0 Ang
+%block LatticeVectors
+    30.000000000000000     0.000000000000000     0.000000000000000 
+    0.000000000000000     30.000000000000000     0.000000000000000 
+    0.000000000000000     0.000000000000000     30.000000000000000 
+%endblock LatticeVectors
+
+
+AtomicCoordinatesFormat  Ang
+%block AtomicCoordinatesAndAtomicSpecies
+    14.579389709     14.149197036     14.830272606 1
+    14.401789709     15.733397036     15.181272606 1
+    15.064189709     15.007397036     14.999272606 2
+%endblock AtomicCoordinatesAndAtomicSpecies
+
+%block DM.InitSpin
+%endblock DM.InitSpin
+
+DM.UseSaveDM	True
+
+#KPoint grid
+%block kgrid_Monkhorst_Pack
+     1       0       0  0.0
+     0       1       0  0.0
+     0       0       1  0.0
+%endblock kgrid_Monkhorst_Pack
+

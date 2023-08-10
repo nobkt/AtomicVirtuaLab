@@ -18,6 +18,7 @@ g.cifdir = '/home/A23321P/work/myPython/AtomicVirtuaLab/cifs'
 # 双極子モーメントと分極率テンソルの試計算
 au2v=51.4220632
 epsilon=0.001*au2v
+xc='PBE'
 os.makedirs('./dp_raman_test',exist_ok=True)
 os.chdir('./dp_raman_test')
 os.makedirs('./dipole_and_polarizability',exist_ok=True)
@@ -41,46 +42,46 @@ for mol in mollist:
     xyz.translate(shift)
     xyz.set_cell(lat)
     #view(xyz)
-    for basis in ['SZ','SZP','DZ','DZP']:
+    for basis in ['DZ','DZP']:
         os.makedirs(str(basis),exist_ok=True)
         os.chdir(str(basis))
-        for cutoff in [50.0,100.0,150.0]:
+        for cutoff in [81.0]:
             os.makedirs('cutoff_'+str(cutoff),exist_ok=True)
             os.chdir('cutoff_'+str(cutoff))
             # no efield
             os.makedirs('e0',exist_ok=True)
             os.chdir('e0')            
-            mk_siesta_input_scf_withEfield_wannier(xyz,'VDW',basis,cutoff,[1,1,1],g.siesta_pot,ex=0.0,ey=0.0,ez=0.0,SolutionMethod='diagon',MaxSCFIterations=2000,spin='non-polarized')
+            mk_siesta_input_scf_withEfield_wannier(xyz,xc,basis,cutoff,[1,1,1],g.siesta_pot,ex=0.0,ey=0.0,ez=0.0,SolutionMethod='diagon',MaxSCFIterations=2000,spin='non-polarized')
             os.chdir('../')
             # ex+
             os.makedirs('ex+',exist_ok=True)
             os.chdir('ex+')            
-            mk_siesta_input_scf_withEfield_wannier(xyz,'VDW',basis,cutoff,[1,1,1],g.siesta_pot,ex=epsilon,ey=0.0,ez=0.0,SolutionMethod='diagon',MaxSCFIterations=2000,spin='non-polarized')
+            mk_siesta_input_scf_withEfield_wannier(xyz,xc,basis,cutoff,[1,1,1],g.siesta_pot,ex=epsilon,ey=0.0,ez=0.0,SolutionMethod='diagon',MaxSCFIterations=2000,spin='non-polarized')
             os.chdir('../')
             # ex-
             os.makedirs('ex-',exist_ok=True)
             os.chdir('ex-')            
-            mk_siesta_input_scf_withEfield_wannier(xyz,'VDW',basis,cutoff,[1,1,1],g.siesta_pot,ex=-epsilon,ey=0.0,ez=0.0,SolutionMethod='diagon',MaxSCFIterations=2000,spin='non-polarized')
+            mk_siesta_input_scf_withEfield_wannier(xyz,xc,basis,cutoff,[1,1,1],g.siesta_pot,ex=-epsilon,ey=0.0,ez=0.0,SolutionMethod='diagon',MaxSCFIterations=2000,spin='non-polarized')
             os.chdir('../')
             # ey+
             os.makedirs('ey+',exist_ok=True)
             os.chdir('ey+')            
-            mk_siesta_input_scf_withEfield_wannier(xyz,'VDW',basis,cutoff,[1,1,1],g.siesta_pot,ex=0.0,ey=epsilon,ez=0.0,SolutionMethod='diagon',MaxSCFIterations=2000,spin='non-polarized')
+            mk_siesta_input_scf_withEfield_wannier(xyz,xc,basis,cutoff,[1,1,1],g.siesta_pot,ex=0.0,ey=epsilon,ez=0.0,SolutionMethod='diagon',MaxSCFIterations=2000,spin='non-polarized')
             os.chdir('../')
             # ey-
             os.makedirs('ey-',exist_ok=True)
             os.chdir('ey-')            
-            mk_siesta_input_scf_withEfield_wannier(xyz,'VDW',basis,cutoff,[1,1,1],g.siesta_pot,ex=0.0,ey=-epsilon,ez=0.0,SolutionMethod='diagon',MaxSCFIterations=2000,spin='non-polarized')
+            mk_siesta_input_scf_withEfield_wannier(xyz,xc,basis,cutoff,[1,1,1],g.siesta_pot,ex=0.0,ey=-epsilon,ez=0.0,SolutionMethod='diagon',MaxSCFIterations=2000,spin='non-polarized')
             os.chdir('../')            
             # ez+
             os.makedirs('ez+',exist_ok=True)
             os.chdir('ez+')            
-            mk_siesta_input_scf_withEfield_wannier(xyz,'VDW',basis,cutoff,[1,1,1],g.siesta_pot,ex=0.0,ey=0.0,ez=epsilon,SolutionMethod='diagon',MaxSCFIterations=2000,spin='non-polarized')
+            mk_siesta_input_scf_withEfield_wannier(xyz,xc,basis,cutoff,[1,1,1],g.siesta_pot,ex=0.0,ey=0.0,ez=epsilon,SolutionMethod='diagon',MaxSCFIterations=2000,spin='non-polarized')
             os.chdir('../')
             # ez-
             os.makedirs('ez-',exist_ok=True)
             os.chdir('ez-')            
-            mk_siesta_input_scf_withEfield_wannier(xyz,'VDW',basis,cutoff,[1,1,1],g.siesta_pot,ex=0.0,ey=0.0,ez=-epsilon,SolutionMethod='diagon',MaxSCFIterations=2000,spin='non-polarized')
+            mk_siesta_input_scf_withEfield_wannier(xyz,xc,basis,cutoff,[1,1,1],g.siesta_pot,ex=0.0,ey=0.0,ez=-epsilon,SolutionMethod='diagon',MaxSCFIterations=2000,spin='non-polarized')
             os.chdir('../')
             os.chdir('../')
         os.chdir('../')
@@ -92,7 +93,7 @@ os.chdir(path)
 os.makedirs('./Zn-Pc',exist_ok=True)
 os.chdir('./Zn-Pc')
 mollist=['Zn-Pc_1mer','Zn-Pc_2mer']
-lat=[15.0,15.0,15.0]
+lat=[30.0,30.0,30.0]
 for mol in mollist:
     os.makedirs(str(mol),exist_ok=True)
     os.chdir(str(mol))
@@ -103,46 +104,46 @@ for mol in mollist:
     xyz.translate(shift)
     xyz.set_cell(lat)
     #view(xyz)
-    for basis in ['SZ','SZP','DZ','DZP']:
+    for basis in ['DZ','DZP']:
         os.makedirs(str(basis),exist_ok=True)
         os.chdir(str(basis))
-        for cutoff in [50.0,100.0,150.0]:
+        for cutoff in [81.0]:
             os.makedirs('cutoff_'+str(cutoff),exist_ok=True)
             os.chdir('cutoff_'+str(cutoff))
             # no efield
             os.makedirs('e0',exist_ok=True)
             os.chdir('e0')            
-            mk_siesta_input_scf_withEfield_wannier(xyz,'VDW',basis,cutoff,[1,1,1],g.siesta_pot,ex=0.0,ey=0.0,ez=0.0,SolutionMethod='diagon',MaxSCFIterations=2000,spin='non-polarized')
+            mk_siesta_input_scf_withEfield_wannier(xyz,xc,basis,cutoff,[1,1,1],g.siesta_pot,ex=0.0,ey=0.0,ez=0.0,SolutionMethod='diagon',MaxSCFIterations=2000,spin='non-polarized')
             os.chdir('../')
             # ex+
             os.makedirs('ex+',exist_ok=True)
             os.chdir('ex+')            
-            mk_siesta_input_scf_withEfield_wannier(xyz,'VDW',basis,cutoff,[1,1,1],g.siesta_pot,ex=epsilon,ey=0.0,ez=0.0,SolutionMethod='diagon',MaxSCFIterations=2000,spin='non-polarized')
+            mk_siesta_input_scf_withEfield_wannier(xyz,xc,basis,cutoff,[1,1,1],g.siesta_pot,ex=epsilon,ey=0.0,ez=0.0,SolutionMethod='diagon',MaxSCFIterations=2000,spin='non-polarized')
             os.chdir('../')
             # ex-
             os.makedirs('ex-',exist_ok=True)
             os.chdir('ex-')            
-            mk_siesta_input_scf_withEfield_wannier(xyz,'VDW',basis,cutoff,[1,1,1],g.siesta_pot,ex=-epsilon,ey=0.0,ez=0.0,SolutionMethod='diagon',MaxSCFIterations=2000,spin='non-polarized')
+            mk_siesta_input_scf_withEfield_wannier(xyz,xc,basis,cutoff,[1,1,1],g.siesta_pot,ex=-epsilon,ey=0.0,ez=0.0,SolutionMethod='diagon',MaxSCFIterations=2000,spin='non-polarized')
             os.chdir('../')
             # ey+
             os.makedirs('ey+',exist_ok=True)
             os.chdir('ey+')            
-            mk_siesta_input_scf_withEfield_wannier(xyz,'VDW',basis,cutoff,[1,1,1],g.siesta_pot,ex=0.0,ey=epsilon,ez=0.0,SolutionMethod='diagon',MaxSCFIterations=2000,spin='non-polarized')
+            mk_siesta_input_scf_withEfield_wannier(xyz,xc,basis,cutoff,[1,1,1],g.siesta_pot,ex=0.0,ey=epsilon,ez=0.0,SolutionMethod='diagon',MaxSCFIterations=2000,spin='non-polarized')
             os.chdir('../')
             # ey-
             os.makedirs('ey-',exist_ok=True)
             os.chdir('ey-')            
-            mk_siesta_input_scf_withEfield_wannier(xyz,'VDW',basis,cutoff,[1,1,1],g.siesta_pot,ex=0.0,ey=-epsilon,ez=0.0,SolutionMethod='diagon',MaxSCFIterations=2000,spin='non-polarized')
+            mk_siesta_input_scf_withEfield_wannier(xyz,xc,basis,cutoff,[1,1,1],g.siesta_pot,ex=0.0,ey=-epsilon,ez=0.0,SolutionMethod='diagon',MaxSCFIterations=2000,spin='non-polarized')
             os.chdir('../')            
             # ez+
             os.makedirs('ez+',exist_ok=True)
             os.chdir('ez+')            
-            mk_siesta_input_scf_withEfield_wannier(xyz,'VDW',basis,cutoff,[1,1,1],g.siesta_pot,ex=0.0,ey=0.0,ez=epsilon,SolutionMethod='diagon',MaxSCFIterations=2000,spin='non-polarized')
+            mk_siesta_input_scf_withEfield_wannier(xyz,xc,basis,cutoff,[1,1,1],g.siesta_pot,ex=0.0,ey=0.0,ez=epsilon,SolutionMethod='diagon',MaxSCFIterations=2000,spin='non-polarized')
             os.chdir('../')
             # ez-
             os.makedirs('ez-',exist_ok=True)
             os.chdir('ez-')            
-            mk_siesta_input_scf_withEfield_wannier(xyz,'VDW',basis,cutoff,[1,1,1],g.siesta_pot,ex=0.0,ey=0.0,ez=-epsilon,SolutionMethod='diagon',MaxSCFIterations=2000,spin='non-polarized')
+            mk_siesta_input_scf_withEfield_wannier(xyz,xc,basis,cutoff,[1,1,1],g.siesta_pot,ex=0.0,ey=0.0,ez=-epsilon,SolutionMethod='diagon',MaxSCFIterations=2000,spin='non-polarized')
             os.chdir('../')
             os.chdir('../')
         os.chdir('../')

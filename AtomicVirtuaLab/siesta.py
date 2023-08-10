@@ -189,6 +189,7 @@ def mk_siesta_input_scf_withEfield_wannier(cell,xc,basis_set,mesh_cutoff,kpts,ps
                              'WriteCoorCerius':True,
                              'WriteMDXmol':True,
                              'SolutionMethod':str(SolutionMethod),
+                             'SCF.DM.Tolerance':1E-08,
                              'SCFMustConverge':False,
                              'WriteMullikenPop':1,
                              'WriteHirshfeldPop':True,
