@@ -44,3 +44,20 @@ def slabgen(cell0,h,k,l,nx,ny,nz,z_lower,z_upper):
         slabs0.append(atoms_inv)
         i = i + 1
     return slabs0
+
+def sortmol(cell):
+    from ase import neighborlist
+    from ase.build import sort
+    from ase.io import write
+    from scipy import sparse
+    cell = sort(cell)
+    cutoff = neighborlist.natural_cutoffs(cell)
+    neighborList = neighborlist.NeighborList(cutoff, self_interaction=False, bothways=True)
+    neighborList.update(cell)
+    matrix = neighborList.get_connectivity_matrix()
+    n_components, component_list = sparse.csgraph.connected_components(matrix)
+    cell.arrays['mol_id'] = component_list
+    cell = sort(cell,tags=component_list)
+    return cell
+
+    

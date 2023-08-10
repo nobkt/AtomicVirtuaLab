@@ -170,6 +170,8 @@ def mk_siesta_input_scf_withEfield(cell,xc,basis_set,mesh_cutoff,kpts,pseudo_pat
 def mk_siesta_input_scf_withEfield_wannier(cell,xc,basis_set,mesh_cutoff,kpts,pseudo_path,ex=0.0,ey=0.0,ez=0.0,SolutionMethod='diagon',MaxSCFIterations=2000,spin='non-polarized'):
     from ase.calculators.siesta import Siesta
     from ase.units import Ry
+    import os
+    import sys
     
     calc = Siesta(label='siesta',
               xc=str(xc),
@@ -201,3 +203,54 @@ def mk_siesta_input_scf_withEfield_wannier(cell,xc,basis_set,mesh_cutoff,kpts,ps
                              'siesta2Wannier90.WriteUnk':False
                              }
               ).write_input(cell,'siesta')
+    
+    dnelc = {}
+    for file in os.listdir():
+        base,ext = os.path.splitext(file)
+        if ext == '.psf':
+            #print(base+ext)
+            fpsf = open(base+ext,'r')
+            lines = fpsf.readlines()
+            fpsf.close()
+            #print(lines[3].split()[5])
+            tmp = str(lines[3].split()[5])
+            tmp = float(tmp)
+            nelc = int(tmp)
+            #print(nelc)
+            elm = lines[0].split()[0]
+            #print(elm)
+            dnelc[elm] = nelc
+    tot_nelc = 0
+    for atom in cell:
+        tot_nelc = tot_nelc + dnelc[atom.symbol]
+    #print(tot_nelc)
+    f = open('siesta.win','w')
+    f.write('num_wann            = '+str(int(tot_nelc/2))+'\n')
+    f.write('translate_home_cell = true'+'\n')
+    f.write('guiding_centres     = true'+'\n')
+    f.write('write_xyz           = True'+'\n')
+    f.write('conv_tol            = 1e-10'+'\n')
+    f.write('conv_window         = 5'+'\n')
+    f.write('iprint              = 2'+'\n')
+    f.write('num_iter            = 10000'+'\n')
+    f.write('mp_grid             : 1 1 1'+'\n')
+    f.write('gamma_only          = true'+'\n')
+    f.write('begin kpoints'+'\n')
+    f.write('  0.0000  0.0000  0.0000'+'\n')
+    f.write('end kpoints'+'\n')
+    f.write('begin atoms_cart'+'\n')
+    f.write('Ang'+'\n')
+    for atom in cell:
+        f.write('  '+atom.symbol+'      '+str(atom.position[0])+'   '+str(atom.position[1])+'   '+str(atom.position[2])+'\n')
+    f.write('end atoms_cart'+'\n')
+    f.write('begin projections'+'\n')
+    f.write('  random'+'\n')
+    f.write('end projections'+'\n')
+    f.write('begin unit_cell_cart'+'\n')
+    f.write('Ang'+'\n')
+    lat = cell.get_cell()
+    f.write('  '+str(lat[0][0])+'     '+str(lat[1][0])+'     '+str(lat[2][0])+'\n')
+    f.write('  '+str(lat[0][1])+'     '+str(lat[1][1])+'     '+str(lat[2][1])+'\n')
+    f.write('  '+str(lat[0][2])+'     '+str(lat[1][2])+'     '+str(lat[2][2])+'\n')
+    f.write('end_unit_cell_cart'+'\n')
+    f.close()
