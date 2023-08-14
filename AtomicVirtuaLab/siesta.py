@@ -31,8 +31,8 @@ def mk_siesta_input_npt(cell,xc,basis_set,mesh_cutoff,kpts,temp,press,nstep,pseu
                              'WriteHirshfeldPop':True,
                              'WriteVoronoiPop':True,
                              'PartialChargesAtEveryGeometry':True,
-                             'SCF.Mixers':['broyden'],
-                             'SCF.Mixer.broyden':[('method','broyden'),('weight',0.01),('weight.linear',0.005)]
+                             #'SCF.Mixers':['broyden'],
+                             #'SCF.Mixer.broyden':[('method','broyden'),('weight',0.01),('weight.linear',0.005)]
                              }
               ).write_input(cell,'siesta')
 
@@ -68,8 +68,8 @@ def mk_siesta_input_nvt(cell,xc,basis_set,mesh_cutoff,kpts,temp,nstep,pseudo_pat
                              'WriteHirshfeldPop':True,
                              'WriteVoronoiPop':True,
                              'PartialChargesAtEveryGeometry':True,
-                             'SCF.Mixers':['broyden'],
-                             'SCF.Mixer.broyden':[('method','broyden'),('weight',0.01),('weight.linear',0.005)]
+                             #'SCF.Mixers':['broyden'],
+                             #'SCF.Mixer.broyden':[('method','broyden'),('weight',0.01),('weight.linear',0.005)]
                              }
               ).write_input(cell,'siesta')
 
@@ -101,8 +101,8 @@ def mk_siesta_input_optimize(cell,xc,basis_set,mesh_cutoff,kpts,nstep,pseudo_pat
                              'WriteHirshfeldPop':True,
                              'WriteVoronoiPop':True,
                              'PartialChargesAtEveryGeometry':True,
-                             'SCF.Mixers':['broyden'],
-                             'SCF.Mixer.broyden':[('method','broyden'),('weight',0.01),('weight.linear',0.005)]
+                             #'SCF.Mixers':['broyden'],
+                             #'SCF.Mixer.broyden':[('method','broyden'),('weight',0.01),('weight.linear',0.005)]
                              }
               ).write_input(cell,'siesta')
 
@@ -131,8 +131,8 @@ def mk_siesta_input_scf(cell,xc,basis_set,mesh_cutoff,kpts,pseudo_path,SolutionM
                              'WriteHirshfeldPop':True,
                              'WriteVoronoiPop':True,
                              'PartialChargesAtEveryGeometry':True,
-                             'SCF.Mixers':['broyden'],
-                             'SCF.Mixer.broyden':[('method','broyden'),('weight',0.01),('weight.linear',0.005)]
+                             #'SCF.Mixers':['broyden'],
+                             #'SCF.Mixer.broyden':[('method','broyden'),('weight',0.01),('weight.linear',0.005)]
                              }
               ).write_input(cell,'siesta')
 
@@ -162,12 +162,12 @@ def mk_siesta_input_scf_withEfield(cell,xc,basis_set,mesh_cutoff,kpts,pseudo_pat
                              'WriteVoronoiPop':True,
                              'PartialChargesAtEveryGeometry':True,
                              'ExternalElectricField':[str(ex)+' '+str(ey)+' '+str(ez)+' V/Ang'],
-                             'SCF.Mixers':['broyden'],
-                             'SCF.Mixer.broyden':[('method','broyden'),('weight',0.01),('weight.linear',0.005)]
+                             #'SCF.Mixers':['broyden'],
+                             #'SCF.Mixer.broyden':[('method','broyden'),('weight',0.01),('weight.linear',0.005)]
                              }
               ).write_input(cell,'siesta')
 
-def mk_siesta_input_scf_withEfield_wannier(cell,xc,basis_set,mesh_cutoff,kpts,pseudo_path,ex=0.0,ey=0.0,ez=0.0,SolutionMethod='diagon',MaxSCFIterations=2000,spin='non-polarized'):
+def mk_siesta_input_scf_withEfield_wannier(cell,xc,basis_set,mesh_cutoff,kpts,pseudo_path,bandscale=1.0,ex=0.0,ey=0.0,ez=0.0,SolutionMethod='diagon',MaxSCFIterations=2000,spin='non-polarized'):
     from ase.calculators.siesta import Siesta
     from ase.units import Ry
     import os
@@ -191,13 +191,13 @@ def mk_siesta_input_scf_withEfield_wannier(cell,xc,basis_set,mesh_cutoff,kpts,ps
                              'SolutionMethod':str(SolutionMethod),
                              'SCF.DM.Tolerance':1E-08,
                              'SCFMustConverge':False,
-                             'WriteMullikenPop':1,
-                             'WriteHirshfeldPop':True,
-                             'WriteVoronoiPop':True,
-                             'PartialChargesAtEveryGeometry':True,
+                             #'WriteMullikenPop':1,
+                             #'WriteHirshfeldPop':True,
+                             #'WriteVoronoiPop':True,
+                             #'PartialChargesAtEveryGeometry':True,
                              'ExternalElectricField':[str(ex)+' '+str(ey)+' '+str(ez)+' V/Ang'],
-                             'SCF.Mixers':['broyden'],
-                             'SCF.Mixer.broyden':[('method','broyden'),('weight',0.01),('weight.linear',0.005)],
+                             #'SCF.Mixers':['broyden'],
+                             #'SCF.Mixer.broyden':[('method','broyden'),('weight',0.01),('weight.linear',0.005)],
                              'siesta2Wannier90.WriteMmn':True,
                              'siesta2Wannier90.WriteAmn':True,
                              'siesta2Wannier90.WriteEig':True,
@@ -227,11 +227,13 @@ def mk_siesta_input_scf_withEfield_wannier(cell,xc,basis_set,mesh_cutoff,kpts,ps
     #print(tot_nelc)
     f = open('siesta.win','w')
     f.write('num_wann            = '+str(int(tot_nelc/2))+'\n')
+    f.write('num_bands           = '+str(int(tot_nelc/2+bandscale))+'\n')
     f.write('translate_home_cell = true'+'\n')
     f.write('guiding_centres     = true'+'\n')
     f.write('write_xyz           = True'+'\n')
     f.write('conv_tol            = 1e-10'+'\n')
     f.write('conv_window         = 5'+'\n')
+    f.write('dis_num_iter        = 100000'+'\n')
     f.write('iprint              = 2'+'\n')
     f.write('num_iter            = 10000'+'\n')
     f.write('mp_grid             : 1 1 1'+'\n')
@@ -254,4 +256,9 @@ def mk_siesta_input_scf_withEfield_wannier(cell,xc,basis_set,mesh_cutoff,kpts,ps
     f.write('  '+str(lat[0][1])+'     '+str(lat[1][1])+'     '+str(lat[2][1])+'\n')
     f.write('  '+str(lat[0][2])+'     '+str(lat[1][2])+'     '+str(lat[2][2])+'\n')
     f.write('end_unit_cell_cart'+'\n')
+    f.close()
+    
+    f = open('siesta.fdf','a')
+    f.write('\n')
+    f.write('Siesta2Wannier90.NumberOfBands   '+str(int(tot_nelc/2+bandscale))+'\n')
     f.close()

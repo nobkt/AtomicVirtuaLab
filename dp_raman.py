@@ -1,7 +1,7 @@
 from ase.build import molecule
 from ase.io import read, write
 from ase.visualize import view
-from ase.build import sort
+from ase.build import sort, make_supercell
 from AtomicVirtuaLab.espresso import mk_qe_input_relax
 from AtomicVirtuaLab.siesta import mk_siesta_input_optimize,mk_siesta_input_nvt,mk_siesta_input_scf_withEfield,mk_siesta_input_scf_withEfield_wannier
 from AtomicVirtuaLab.packmol import mk_packmol_random
@@ -13,6 +13,28 @@ import sys
 g.qepot = '/home/A23321P/work/myPython/AtomicVirtuaLab/qe_pseudo'
 g.siesta_pot = '/home/A23321P/work/myPython/AtomicVirtuaLab/siesta_pseudo'
 g.cifdir = '/home/A23321P/work/myPython/AtomicVirtuaLab/cifs'
+
+"""
+# Zn-Pc 結晶モデル作成
+os.makedirs('./dp_raman_test',exist_ok=True)
+os.chdir('./dp_raman_test')
+os.makedirs('./cif_test',exist_ok=True)
+os.chdir('./cif_test')
+
+cell = read(g.cifdir+'/ZincPhthalocyanine.cif')
+#view(cell)
+cell = make_supercell(cell,([2,0,0],[0,3,0],[0,0,1]),wrap=True)
+print(len(cell))
+#cell = read(g.cifdir+'/Zn-Pc_2mer.xyz')
+#cell.set_cell([50,50,50])
+
+cell = sortmol(cell)
+#cell.write('test.lmp',format='lammps-data',atom_style='full')
+#view(cell)
+
+# Zn-Pc 結晶モデル作成
+"""
+
 
 
 # 双極子モーメントと分極率テンソルの試計算
@@ -28,11 +50,15 @@ path = os.getcwd()
 os.chdir(path)
 
 # 水クラスター
-os.makedirs('./water_clusters',exist_ok=True)
-os.chdir('./water_clusters')
+os.makedirs('./water_clusters/'+str(xc),exist_ok=True)
+os.chdir('./water_clusters/'+str(xc))
 mollist=['H2O_1mer','H2O_5mer','H2O_10mer','H2O_20mer']
 lat=[30.0,30.0,30.0]
 for mol in mollist:
+    if mol == 'H2O_1mer':
+        bandscale = 0
+    else:
+        bandscale = 0
     os.makedirs(str(mol),exist_ok=True)
     os.chdir(str(mol))
     xyz = read(g.cifdir+'/'+str(mol)+'.xyz')
@@ -42,46 +68,46 @@ for mol in mollist:
     xyz.translate(shift)
     xyz.set_cell(lat)
     #view(xyz)
-    for basis in ['DZ','DZP']:
+    for basis in ['SZ']:
         os.makedirs(str(basis),exist_ok=True)
         os.chdir(str(basis))
-        for cutoff in [81.0]:
+        for cutoff in [50.0]:
             os.makedirs('cutoff_'+str(cutoff),exist_ok=True)
             os.chdir('cutoff_'+str(cutoff))
             # no efield
             os.makedirs('e0',exist_ok=True)
             os.chdir('e0')            
-            mk_siesta_input_scf_withEfield_wannier(xyz,xc,basis,cutoff,[1,1,1],g.siesta_pot,ex=0.0,ey=0.0,ez=0.0,SolutionMethod='diagon',MaxSCFIterations=2000,spin='non-polarized')
+            mk_siesta_input_scf_withEfield_wannier(xyz,xc,basis,cutoff,None,g.siesta_pot,bandscale=bandscale,ex=0.0,ey=0.0,ez=0.0,SolutionMethod='diagon',MaxSCFIterations=2000,spin='non-polarized')
             os.chdir('../')
             # ex+
             os.makedirs('ex+',exist_ok=True)
             os.chdir('ex+')            
-            mk_siesta_input_scf_withEfield_wannier(xyz,xc,basis,cutoff,[1,1,1],g.siesta_pot,ex=epsilon,ey=0.0,ez=0.0,SolutionMethod='diagon',MaxSCFIterations=2000,spin='non-polarized')
+            mk_siesta_input_scf_withEfield_wannier(xyz,xc,basis,cutoff,None,g.siesta_pot,bandscale=bandscale,ex=epsilon,ey=0.0,ez=0.0,SolutionMethod='diagon',MaxSCFIterations=2000,spin='non-polarized')
             os.chdir('../')
             # ex-
             os.makedirs('ex-',exist_ok=True)
             os.chdir('ex-')            
-            mk_siesta_input_scf_withEfield_wannier(xyz,xc,basis,cutoff,[1,1,1],g.siesta_pot,ex=-epsilon,ey=0.0,ez=0.0,SolutionMethod='diagon',MaxSCFIterations=2000,spin='non-polarized')
+            mk_siesta_input_scf_withEfield_wannier(xyz,xc,basis,cutoff,None,g.siesta_pot,bandscale=bandscale,ex=-epsilon,ey=0.0,ez=0.0,SolutionMethod='diagon',MaxSCFIterations=2000,spin='non-polarized')
             os.chdir('../')
             # ey+
             os.makedirs('ey+',exist_ok=True)
             os.chdir('ey+')            
-            mk_siesta_input_scf_withEfield_wannier(xyz,xc,basis,cutoff,[1,1,1],g.siesta_pot,ex=0.0,ey=epsilon,ez=0.0,SolutionMethod='diagon',MaxSCFIterations=2000,spin='non-polarized')
+            mk_siesta_input_scf_withEfield_wannier(xyz,xc,basis,cutoff,None,g.siesta_pot,bandscale=bandscale,ex=0.0,ey=epsilon,ez=0.0,SolutionMethod='diagon',MaxSCFIterations=2000,spin='non-polarized')
             os.chdir('../')
             # ey-
             os.makedirs('ey-',exist_ok=True)
             os.chdir('ey-')            
-            mk_siesta_input_scf_withEfield_wannier(xyz,xc,basis,cutoff,[1,1,1],g.siesta_pot,ex=0.0,ey=-epsilon,ez=0.0,SolutionMethod='diagon',MaxSCFIterations=2000,spin='non-polarized')
+            mk_siesta_input_scf_withEfield_wannier(xyz,xc,basis,cutoff,None,g.siesta_pot,bandscale=bandscale,ex=0.0,ey=-epsilon,ez=0.0,SolutionMethod='diagon',MaxSCFIterations=2000,spin='non-polarized')
             os.chdir('../')            
             # ez+
             os.makedirs('ez+',exist_ok=True)
             os.chdir('ez+')            
-            mk_siesta_input_scf_withEfield_wannier(xyz,xc,basis,cutoff,[1,1,1],g.siesta_pot,ex=0.0,ey=0.0,ez=epsilon,SolutionMethod='diagon',MaxSCFIterations=2000,spin='non-polarized')
+            mk_siesta_input_scf_withEfield_wannier(xyz,xc,basis,cutoff,None,g.siesta_pot,bandscale=bandscale,ex=0.0,ey=0.0,ez=epsilon,SolutionMethod='diagon',MaxSCFIterations=2000,spin='non-polarized')
             os.chdir('../')
             # ez-
             os.makedirs('ez-',exist_ok=True)
             os.chdir('ez-')            
-            mk_siesta_input_scf_withEfield_wannier(xyz,xc,basis,cutoff,[1,1,1],g.siesta_pot,ex=0.0,ey=0.0,ez=-epsilon,SolutionMethod='diagon',MaxSCFIterations=2000,spin='non-polarized')
+            mk_siesta_input_scf_withEfield_wannier(xyz,xc,basis,cutoff,None,g.siesta_pot,bandscale=bandscale,ex=0.0,ey=0.0,ez=-epsilon,SolutionMethod='diagon',MaxSCFIterations=2000,spin='non-polarized')
             os.chdir('../')
             os.chdir('../')
         os.chdir('../')
@@ -90,60 +116,65 @@ for mol in mollist:
 
 # Zn-フタロシアニン
 os.chdir(path)
-os.makedirs('./Zn-Pc',exist_ok=True)
-os.chdir('./Zn-Pc')
+os.makedirs('./Zn-Pc/'+str(xc),exist_ok=True)
+os.chdir('./Zn-Pc/'+str(xc))
 mollist=['Zn-Pc_1mer','Zn-Pc_2mer']
 lat=[30.0,30.0,30.0]
 for mol in mollist:
+    if mol == 'Zn-Pc_1mer':
+        bandscale=30
+    elif mol == 'Zn-Pc_2mer':
+        bandscale=30
     os.makedirs(str(mol),exist_ok=True)
     os.chdir(str(mol))
     xyz = read(g.cifdir+'/'+str(mol)+'.xyz')
     xyz = sortmol(xyz)
     com = xyz.get_center_of_mass()
     shift=[lat[0]/2.0,lat[1]/2.0,lat[2]/2.0]-com
+    #shift=[0.0,0.0,0.0]-com
     xyz.translate(shift)
     xyz.set_cell(lat)
     #view(xyz)
-    for basis in ['DZ','DZP']:
+    for basis in ['SZ']:
         os.makedirs(str(basis),exist_ok=True)
         os.chdir(str(basis))
-        for cutoff in [81.0]:
+        for cutoff in [50.0]:
             os.makedirs('cutoff_'+str(cutoff),exist_ok=True)
             os.chdir('cutoff_'+str(cutoff))
             # no efield
             os.makedirs('e0',exist_ok=True)
             os.chdir('e0')            
-            mk_siesta_input_scf_withEfield_wannier(xyz,xc,basis,cutoff,[1,1,1],g.siesta_pot,ex=0.0,ey=0.0,ez=0.0,SolutionMethod='diagon',MaxSCFIterations=2000,spin='non-polarized')
+            mk_siesta_input_scf_withEfield_wannier(xyz,xc,basis,cutoff,None,g.siesta_pot,bandscale=bandscale,ex=0.0,ey=0.0,ez=0.0,SolutionMethod='diagon',MaxSCFIterations=2000,spin='non-polarized')
             os.chdir('../')
             # ex+
             os.makedirs('ex+',exist_ok=True)
             os.chdir('ex+')            
-            mk_siesta_input_scf_withEfield_wannier(xyz,xc,basis,cutoff,[1,1,1],g.siesta_pot,ex=epsilon,ey=0.0,ez=0.0,SolutionMethod='diagon',MaxSCFIterations=2000,spin='non-polarized')
+            mk_siesta_input_scf_withEfield_wannier(xyz,xc,basis,cutoff,None,g.siesta_pot,bandscale=bandscale,ex=epsilon,ey=0.0,ez=0.0,SolutionMethod='diagon',MaxSCFIterations=2000,spin='non-polarized')
             os.chdir('../')
             # ex-
             os.makedirs('ex-',exist_ok=True)
             os.chdir('ex-')            
-            mk_siesta_input_scf_withEfield_wannier(xyz,xc,basis,cutoff,[1,1,1],g.siesta_pot,ex=-epsilon,ey=0.0,ez=0.0,SolutionMethod='diagon',MaxSCFIterations=2000,spin='non-polarized')
+            mk_siesta_input_scf_withEfield_wannier(xyz,xc,basis,cutoff,None,g.siesta_pot,bandscale=bandscale,ex=-epsilon,ey=0.0,ez=0.0,SolutionMethod='diagon',MaxSCFIterations=2000,spin='non-polarized')
             os.chdir('../')
             # ey+
             os.makedirs('ey+',exist_ok=True)
             os.chdir('ey+')            
-            mk_siesta_input_scf_withEfield_wannier(xyz,xc,basis,cutoff,[1,1,1],g.siesta_pot,ex=0.0,ey=epsilon,ez=0.0,SolutionMethod='diagon',MaxSCFIterations=2000,spin='non-polarized')
+            mk_siesta_input_scf_withEfield_wannier(xyz,xc,basis,cutoff,None,g.siesta_pot,bandscale=bandscale,ex=0.0,ey=epsilon,ez=0.0,SolutionMethod='diagon',MaxSCFIterations=2000,spin='non-polarized')
             os.chdir('../')
             # ey-
             os.makedirs('ey-',exist_ok=True)
             os.chdir('ey-')            
-            mk_siesta_input_scf_withEfield_wannier(xyz,xc,basis,cutoff,[1,1,1],g.siesta_pot,ex=0.0,ey=-epsilon,ez=0.0,SolutionMethod='diagon',MaxSCFIterations=2000,spin='non-polarized')
+            mk_siesta_input_scf_withEfield_wannier(xyz,xc,basis,cutoff,None,g.siesta_pot,bandscale=bandscale,ex=0.0,ey=-epsilon,ez=0.0,SolutionMethod='diagon',MaxSCFIterations=2000,spin='non-polarized')
             os.chdir('../')            
             # ez+
             os.makedirs('ez+',exist_ok=True)
             os.chdir('ez+')            
-            mk_siesta_input_scf_withEfield_wannier(xyz,xc,basis,cutoff,[1,1,1],g.siesta_pot,ex=0.0,ey=0.0,ez=epsilon,SolutionMethod='diagon',MaxSCFIterations=2000,spin='non-polarized')
+            mk_siesta_input_scf_withEfield_wannier(xyz,xc,basis,cutoff,None,g.siesta_pot,bandscale=bandscale,ex=0.0,ey=0.0,ez=epsilon,SolutionMethod='diagon',MaxSCFIterations=2000,spin='non-polarized')
             os.chdir('../')
             # ez-
             os.makedirs('ez-',exist_ok=True)
             os.chdir('ez-')            
-            mk_siesta_input_scf_withEfield_wannier(xyz,xc,basis,cutoff,[1,1,1],g.siesta_pot,ex=0.0,ey=0.0,ez=-epsilon,SolutionMethod='diagon',MaxSCFIterations=2000,spin='non-polarized')
+            mk_siesta_input_scf_withEfield_wannier(xyz,xc,basis,cutoff,None,g.siesta_pot,bandscale=bandscale,ex=0.0,ey=0.0,ez=-epsilon,SolutionMethod='diagon',MaxSCFIterations=2000,spin='non-polarized')
             os.chdir('../')
             os.chdir('../')
         os.chdir('../')
@@ -157,18 +188,18 @@ os.makedirs('./dp_raman_test',exist_ok=True)
 os.chdir('./dp_raman_test')
 os.makedirs('./ZincPhthalocyanine_2mol_test',exist_ok=True)
 os.chdir('./ZincPhthalocyanine_2mol_test')
-allBr = read(g.cifdir+'/ZincPhthalocyanine_allBr.xyz')
+allBr = read(g.cifdir+'/Zn-Pc_1mer.xyz')
 allBr_sorted = sort(allBr)
 
 allBr_sorted.write('./test.xyz')
 
 mollist={
-    'test':2
+    'test':8
 }
 
-x_box=30.0
-y_box=30.0
-z_box=30.0
+x_box=50.0
+y_box=50.0
+z_box=50.0
 
 mk_packmol_random(mollist,x_box,y_box,z_box)
 os.system('packmol < packmol.inp 1> log_packmol 2> err_packmol')
@@ -177,12 +208,64 @@ cell = read('./system.xyz')
 cell.set_cell([x_box,y_box,z_box])
 cell.write('test.cif')
 
-mk_siesta_input_optimize(cell,'VDW','DZP',50.0,[1,1,1],2000,g.siesta_pot,SolutionMethod='diagon',MaxSCFIterations=2000,spin='non-polarized')
+mk_siesta_input_scf_withEfield_wannier(cell,'PBE','SZ',50.0,None,g.siesta_pot,bandscale=30,ex=0.0,ey=0.0,ez=-0.0,SolutionMethod='diagon',MaxSCFIterations=2000,spin='non-polarized')
 #mk_qe_input_relax(cell,'pbe','us',level='high',estep=1000,nstep=1000,nosym=True,ecutwfc=36,ecutrho=400,mixing_beta=0.2,kpts=None,ecut='manual',tstress=False,options={'vdw_corr':'dft-d3','dftd3_version':4},nspin=False)
 view(cell)
 
 # Zn-フタロシアニンのパッキングモデル作成終了
 """
+
+"""
+# Zn-Pc Br置換モデル構造最適化
+os.makedirs('./dp_raman_test',exist_ok=True)
+os.chdir('./dp_raman_test')
+os.makedirs('./Zn-Pc_allBr',exist_ok=True)
+os.chdir('./Zn-Pc_allBr')
+os.makedirs('./2-mer',exist_ok=True)
+os.chdir('./2-mer')
+os.makedirs('./opt_Br',exist_ok=True)
+os.chdir('./opt_Br')
+xyz = read(g.cifdir+'/Zn-Pc_2mer.xyz')
+symbols=[]
+for atom in xyz:
+    if atom.symbol == 'H':
+        symbols.append('Br')
+    else:
+        symbols.append(atom.symbol)
+xyz.set_chemical_symbols(symbols)
+xyz = sortmol(xyz)
+com = xyz.get_center_of_mass()
+lat = [30.0,30.0,30.0]
+shift=[lat[0]/2.0,lat[1]/2.0,lat[2]/2.0]-com
+xyz.translate(shift)
+xyz.set_cell(lat)
+#view(xyz)
+mk_siesta_input_optimize(xyz,'PBE','SZ',50.0,None,2000,g.siesta_pot,SolutionMethod='diagon',MaxSCFIterations=2000,spin='non-polarized')
+# Zn-Pc Br置換モデル構造最適化 終了
+"""
+
+"""
+# Zn-Pc Br置換モデルWannier関数
+os.makedirs('./dp_raman_test',exist_ok=True)
+os.chdir('./dp_raman_test')
+os.makedirs('./Zn-Pc_allBr',exist_ok=True)
+os.chdir('./Zn-Pc_allBr')
+os.makedirs('./2-mer',exist_ok=True)
+os.chdir('./2-mer')
+os.makedirs('./wannier',exist_ok=True)
+os.chdir('./wannier')
+xyz = read(g.cifdir+'/Zn-Pc-allBr_2mer.xyz')
+xyz = sortmol(xyz)
+com = xyz.get_center_of_mass()
+lat = [30.0,30.0,30.0]
+shift=[lat[0]/2.0,lat[1]/2.0,lat[2]/2.0]-com
+xyz.translate(shift)
+xyz.set_cell(lat)
+#view(xyz)
+mk_siesta_input_scf_withEfield_wannier(xyz,'PBE','SZ',50.0,None,g.siesta_pot,bandscale=30,ex=0.0,ey=0.0,ez=0.0,SolutionMethod='diagon',MaxSCFIterations=2000,spin='non-polarized')
+# Zn-Pc Br置換モデルWannier関数 終了
+"""
+
 
 """
 # Zn-フタロシアニン単分子構造最適化

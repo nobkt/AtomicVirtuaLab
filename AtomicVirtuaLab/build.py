@@ -50,14 +50,18 @@ def sortmol(cell):
     from ase.build import sort
     from ase.io import write
     from scipy import sparse
+    import numpy as np
     cell = sort(cell)
     cutoff = neighborlist.natural_cutoffs(cell)
     neighborList = neighborlist.NeighborList(cutoff, self_interaction=False, bothways=True)
     neighborList.update(cell)
     matrix = neighborList.get_connectivity_matrix()
     n_components, component_list = sparse.csgraph.connected_components(matrix)
-    cell.arrays['mol_id'] = component_list
+    tmp = []
+    for l in component_list:
+        tmp.append(l+1)
+    component_list = np.array(tmp)
+    cell.arrays['mol-id'] = component_list
     cell = sort(cell,tags=component_list)
     return cell
-
     

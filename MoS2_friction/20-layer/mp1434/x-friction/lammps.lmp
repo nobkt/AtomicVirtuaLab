@@ -1,0 +1,402 @@
+units metal
+boundary p p f
+atom_style atomic
+read_data lammps.data
+region upper block INF INF INF INF ${z1} INF
+region lower block INF INF INF INF INF ${z0}
+group Mo type 1
+group upper region upper
+group lower region lower
+group upperMo intersect upper Mo
+group lowerMo intersect lower Mo
+region layer1 block INF INF INF INF ${zm1} ${z1}
+group layer1 region layer1
+group layer1Mo intersect layer1 Mo
+region layer2 block INF INF INF INF ${zm2} ${zm1}
+group layer2 region layer2
+group layer2Mo intersect layer2 Mo
+region layer3 block INF INF INF INF ${zm3} ${zm2}
+group layer3 region layer3
+group layer3Mo intersect layer3 Mo
+region layer4 block INF INF INF INF ${zm4} ${zm3}
+group layer4 region layer4
+group layer4Mo intersect layer4 Mo
+region layer5 block INF INF INF INF ${zm5} ${zm4}
+group layer5 region layer5
+group layer5Mo intersect layer5 Mo
+region layer6 block INF INF INF INF ${zm6} ${zm5}
+group layer6 region layer6
+group layer6Mo intersect layer6 Mo
+region layer7 block INF INF INF INF ${zm7} ${zm6}
+group layer7 region layer7
+group layer7Mo intersect layer7 Mo
+region layer8 block INF INF INF INF ${zm8} ${zm7}
+group layer8 region layer8
+group layer8Mo intersect layer8 Mo
+region layer9 block INF INF INF INF ${zm9} ${zm8}
+group layer9 region layer9
+group layer9Mo intersect layer9 Mo
+region layer10 block INF INF INF INF ${zm10} ${zm9}
+group layer10 region layer10
+group layer10Mo intersect layer10 Mo
+region layer11 block INF INF INF INF ${zm11} ${zm10}
+group layer11 region layer11
+group layer11Mo intersect layer11 Mo
+region layer12 block INF INF INF INF ${zm12} ${zm11}
+group layer12 region layer12
+group layer12Mo intersect layer12 Mo
+region layer13 block INF INF INF INF ${zm13} ${zm12}
+group layer13 region layer13
+group layer13Mo intersect layer13 Mo
+region layer14 block INF INF INF INF ${zm14} ${zm13}
+group layer14 region layer14
+group layer14Mo intersect layer14 Mo
+region layer15 block INF INF INF INF ${zm15} ${zm14}
+group layer15 region layer15
+group layer15Mo intersect layer15 Mo
+region layer16 block INF INF INF INF ${zm16} ${zm15}
+group layer16 region layer16
+group layer16Mo intersect layer16 Mo
+region layer17 block INF INF INF INF ${zm17} ${zm16}
+group layer17 region layer17
+group layer17Mo intersect layer17 Mo
+region layer18 block INF INF INF INF ${zm18} ${zm17}
+group layer18 region layer18
+group layer18Mo intersect layer18 Mo
+region layer19 block INF INF INF INF ${z0} ${zm18}
+group layer19 region layer19
+group layer19Mo intersect layer19 Mo
+group middle subtract all upper lower
+compute mype all pe/atom
+compute myke all ke/atom
+mass 1 95.95
+mass 2 32.06
+pair_style deepmd graph.pb
+pair_coeff * *  Mo S
+dump dmp all custom 100 traj_nvt_load.lammpstrj id type element x y z vx vy vz fx fy fz c_mype c_myke ix iy iz
+dump_modify dmp element Mo S
+timestep 0.0005
+fix rigid1 lower rigid single torque * off off off
+fix rigid2 upper rigid single torque * off off off
+variable S equal lx*ly
+variable P equal v_P0*1.0e-6/1.602176634
+variable N equal count(upper)
+variable Pz0 equal v_P*v_S
+variable Pz equal v_P*v_S/v_N
+fix freeze1 lower setforce 0.0 0.0 0.0
+fix freeze2 upper setforce 0.0 0.0 NULL
+fix addf upper addforce 0 0 v_Pz
+velocity middle create 300 12345
+variable Fric equal f_freeze2[1]/v_Pz0
+
+fix fxnvt middle nvt temp 300 300 $(dt*100.0)
+run 200000
+unfix freeze1
+unfix freeze2
+unfix rigid1
+unfix rigid2
+unfix fxnvt
+unfix addf
+undump dmp
+
+dump dmp all custom 100 traj_nvt_fric.lammpstrj id type element x y z vx vy vz fx fy fz c_mype c_myke ix iy iz
+dump_modify dmp element Mo S
+reset_timestep 0
+compute uppermsd upper msd average yes
+compute lowermsd lower msd average yes
+compute upperpeperatom upper pe/atom
+compute lowerpeperatom lower pe/atom
+compute upperpe upper reduce sum c_upperpeperatom
+compute lowerpe lower reduce sum c_lowerpeperatom
+compute upperMopropperatom upper property/atom z
+compute lowerMopropperatom lower property/atom z
+compute upperMomaxz upperMo reduce max c_upperMopropperatom
+compute lowerMomaxz lowerMo reduce max c_lowerMopropperatom
+compute upperMominz upperMo reduce min c_upperMopropperatom
+compute lowerMominz lowerMo reduce min c_lowerMopropperatom
+compute layer1msd layer1 msd average yes
+compute layer1peperatom layer1 pe/atom
+compute layer1pe layer1 reduce sum c_layer1peperatom
+compute layer1propperatom layer1 property/atom fx fy fz
+compute layer1prop layer1 reduce sum c_layer1propperatom[*]
+compute layerMo1propperatom layer1 property/atom z
+compute layerMo1maxz layer1 reduce max c_layerMo1propperatom
+compute layerMo1minz layer1 reduce min c_layerMo1propperatom
+compute layer2msd layer2 msd average yes
+compute layer2peperatom layer2 pe/atom
+compute layer2pe layer2 reduce sum c_layer2peperatom
+compute layer2propperatom layer2 property/atom fx fy fz
+compute layer2prop layer2 reduce sum c_layer2propperatom[*]
+compute layerMo2propperatom layer2 property/atom z
+compute layerMo2maxz layer2 reduce max c_layerMo2propperatom
+compute layerMo2minz layer2 reduce min c_layerMo2propperatom
+compute layer3msd layer3 msd average yes
+compute layer3peperatom layer3 pe/atom
+compute layer3pe layer3 reduce sum c_layer3peperatom
+compute layer3propperatom layer3 property/atom fx fy fz
+compute layer3prop layer3 reduce sum c_layer3propperatom[*]
+compute layerMo3propperatom layer3 property/atom z
+compute layerMo3maxz layer3 reduce max c_layerMo3propperatom
+compute layerMo3minz layer3 reduce min c_layerMo3propperatom
+compute layer4msd layer4 msd average yes
+compute layer4peperatom layer4 pe/atom
+compute layer4pe layer4 reduce sum c_layer4peperatom
+compute layer4propperatom layer4 property/atom fx fy fz
+compute layer4prop layer4 reduce sum c_layer4propperatom[*]
+compute layerMo4propperatom layer4 property/atom z
+compute layerMo4maxz layer4 reduce max c_layerMo4propperatom
+compute layerMo4minz layer4 reduce min c_layerMo4propperatom
+compute layer5msd layer5 msd average yes
+compute layer5peperatom layer5 pe/atom
+compute layer5pe layer5 reduce sum c_layer5peperatom
+compute layer5propperatom layer5 property/atom fx fy fz
+compute layer5prop layer5 reduce sum c_layer5propperatom[*]
+compute layerMo5propperatom layer5 property/atom z
+compute layerMo5maxz layer5 reduce max c_layerMo5propperatom
+compute layerMo5minz layer5 reduce min c_layerMo5propperatom
+compute layer6msd layer6 msd average yes
+compute layer6peperatom layer6 pe/atom
+compute layer6pe layer6 reduce sum c_layer6peperatom
+compute layer6propperatom layer6 property/atom fx fy fz
+compute layer6prop layer6 reduce sum c_layer6propperatom[*]
+compute layerMo6propperatom layer6 property/atom z
+compute layerMo6maxz layer6 reduce max c_layerMo6propperatom
+compute layerMo6minz layer6 reduce min c_layerMo6propperatom
+compute layer7msd layer7 msd average yes
+compute layer7peperatom layer7 pe/atom
+compute layer7pe layer7 reduce sum c_layer7peperatom
+compute layer7propperatom layer7 property/atom fx fy fz
+compute layer7prop layer7 reduce sum c_layer7propperatom[*]
+compute layerMo7propperatom layer7 property/atom z
+compute layerMo7maxz layer7 reduce max c_layerMo7propperatom
+compute layerMo7minz layer7 reduce min c_layerMo7propperatom
+compute layer8msd layer8 msd average yes
+compute layer8peperatom layer8 pe/atom
+compute layer8pe layer8 reduce sum c_layer8peperatom
+compute layer8propperatom layer8 property/atom fx fy fz
+compute layer8prop layer8 reduce sum c_layer8propperatom[*]
+compute layerMo8propperatom layer8 property/atom z
+compute layerMo8maxz layer8 reduce max c_layerMo8propperatom
+compute layerMo8minz layer8 reduce min c_layerMo8propperatom
+compute layer9msd layer9 msd average yes
+compute layer9peperatom layer9 pe/atom
+compute layer9pe layer9 reduce sum c_layer9peperatom
+compute layer9propperatom layer9 property/atom fx fy fz
+compute layer9prop layer9 reduce sum c_layer9propperatom[*]
+compute layerMo9propperatom layer9 property/atom z
+compute layerMo9maxz layer9 reduce max c_layerMo9propperatom
+compute layerMo9minz layer9 reduce min c_layerMo9propperatom
+compute layer10msd layer10 msd average yes
+compute layer10peperatom layer10 pe/atom
+compute layer10pe layer10 reduce sum c_layer10peperatom
+compute layer10propperatom layer10 property/atom fx fy fz
+compute layer10prop layer10 reduce sum c_layer10propperatom[*]
+compute layerMo10propperatom layer10 property/atom z
+compute layerMo10maxz layer10 reduce max c_layerMo10propperatom
+compute layerMo10minz layer10 reduce min c_layerMo10propperatom
+compute layer11msd layer11 msd average yes
+compute layer11peperatom layer11 pe/atom
+compute layer11pe layer11 reduce sum c_layer11peperatom
+compute layer11propperatom layer11 property/atom fx fy fz
+compute layer11prop layer11 reduce sum c_layer11propperatom[*]
+compute layerMo11propperatom layer11 property/atom z
+compute layerMo11maxz layer11 reduce max c_layerMo11propperatom
+compute layerMo11minz layer11 reduce min c_layerMo11propperatom
+compute layer12msd layer12 msd average yes
+compute layer12peperatom layer12 pe/atom
+compute layer12pe layer12 reduce sum c_layer12peperatom
+compute layer12propperatom layer12 property/atom fx fy fz
+compute layer12prop layer12 reduce sum c_layer12propperatom[*]
+compute layerMo12propperatom layer12 property/atom z
+compute layerMo12maxz layer12 reduce max c_layerMo12propperatom
+compute layerMo12minz layer12 reduce min c_layerMo12propperatom
+compute layer13msd layer13 msd average yes
+compute layer13peperatom layer13 pe/atom
+compute layer13pe layer13 reduce sum c_layer13peperatom
+compute layer13propperatom layer13 property/atom fx fy fz
+compute layer13prop layer13 reduce sum c_layer13propperatom[*]
+compute layerMo13propperatom layer13 property/atom z
+compute layerMo13maxz layer13 reduce max c_layerMo13propperatom
+compute layerMo13minz layer13 reduce min c_layerMo13propperatom
+compute layer14msd layer14 msd average yes
+compute layer14peperatom layer14 pe/atom
+compute layer14pe layer14 reduce sum c_layer14peperatom
+compute layer14propperatom layer14 property/atom fx fy fz
+compute layer14prop layer14 reduce sum c_layer14propperatom[*]
+compute layerMo14propperatom layer14 property/atom z
+compute layerMo14maxz layer14 reduce max c_layerMo14propperatom
+compute layerMo14minz layer14 reduce min c_layerMo14propperatom
+compute layer15msd layer15 msd average yes
+compute layer15peperatom layer15 pe/atom
+compute layer15pe layer15 reduce sum c_layer15peperatom
+compute layer15propperatom layer15 property/atom fx fy fz
+compute layer15prop layer15 reduce sum c_layer15propperatom[*]
+compute layerMo15propperatom layer15 property/atom z
+compute layerMo15maxz layer15 reduce max c_layerMo15propperatom
+compute layerMo15minz layer15 reduce min c_layerMo15propperatom
+compute layer16msd layer16 msd average yes
+compute layer16peperatom layer16 pe/atom
+compute layer16pe layer16 reduce sum c_layer16peperatom
+compute layer16propperatom layer16 property/atom fx fy fz
+compute layer16prop layer16 reduce sum c_layer16propperatom[*]
+compute layerMo16propperatom layer16 property/atom z
+compute layerMo16maxz layer16 reduce max c_layerMo16propperatom
+compute layerMo16minz layer16 reduce min c_layerMo16propperatom
+compute layer17msd layer17 msd average yes
+compute layer17peperatom layer17 pe/atom
+compute layer17pe layer17 reduce sum c_layer17peperatom
+compute layer17propperatom layer17 property/atom fx fy fz
+compute layer17prop layer17 reduce sum c_layer17propperatom[*]
+compute layerMo17propperatom layer17 property/atom z
+compute layerMo17maxz layer17 reduce max c_layerMo17propperatom
+compute layerMo17minz layer17 reduce min c_layerMo17propperatom
+compute layer18msd layer18 msd average yes
+compute layer18peperatom layer18 pe/atom
+compute layer18pe layer18 reduce sum c_layer18peperatom
+compute layer18propperatom layer18 property/atom fx fy fz
+compute layer18prop layer18 reduce sum c_layer18propperatom[*]
+compute layerMo18propperatom layer18 property/atom z
+compute layerMo18maxz layer18 reduce max c_layerMo18propperatom
+compute layerMo18minz layer18 reduce min c_layerMo18propperatom
+compute layer19msd layer19 msd average yes
+compute layer19peperatom layer19 pe/atom
+compute layer19pe layer19 reduce sum c_layer19peperatom
+compute layer19propperatom layer19 property/atom fx fy fz
+compute layer19prop layer19 reduce sum c_layer19propperatom[*]
+compute layerMo19propperatom layer19 property/atom z
+compute layerMo19maxz layer19 reduce max c_layerMo19propperatom
+compute layerMo19minz layer19 reduce min c_layerMo19propperatom
+fix rigid1 lower rigid single torque * off off off
+fix rigid2 upper rigid single torque * off off off
+fix addf upper addforce 0 0 v_Pz
+variable vp equal ${vfric}
+variable vm equal -1.0*${vfric}
+fix freeze1 lower setforce 0.0 NULL 0.0
+fix freeze2 upper setforce 0.0 NULL NULL
+velocity lower set v_vm NULL 0.0 units box
+velocity upper set v_vp NULL NULL units box
+fix th all ave/time 1 200000 200000 f_freeze2[1] f_freeze2[2] f_freeze2[3] v_Pz0 v_Fric file friction.profile
+variable layF1 equal f_freeze2[1]+c_layer1prop[1]
+variable layFric1 equal v_layF1/v_Pz0
+variable layF2 equal c_layer1prop[1]+c_layer2prop[1]
+variable layFric2 equal v_layF2/v_Pz0
+variable layF3 equal c_layer2prop[1]+c_layer3prop[1]
+variable layFric3 equal v_layF3/v_Pz0
+variable layF4 equal c_layer3prop[1]+c_layer4prop[1]
+variable layFric4 equal v_layF4/v_Pz0
+variable layF5 equal c_layer4prop[1]+c_layer5prop[1]
+variable layFric5 equal v_layF5/v_Pz0
+variable layF6 equal c_layer5prop[1]+c_layer6prop[1]
+variable layFric6 equal v_layF6/v_Pz0
+variable layF7 equal c_layer6prop[1]+c_layer7prop[1]
+variable layFric7 equal v_layF7/v_Pz0
+variable layF8 equal c_layer7prop[1]+c_layer8prop[1]
+variable layFric8 equal v_layF8/v_Pz0
+variable layF9 equal c_layer8prop[1]+c_layer9prop[1]
+variable layFric9 equal v_layF9/v_Pz0
+variable layF10 equal c_layer9prop[1]+c_layer10prop[1]
+variable layFric10 equal v_layF10/v_Pz0
+variable layF11 equal c_layer10prop[1]+c_layer11prop[1]
+variable layFric11 equal v_layF11/v_Pz0
+variable layF12 equal c_layer11prop[1]+c_layer12prop[1]
+variable layFric12 equal v_layF12/v_Pz0
+variable layF13 equal c_layer12prop[1]+c_layer13prop[1]
+variable layFric13 equal v_layF13/v_Pz0
+variable layF14 equal c_layer13prop[1]+c_layer14prop[1]
+variable layFric14 equal v_layF14/v_Pz0
+variable layF15 equal c_layer14prop[1]+c_layer15prop[1]
+variable layFric15 equal v_layF15/v_Pz0
+variable layF16 equal c_layer15prop[1]+c_layer16prop[1]
+variable layFric16 equal v_layF16/v_Pz0
+variable layF17 equal c_layer16prop[1]+c_layer17prop[1]
+variable layFric17 equal v_layF17/v_Pz0
+variable layF18 equal c_layer17prop[1]+c_layer18prop[1]
+variable layFric18 equal v_layF18/v_Pz0
+variable layF19 equal c_layer18prop[1]+c_layer19prop[1]
+variable layFric19 equal v_layF19/v_Pz0
+fix thmsdupper all ave/time 1 200000 200000 c_uppermsd[1] c_uppermsd[2] c_uppermsd[3] file msdupper.profile
+fix thmsdlower all ave/time 1 200000 200000 c_lowermsd[1] c_lowermsd[2] c_lowermsd[3] file msdlower.profile
+fix thpeupper all ave/time 1 200000 200000 c_upperpe file peupper.profile
+fix thpelower all ave/time 1 200000 200000 c_lowerpe file pelower.profile
+fix thpropupper all ave/time 1 200000 200000 c_upperMomaxz c_upperMominz file propupper.profile
+fix thproplower all ave/time 1 200000 200000 c_lowerMomaxz c_lowerMominz file proplower.profile
+fix thmsdlayer1 all ave/time 1 200000 200000 c_layer1msd[1] c_layer1msd[2] c_layer1msd[3] file msdlayer1.profile
+fix thpelayer1 all ave/time 1 200000 200000 c_layer1pe file pelayer1.profile
+fix thproplayer1 all ave/time 1 200000 200000 c_layerMo1maxz c_layerMo1minz file proplayer1.profile
+fix thlayfric1 all ave/time 1 200000 200000 v_layFric1 file friclay1.profile
+fix thmsdlayer2 all ave/time 1 200000 200000 c_layer2msd[1] c_layer2msd[2] c_layer2msd[3] file msdlayer2.profile
+fix thpelayer2 all ave/time 1 200000 200000 c_layer2pe file pelayer2.profile
+fix thproplayer2 all ave/time 1 200000 200000 c_layerMo2maxz c_layerMo2minz file proplayer2.profile
+fix thlayfric2 all ave/time 1 200000 200000 v_layFric2 file friclay2.profile
+fix thmsdlayer3 all ave/time 1 200000 200000 c_layer3msd[1] c_layer3msd[2] c_layer3msd[3] file msdlayer3.profile
+fix thpelayer3 all ave/time 1 200000 200000 c_layer3pe file pelayer3.profile
+fix thproplayer3 all ave/time 1 200000 200000 c_layerMo3maxz c_layerMo3minz file proplayer3.profile
+fix thlayfric3 all ave/time 1 200000 200000 v_layFric3 file friclay3.profile
+fix thmsdlayer4 all ave/time 1 200000 200000 c_layer4msd[1] c_layer4msd[2] c_layer4msd[3] file msdlayer4.profile
+fix thpelayer4 all ave/time 1 200000 200000 c_layer4pe file pelayer4.profile
+fix thproplayer4 all ave/time 1 200000 200000 c_layerMo4maxz c_layerMo4minz file proplayer4.profile
+fix thlayfric4 all ave/time 1 200000 200000 v_layFric4 file friclay4.profile
+fix thmsdlayer5 all ave/time 1 200000 200000 c_layer5msd[1] c_layer5msd[2] c_layer5msd[3] file msdlayer5.profile
+fix thpelayer5 all ave/time 1 200000 200000 c_layer5pe file pelayer5.profile
+fix thproplayer5 all ave/time 1 200000 200000 c_layerMo5maxz c_layerMo5minz file proplayer5.profile
+fix thlayfric5 all ave/time 1 200000 200000 v_layFric5 file friclay5.profile
+fix thmsdlayer6 all ave/time 1 200000 200000 c_layer6msd[1] c_layer6msd[2] c_layer6msd[3] file msdlayer6.profile
+fix thpelayer6 all ave/time 1 200000 200000 c_layer6pe file pelayer6.profile
+fix thproplayer6 all ave/time 1 200000 200000 c_layerMo6maxz c_layerMo6minz file proplayer6.profile
+fix thlayfric6 all ave/time 1 200000 200000 v_layFric6 file friclay6.profile
+fix thmsdlayer7 all ave/time 1 200000 200000 c_layer7msd[1] c_layer7msd[2] c_layer7msd[3] file msdlayer7.profile
+fix thpelayer7 all ave/time 1 200000 200000 c_layer7pe file pelayer7.profile
+fix thproplayer7 all ave/time 1 200000 200000 c_layerMo7maxz c_layerMo7minz file proplayer7.profile
+fix thlayfric7 all ave/time 1 200000 200000 v_layFric7 file friclay7.profile
+fix thmsdlayer8 all ave/time 1 200000 200000 c_layer8msd[1] c_layer8msd[2] c_layer8msd[3] file msdlayer8.profile
+fix thpelayer8 all ave/time 1 200000 200000 c_layer8pe file pelayer8.profile
+fix thproplayer8 all ave/time 1 200000 200000 c_layerMo8maxz c_layerMo8minz file proplayer8.profile
+fix thlayfric8 all ave/time 1 200000 200000 v_layFric8 file friclay8.profile
+fix thmsdlayer9 all ave/time 1 200000 200000 c_layer9msd[1] c_layer9msd[2] c_layer9msd[3] file msdlayer9.profile
+fix thpelayer9 all ave/time 1 200000 200000 c_layer9pe file pelayer9.profile
+fix thproplayer9 all ave/time 1 200000 200000 c_layerMo9maxz c_layerMo9minz file proplayer9.profile
+fix thlayfric9 all ave/time 1 200000 200000 v_layFric9 file friclay9.profile
+fix thmsdlayer10 all ave/time 1 200000 200000 c_layer10msd[1] c_layer10msd[2] c_layer10msd[3] file msdlayer10.profile
+fix thpelayer10 all ave/time 1 200000 200000 c_layer10pe file pelayer10.profile
+fix thproplayer10 all ave/time 1 200000 200000 c_layerMo10maxz c_layerMo10minz file proplayer10.profile
+fix thlayfric10 all ave/time 1 200000 200000 v_layFric10 file friclay10.profile
+fix thmsdlayer11 all ave/time 1 200000 200000 c_layer11msd[1] c_layer11msd[2] c_layer11msd[3] file msdlayer11.profile
+fix thpelayer11 all ave/time 1 200000 200000 c_layer11pe file pelayer11.profile
+fix thproplayer11 all ave/time 1 200000 200000 c_layerMo11maxz c_layerMo11minz file proplayer11.profile
+fix thlayfric11 all ave/time 1 200000 200000 v_layFric11 file friclay11.profile
+fix thmsdlayer12 all ave/time 1 200000 200000 c_layer12msd[1] c_layer12msd[2] c_layer12msd[3] file msdlayer12.profile
+fix thpelayer12 all ave/time 1 200000 200000 c_layer12pe file pelayer12.profile
+fix thproplayer12 all ave/time 1 200000 200000 c_layerMo12maxz c_layerMo12minz file proplayer12.profile
+fix thlayfric12 all ave/time 1 200000 200000 v_layFric12 file friclay12.profile
+fix thmsdlayer13 all ave/time 1 200000 200000 c_layer13msd[1] c_layer13msd[2] c_layer13msd[3] file msdlayer13.profile
+fix thpelayer13 all ave/time 1 200000 200000 c_layer13pe file pelayer13.profile
+fix thproplayer13 all ave/time 1 200000 200000 c_layerMo13maxz c_layerMo13minz file proplayer13.profile
+fix thlayfric13 all ave/time 1 200000 200000 v_layFric13 file friclay13.profile
+fix thmsdlayer14 all ave/time 1 200000 200000 c_layer14msd[1] c_layer14msd[2] c_layer14msd[3] file msdlayer14.profile
+fix thpelayer14 all ave/time 1 200000 200000 c_layer14pe file pelayer14.profile
+fix thproplayer14 all ave/time 1 200000 200000 c_layerMo14maxz c_layerMo14minz file proplayer14.profile
+fix thlayfric14 all ave/time 1 200000 200000 v_layFric14 file friclay14.profile
+fix thmsdlayer15 all ave/time 1 200000 200000 c_layer15msd[1] c_layer15msd[2] c_layer15msd[3] file msdlayer15.profile
+fix thpelayer15 all ave/time 1 200000 200000 c_layer15pe file pelayer15.profile
+fix thproplayer15 all ave/time 1 200000 200000 c_layerMo15maxz c_layerMo15minz file proplayer15.profile
+fix thlayfric15 all ave/time 1 200000 200000 v_layFric15 file friclay15.profile
+fix thmsdlayer16 all ave/time 1 200000 200000 c_layer16msd[1] c_layer16msd[2] c_layer16msd[3] file msdlayer16.profile
+fix thpelayer16 all ave/time 1 200000 200000 c_layer16pe file pelayer16.profile
+fix thproplayer16 all ave/time 1 200000 200000 c_layerMo16maxz c_layerMo16minz file proplayer16.profile
+fix thlayfric16 all ave/time 1 200000 200000 v_layFric16 file friclay16.profile
+fix thmsdlayer17 all ave/time 1 200000 200000 c_layer17msd[1] c_layer17msd[2] c_layer17msd[3] file msdlayer17.profile
+fix thpelayer17 all ave/time 1 200000 200000 c_layer17pe file pelayer17.profile
+fix thproplayer17 all ave/time 1 200000 200000 c_layerMo17maxz c_layerMo17minz file proplayer17.profile
+fix thlayfric17 all ave/time 1 200000 200000 v_layFric17 file friclay17.profile
+fix thmsdlayer18 all ave/time 1 200000 200000 c_layer18msd[1] c_layer18msd[2] c_layer18msd[3] file msdlayer18.profile
+fix thpelayer18 all ave/time 1 200000 200000 c_layer18pe file pelayer18.profile
+fix thproplayer18 all ave/time 1 200000 200000 c_layerMo18maxz c_layerMo18minz file proplayer18.profile
+fix thlayfric18 all ave/time 1 200000 200000 v_layFric18 file friclay18.profile
+fix thmsdlayer19 all ave/time 1 200000 200000 c_layer19msd[1] c_layer19msd[2] c_layer19msd[3] file msdlayer19.profile
+fix thpelayer19 all ave/time 1 200000 200000 c_layer19pe file pelayer19.profile
+fix thproplayer19 all ave/time 1 200000 200000 c_layerMo19maxz c_layerMo19minz file proplayer19.profile
+fix thlayfric19 all ave/time 1 200000 200000 v_layFric19 file friclay19.profile
+thermo_style custom step etotal enthalpy pe ke temp press vol density cella cellb cellc cellalpha cellbeta cellgamma f_freeze2[1] f_freeze2[2] f_freeze2[3] v_Pz0 v_Fric v_layFric1 v_layFric2 v_layFric3 v_layFric4 v_layFric5 v_layFric6 v_layFric7 v_layFric8 v_layFric9 v_layFric10 v_layFric11 v_layFric12 v_layFric13 v_layFric14 v_layFric15 v_layFric16 v_layFric17 v_layFric18 v_layFric19
+thermo 100
+fix fxnvt middle nvt temp 300 300 $(dt*100.0)
+run 2000000

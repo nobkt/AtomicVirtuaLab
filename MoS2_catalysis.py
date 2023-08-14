@@ -98,7 +98,7 @@ slab.set_constraint(c)
 #view(slab)
 
 # ontop
-rlist = [2.1,2.2,2.3,2.4]
+rlist = [1.1,1.2,1.3,1.4]
 adtype = 'ontop'
 x0 = 1.577
 y0 = 4.552
@@ -117,7 +117,7 @@ for r in rlist:
 os.chdir('../')
 
 # bridge
-rlist = [1.6,1.7,1.8,1.9]
+rlist = [0.6,0.7,0.8,0.9]
 adtype = 'bridge'
 x0 = (1.577+4.731)/2.0
 y0 = 4.552
@@ -136,6 +136,7 @@ for r in rlist:
 os.chdir('../')
 
 # fcc
+rlist = [0.6,0.7,0.8,0.9,1.1,1.2,1.3,1.4]
 adtype = 'fcc'
 x0 = 3.154
 y0 = 5.463
@@ -154,6 +155,7 @@ for r in rlist:
 os.chdir('../')
 
 # hcp
+rlist = [0.6,0.7,0.8,0.9,1.1,1.2,1.3,1.4]
 adtype = 'hcp'
 x0 = 1.577
 y0 = 6.373
@@ -191,6 +193,7 @@ slab.set_constraint(c)
 #sys.exit()
 
 # ontop
+rlist = [1.6,1.7,1.8,1.9,2.1,2.2,2.3,2.4]
 adtype = 'ontop'
 x0 = 1.576
 y0 = 4.548
@@ -210,6 +213,7 @@ for r in rlist:
 os.chdir('../')
 
 # bridge
+rlist = [1.0,1.1,1.2,1.3,1.4,1.6,1.7,1.8,1.9]
 adtype = 'bridge'
 x0 = (1.576+4.727)/2.0
 y0 = 4.548
@@ -229,6 +233,7 @@ for r in rlist:
 os.chdir('../')
 
 # fcc
+rlist = [1.0,1.1,1.2,1.3,1.4,1.6,1.7,1.8,1.9]
 adtype = 'fcc'
 x0 = (1.576+4.727+3.151)/3.0
 y0 = (4.548+4.548+7.278)/3.0
@@ -248,6 +253,7 @@ for r in rlist:
 os.chdir('../')
 
 # hcp
+rlist = [1.0,1.1,1.2,1.3,1.4,1.6,1.7,1.8,1.9]
 adtype = 'hcp'
 x0 = 1.576
 y0 = 6.368
@@ -267,6 +273,7 @@ for r in rlist:
 os.chdir('../')
 # 吸着モデル ポテンシャル計算終了
 """
+
 
 # 吸着モデル 構造最適化
 ecutwfc0=77.0
@@ -303,7 +310,7 @@ slab.set_constraint(c)
 #view(slab)
 
 # ontop
-rlist = [2.2]
+rlist = [1.3]
 adtype = 'ontop'
 x0 = 1.577
 y0 = 4.552
@@ -319,7 +326,7 @@ for r in rlist:
 os.chdir('../')
 
 # bridge
-rlist = [1.7]
+rlist = [0.8]
 adtype = 'bridge'
 x0 = (1.577+4.731)/2.0
 y0 = 4.552
@@ -335,7 +342,7 @@ for r in rlist:
 os.chdir('../')
 
 # fcc
-rlist = [1.5]
+rlist = [1.0]
 adtype = 'fcc'
 x0 = 3.154
 y0 = 5.463
@@ -351,7 +358,7 @@ for r in rlist:
 os.chdir('../')
 
 # hcp
-rlist = [1.6]
+rlist = [0.9]
 adtype = 'hcp'
 x0 = 1.577
 y0 = 6.373
@@ -387,6 +394,7 @@ slab.set_constraint(c)
 
 # ontop
 adtype = 'ontop'
+rlist = [2.2]
 x0 = 1.576
 y0 = 4.548
 z0 = 10.736
@@ -402,6 +410,7 @@ for r in rlist:
 os.chdir('../')
 
 # bridge
+rlist = [1.7]
 adtype = 'bridge'
 x0 = (1.576+4.727)/2.0
 y0 = 4.548
@@ -419,6 +428,7 @@ os.chdir('../')
 
 # fcc
 adtype = 'fcc'
+rlist = [1.6]
 x0 = (1.576+4.727+3.151)/3.0
 y0 = (4.548+4.548+7.278)/3.0
 z0 = 10.736
@@ -434,6 +444,7 @@ for r in rlist:
 os.chdir('../')
 
 # hcp
+rlist = [1.5]
 adtype = 'hcp'
 x0 = 1.576
 y0 = 6.368
@@ -676,6 +687,21 @@ plot_qe_dos(g.dos_rusult_dir,-4.787,['Mo','S'],nspin=False)
 """
 
 """
+# DOSプロット 吸着モデル
+mpid='1434'
+#mpid='2815'
+style='adsorp'
+mill='001'
+elm='Pd'
+site='hcp'
+g.dos_rusult_dir = '/home/A23321P/work/myPython/AtomicVirtuaLab/pwos/MoS2_catalysis/absorp/dos/mp'+str(mpid)+'/'+str(mill)+'/'+str(elm)+'_adsorp/'+str(site)
+os.makedirs('./MoS2_catalysis/'+str(style)+'/plot_dos/mp-'+str(mpid)+'/'+str(mill)+'/'+str(elm)+'_adsorp/'+str(site),exist_ok=True)
+os.chdir('./MoS2_catalysis/'+str(style)+'/plot_dos/mp-'+str(mpid)+'/'+str(mill)+'/'+str(elm)+'_adsorp/'+str(site))
+plot_qe_dos(g.dos_rusult_dir,-4.5472,['Mo','S','Pd'],nspin=False)
+# DOSプロット 吸着モデル 終了
+"""
+
+"""
 #単体の構造最適化
 ecutwfc0=77.0
 ecutrho0=539.0
@@ -711,7 +737,7 @@ mk_qe_input_vcrelax(cell,'pbe','paw',level='high',nosym=True,ecutwfc=ecutwfc,ecu
 # DOS計算
 ecutwfc0=77.0
 ecutrho0=539.0
-kpoint=4
+kpoint=2
 scale=1.0
 
 ecutwfc=77.0*scale
@@ -721,13 +747,20 @@ k0 = kpoint
 mpid = 1434
 #mpid = 2815
 
-cell = read('/home/A23321P/work/myPython/AtomicVirtuaLab/pwos/MoS2_catalysis/bulk/optimize/mp'+str(mpid)+'/qe_vc-relax.pwo')
+adelm = 'Pd'
+site = 'hcp'
 
+#cell = read('/home/A23321P/work/myPython/AtomicVirtuaLab/pwos/MoS2_catalysis/bulk/optimize/mp'+str(mpid)+'/qe_vc-relax.pwo')
+cell = read('/home/A23321P/work/myPython/AtomicVirtuaLab/pwos/MoS2_catalysis/absorp/optimize/mp-'+str(mpid)+'/001/'+str(adelm)+'_optimize/'+str(site)+'/qe_relax.pwo')
+view(cell)
 os.makedirs('./MoS2_catalysis',exist_ok=True)
 os.chdir('./MoS2_catalysis')
 
-os.makedirs('./bulk',exist_ok=True)
-os.chdir('./bulk')
+#os.makedirs('./bulk',exist_ok=True)
+#os.chdir('./bulk')
+
+os.makedirs('./adsorp',exist_ok=True)
+os.chdir('./adsorp')
 
 os.makedirs('./dos',exist_ok=True)
 os.chdir('./dos')
@@ -735,17 +768,26 @@ os.chdir('./dos')
 os.makedirs('./mp'+str(mpid),exist_ok=True)
 os.chdir('./mp'+str(mpid))
 
-os.makedirs('./scf',exist_ok=True)
-os.chdir('./scf')
-mk_qe_input_scf(cell,'pbe','paw',level='high',ecutwfc=ecutwfc,ecutrho=ecutrho,mixing_beta=0.2,kpts=(k0,k0,k0),ecut='manual',options={'vdw_corr':'dft-d3','dftd3_version':4},nspin=False)
-mk_qe_input_dos(cell,'pbe','paw',level='high',ecutwfc=ecutwfc,ecutrho=ecutrho,mixing_beta=0.2,kpts=(k0,k0,k0),ecut='manual',options={'vdw_corr':'dft-d3','dftd3_version':4})
+os.makedirs('./001',exist_ok=True)
+os.chdir('./001')
+
+os.makedirs('./'+str(adelm)+'_adsorp',exist_ok=True)
+os.chdir('./'+str(adelm)+'_adsorp')
+
+os.makedirs('./'+str(site),exist_ok=True)
+os.chdir('./'+str(site))
+mk_qe_input_scf(cell,'pbe','paw',level='high',ecutwfc=ecutwfc,ecutrho=ecutrho,mixing_beta=0.2,kpts=(k0,k0,1),ecut='manual',tstress=False,options={'vdw_corr':'dft-d3','dftd3_version':4,'assume_isolated':'esm','esm_bc':'bc1'},nspin=False)
+mk_qe_input_dos(cell,'pbe','paw',level='high',ecutwfc=ecutwfc,ecutrho=ecutrho,mixing_beta=0.2,kpts=(k0,k0,1),ecut='manual',options={'vdw_corr':'dft-d3','dftd3_version':4,'assume_isolated':'esm','esm_bc':'bc1'},nspin=False)
+#mk_qe_input_scf(cell,'pbe','paw',level='high',ecutwfc=ecutwfc,ecutrho=ecutrho,mixing_beta=0.2,kpts=(k0,k0,k0),ecut='manual',options={'vdw_corr':'dft-d3','dftd3_version':4},nspin=False)
+#mk_qe_input_dos(cell,'pbe','paw',level='high',ecutwfc=ecutwfc,ecutrho=ecutrho,mixing_beta=0.2,kpts=(k0,k0,k0),ecut='manual',options={'vdw_corr':'dft-d3','dftd3_version':4})
 os.chdir('../')
 
-os.makedirs('./dos',exist_ok=True)
-os.chdir('./dos')
-mk_qe_input_dos(cell,'pbe','paw',level='high',ecutwfc=ecutwfc,ecutrho=ecutrho,mixing_beta=0.2,kpts=(12,12,12),ecut='manual',options={'vdw_corr':'dft-d3','dftd3_version':4})
+#os.makedirs('./dos',exist_ok=True)
+#os.chdir('./dos')
+#mk_qe_input_dos(cell,'pbe','paw',level='high',ecutwfc=ecutwfc,ecutrho=ecutrho,mixing_beta=0.2,kpts=(12,12,12),ecut='manual',options={'vdw_corr':'dft-d3','dftd3_version':4})
 # DOS計算終了
 """
+
 
 
 """
