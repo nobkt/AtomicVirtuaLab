@@ -100,7 +100,7 @@ def cell2atomlist(cell):
 def mk_lammpsdata(cell,charge):
     from ase.io import write
     if charge:
-        cell.write('lammps.data',format='lammps-data',force_skew=True,atom_style='charge')
+        cell.write('lammps.data',format='lammps-data',force_skew=True,atom_style='full')
     else:
         cell.write('lammps.data',format='lammps-data',force_skew=True)
 

@@ -29,20 +29,20 @@ cell2 = rd_cif(g.cifdir+'/MoS2_mp2815.cif')
 #nlayer2=6
 
 # 6-layers xy expand
-nx=18
-ny=10
-nz1=2
-nz2=3
-nlayer1=6
-nlayer2=6
+#nx=18
+#ny=10
+#nz1=2
+#nz2=3
+#nlayer1=6
+#nlayer2=6
 
 # 20-layers
-#nx=9
-#ny=5
-#nz1=7
-#nz2=10
-#nlayer1=21
-#nlayer2=20
+nx=9
+ny=5
+nz1=7
+nz2=10
+nlayer1=21
+nlayer2=20
 
 os.makedirs('./MoS2_friction',exist_ok=True)
 os.chdir('./MoS2_friction')

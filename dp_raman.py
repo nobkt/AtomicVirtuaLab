@@ -3,8 +3,9 @@ from ase.io import read, write
 from ase.visualize import view
 from ase.build import sort, make_supercell
 from AtomicVirtuaLab.espresso import mk_qe_input_relax
-from AtomicVirtuaLab.siesta import mk_siesta_input_optimize,mk_siesta_input_nvt,mk_siesta_input_scf_withEfield,mk_siesta_input_scf_withEfield_wannier
+from AtomicVirtuaLab.siesta import mk_siesta_input_optimize,mk_siesta_input_nvt,mk_siesta_input_scf_withEfield,mk_siesta_input_scf_withEfield_wannier,mk_siesta_input_cellopt
 from AtomicVirtuaLab.packmol import mk_packmol_random
+from AtomicVirtuaLab.lammps import mk_nvt_input_uff_rigid
 import AtomicVirtuaLab.globalv as g
 from AtomicVirtuaLab.build import sortmol
 import os
@@ -14,6 +15,23 @@ g.qepot = '/home/A23321P/work/myPython/AtomicVirtuaLab/qe_pseudo'
 g.siesta_pot = '/home/A23321P/work/myPython/AtomicVirtuaLab/siesta_pseudo'
 g.cifdir = '/home/A23321P/work/myPython/AtomicVirtuaLab/cifs'
 
+
+# Zn-Pc アモルファスモデル読み込み
+os.makedirs('./dp_raman_test',exist_ok=True)
+os.chdir('./dp_raman_test')
+os.makedirs('Zn-Pc-amo',exist_ok=True)
+os.chdir('Zn-Pc-amo')
+
+cell = read(g.cifdir+'/Zn-Pc_10.data',format='lammps-data',sort_by_id=True,Z_of_type={1:6,2:1,3:7,4:30})
+
+view(cell)
+
+#mk_siesta_input_optimize(cell,'PBE','SZ',50.0,None,2000,g.siesta_pot,SolutionMethod='diagon',MaxSCFIterations=2000,spin='non-polarized')
+
+mk_siesta_input_cellopt(cell,'PBE','SZ',50.0,None,2000,g.siesta_pot,SolutionMethod='diagon',MaxSCFIterations=2000,spin='non-polarized')
+
+# Zn-Pc アモルファスモデル読み込み 終了
+
 """
 # Zn-Pc 結晶モデル作成
 os.makedirs('./dp_raman_test',exist_ok=True)
@@ -22,13 +40,24 @@ os.makedirs('./cif_test',exist_ok=True)
 os.chdir('./cif_test')
 
 cell = read(g.cifdir+'/ZincPhthalocyanine.cif')
-#view(cell)
-cell = make_supercell(cell,([2,0,0],[0,3,0],[0,0,1]),wrap=True)
-print(len(cell))
+cell_solid = read('/home/A23321P/work/mySiesta/dipole_and_polarizability/cell_opt/Zn-Pc_unitcell/siesta.STRUCT_OUT',format='struct_out')
+cell_test = read('POSCAR')
+view(cell_test)
+#view(cell_solid)
+cell_solid = make_supercell(cell,([2,0,0],[0,2,0],[0,0,2]),wrap=True)
+#view(cell_solid)
+
+#print(len(cell))
 #cell = read(g.cifdir+'/Zn-Pc_2mer.xyz')
 #cell.set_cell([50,50,50])
 
 cell = sortmol(cell)
+cell_solid = sortmol(cell_solid)
+cell_test = sortmol(cell_test)
+
+#mk_siesta_input_cellopt(cell,'PBE','SZ',50.0,[1,2,1],2000,g.siesta_pot,SolutionMethod='diagon',MaxSCFIterations=2000,spin='non-polarized')
+mk_siesta_input_scf_withEfield_wannier(cell_solid,'PBE','SZ',50.0,None,g.siesta_pot,bandscale=30,ex=0.0,ey=0.0,ez=0.0,SolutionMethod='diagon',MaxSCFIterations=2000,spin='non-polarized')
+
 #cell.write('test.lmp',format='lammps-data',atom_style='full')
 #view(cell)
 
@@ -36,7 +65,7 @@ cell = sortmol(cell)
 """
 
 
-
+"""
 # 双極子モーメントと分極率テンソルの試計算
 au2v=51.4220632
 epsilon=0.001*au2v
@@ -180,7 +209,7 @@ for mol in mollist:
         os.chdir('../')
     os.chdir('../')  
 # 双極子モーメントと分極率テンソルの試計算終了
-
+"""
             
 """
 # Zn-フタロシアニンのパッキングモデル作成
@@ -194,7 +223,7 @@ allBr_sorted = sort(allBr)
 allBr_sorted.write('./test.xyz')
 
 mollist={
-    'test':8
+    'test':15
 }
 
 x_box=50.0
@@ -206,11 +235,30 @@ os.system('packmol < packmol.inp 1> log_packmol 2> err_packmol')
 
 cell = read('./system.xyz')
 cell.set_cell([x_box,y_box,z_box])
+cell = sortmol(cell)
 cell.write('test.cif')
 
-mk_siesta_input_scf_withEfield_wannier(cell,'PBE','SZ',50.0,None,g.siesta_pot,bandscale=30,ex=0.0,ey=0.0,ez=-0.0,SolutionMethod='diagon',MaxSCFIterations=2000,spin='non-polarized')
+#mk_siesta_input_scf_withEfield_wannier(cell,'PBE','SZ',50.0,None,g.siesta_pot,bandscale=30,ex=0.0,ey=0.0,ez=-0.0,SolutionMethod='diagon',MaxSCFIterations=2000,spin='non-polarized')
 #mk_qe_input_relax(cell,'pbe','us',level='high',estep=1000,nstep=1000,nosym=True,ecutwfc=36,ecutrho=400,mixing_beta=0.2,kpts=None,ecut='manual',tstress=False,options={'vdw_corr':'dft-d3','dftd3_version':4},nspin=False)
+mk_nvt_input_uff_rigid(cell,0.0005,100,100,20000,300.0,12345)
 view(cell)
+
+unitcell = read(g.cifdir+'/ZincPhthalocyanine.cif')
+
+volume = unitcell.get_volume()
+masses = unitcell.get_masses()
+tot_mass = sum(masses)
+dens = tot_mass/volume
+print(dens)
+
+volume1 = cell.get_volume()
+masses1 = cell.get_masses()
+tot_mass1 = sum(masses1)
+dens1 = tot_mass1/volume1
+print(dens1)
+
+scale = (volume1/(dens/dens1))**(1/3)
+print(scale)
 
 # Zn-フタロシアニンのパッキングモデル作成終了
 """
@@ -221,11 +269,11 @@ os.makedirs('./dp_raman_test',exist_ok=True)
 os.chdir('./dp_raman_test')
 os.makedirs('./Zn-Pc_allBr',exist_ok=True)
 os.chdir('./Zn-Pc_allBr')
-os.makedirs('./2-mer',exist_ok=True)
-os.chdir('./2-mer')
+os.makedirs('./1-mer',exist_ok=True)
+os.chdir('./1-mer')
 os.makedirs('./opt_Br',exist_ok=True)
 os.chdir('./opt_Br')
-xyz = read(g.cifdir+'/Zn-Pc_2mer.xyz')
+xyz = read(g.cifdir+'/Zn-Pc_1mer.xyz')
 symbols=[]
 for atom in xyz:
     if atom.symbol == 'H':
@@ -239,7 +287,7 @@ lat = [30.0,30.0,30.0]
 shift=[lat[0]/2.0,lat[1]/2.0,lat[2]/2.0]-com
 xyz.translate(shift)
 xyz.set_cell(lat)
-#view(xyz)
+view(xyz)
 mk_siesta_input_optimize(xyz,'PBE','SZ',50.0,None,2000,g.siesta_pot,SolutionMethod='diagon',MaxSCFIterations=2000,spin='non-polarized')
 # Zn-Pc Br置換モデル構造最適化 終了
 """

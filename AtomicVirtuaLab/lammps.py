@@ -270,6 +270,49 @@ def mk_nvt_input_uff(cell,dt,dmp_step,thermo_step,md_step,T,seed):
     f.write('write_data result.data'+'\n')
     f.close()
 
+def mk_nvt_input_uff_rigid(cell,dt,dmp_step,thermo_step,md_step,T,seed):
+    from AtomicVirtuaLab.io import cell2atomlist, mk_lammpsdata
+    from ase import Atom
+    import random
+    mk_lammpsdata(cell,True)
+    symbols = cell2atomlist(cell)
+    f = open('lammps.lmp','w')
+    mk_qeqfile(symbols)
+    f.write('units metal'+'\n')
+    f.write('boundary p p p'+'\n')
+    f.write('atom_style full'+'\n')
+    f.write('read_data lammps.data'+'\n')
+    i = 1
+    for symbol in symbols:
+        a = Atom(symbol)
+        f.write('mass '+str(i)+' '+str(a.mass)+'\n')
+        i = i + 1
+    f.write('set atom 1 charge 0.0001'+'\n')
+    f.write('set atom 2 charge -0.0001'+'\n')
+    f.write('pair_style lj/cut/coul/long 10.0 10.0'+'\n')
+    f.write('kspace_style ewald 0.000001'+'\n')
+    i = 1
+    for symbol in symbols:
+        sigma, epsilon = set_uff_lj(symbol)
+        f.write('pair_coeff '+str(i)+' '+str(i)+' '+str(epsilon)+' '+str(sigma)+'\n')
+        i = i + 1
+    f.write('pair_modify mix geometric'+'\n')
+    f.write('dump dmp all custom '+str(dmp_step)+' traj_nvt.lammpstrj id type element x y z ix iy iz'+'\n')
+    f.write('dump_modify dmp element')
+    for symbol in symbols:
+        f.write(' '+str(symbol))
+    f.write('\n')
+    f.write('thermo_style custom step etotal enthalpy pe ke temp press vol density cella cellb cellc cellalpha cellbeta cellgamma'+'\n')
+    f.write('thermo '+str(thermo_step)+'\n')
+    f.write('\n')
+    f.write('fix fxqeq all qeq/point 1 10 1.0e-6 100 my_qeq'+'\n')
+    f.write('timestep '+str(dt)+'\n')
+    f.write('velocity all create '+str(T)+' '+str(seed)+'\n')
+    f.write('fix fxnvt all rigid/nvt molecule temp '+str(T)+' '+str(T)+' $(dt*100.0)'+'\n')
+    f.write('run '+str(md_step)+'\n')
+    f.write('write_data result.data'+'\n')
+    f.close()
+
 def mk_nvt_input_deepmd_friction(cell,dt,dmp_step,thermo_step,eq_step,md_step,nave,T,seed,nlayer=0,vdirec='y'):
     from AtomicVirtuaLab.io import cell2atomlist, mk_lammpsdata
     from ase import Atom
@@ -291,6 +334,8 @@ def mk_nvt_input_deepmd_friction(cell,dt,dmp_step,thermo_step,eq_step,md_step,na
     
     if nlayer != 0:
         for nl in range(nlayer-2):
+            if nl+1 == 13:
+                break
             if nl == 0:
                 f.write('region layer'+str(nl+1)+' block INF INF INF INF ${zm'+str(nl+1)+'} ${z1}'+'\n')
                 f.write('group layer'+str(nl+1)+' region layer'+str(nl+1)+'\n')
@@ -393,6 +438,8 @@ def mk_nvt_input_deepmd_friction(cell,dt,dmp_step,thermo_step,eq_step,md_step,na
 
     if nlayer != 0:
         for nl in range(nlayer-2):
+            if nl+1 == 13:
+                break
             if nl == 0:
                 f.write('compute layer'+str(nl+1)+'msd layer'+str(nl+1)+' msd average yes'+'\n')
                 f.write('compute layer'+str(nl+1)+'peperatom layer'+str(nl+1)+' pe/atom'+'\n')
@@ -443,6 +490,8 @@ def mk_nvt_input_deepmd_friction(cell,dt,dmp_step,thermo_step,eq_step,md_step,na
 
     if nlayer != 0:
         for nl in range(nlayer-2):
+            if nl+1 == 13:
+                break
             if nl == 0:
                 if vdirec == 'y':
                     f.write('variable layF'+str(nl+1)+' equal f_freeze2[2]+c_layer'+str(nl+1)+'prop[2]'+'\n')
@@ -475,6 +524,8 @@ def mk_nvt_input_deepmd_friction(cell,dt,dmp_step,thermo_step,eq_step,md_step,na
         f.write('fix thpropupper all ave/time 1 '+str(int(md_step/nave))+' '+str(int(md_step/nave))+' c_upperMomaxz c_upperMominz file propupper.profile'+'\n')
         f.write('fix thproplower all ave/time 1 '+str(int(md_step/nave))+' '+str(int(md_step/nave))+' c_lowerMomaxz c_lowerMominz file proplower.profile'+'\n')
         for nl in range(nlayer-2):
+            if nl+1 == 13:
+                break
             f.write('fix thmsdlayer'+str(nl+1)+' all ave/time 1 '+str(int(md_step/nave))+' '+str(int(md_step/nave))+' c_layer'+str(nl+1)+'msd[1] c_layer'+str(nl+1)+'msd[2] c_layer'+str(nl+1)+'msd[3] file msdlayer'+str(nl+1)+'.profile'+'\n')
             f.write('fix thpelayer'+str(nl+1)+' all ave/time 1 '+str(int(md_step/nave))+' '+str(int(md_step/nave))+' c_layer'+str(nl+1)+'pe file pelayer'+str(nl+1)+'.profile'+'\n')
             #f.write('fix thproplayer'+str(nl+1)+' all ave/time 1 '+str(int(md_step/nave))+' '+str(int(md_step/nave))+' c_layer'+str(nl+1)+'prop[1] c_layer'+str(nl+1)+'prop[2] c_layer'+str(nl+1)+'prop[3] c_layer'+str(nl+1)+'prop[4] c_layer'+str(nl+1)+'prop[5] c_layer'+str(nl+1)+'prop[6] c_layerMo'+str(nl+1)+'maxz c_layerMo'+str(nl+1)+'minz file proplayer'+str(nl+1)+'.profile'+'\n')
@@ -489,6 +540,8 @@ def mk_nvt_input_deepmd_friction(cell,dt,dmp_step,thermo_step,eq_step,md_step,na
     if nlayer != 0:
         f.write('thermo_style custom step etotal enthalpy pe ke temp press vol density cella cellb cellc cellalpha cellbeta cellgamma f_freeze2[1] f_freeze2[2] f_freeze2[3] v_Pz0 v_Fric')
         for nl in range(nlayer-2):
+            if nl+1 == 13:
+                break
             f.write(' v_layFric'+str(nl+1))
         f.write('\n')
     else:

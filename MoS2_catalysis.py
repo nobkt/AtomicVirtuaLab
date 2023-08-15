@@ -62,7 +62,7 @@ mk_qe_input_dos(slab,'pbe','paw',level='high',ecutwfc=ecutwfc,ecutrho=ecutrho,mi
 """
 
 
-"""
+
 # 吸着モデル ポテンシャル計算
 ecutwfc0=77.0
 ecutrho0=539.0
@@ -75,7 +75,7 @@ k0 = kpoint
 
 rlist = [0.5,1.0,1.5,2.0,2.5,3.0,3.5,4.0]
 
-elm = 'Pd'
+elm = 'H'
 
 path = os.getcwd()
 os.chdir(path)
@@ -193,7 +193,7 @@ slab.set_constraint(c)
 #sys.exit()
 
 # ontop
-rlist = [1.6,1.7,1.8,1.9,2.1,2.2,2.3,2.4]
+rlist = [0.6,0.7,0.8,0.9,1.1,1.2,1.3,1.4]
 adtype = 'ontop'
 x0 = 1.576
 y0 = 4.548
@@ -213,7 +213,7 @@ for r in rlist:
 os.chdir('../')
 
 # bridge
-rlist = [1.0,1.1,1.2,1.3,1.4,1.6,1.7,1.8,1.9]
+rlist = [0.6,0.7,0.8,0.9,1.1,1.2,1.3,1.4]
 adtype = 'bridge'
 x0 = (1.576+4.727)/2.0
 y0 = 4.548
@@ -233,7 +233,7 @@ for r in rlist:
 os.chdir('../')
 
 # fcc
-rlist = [1.0,1.1,1.2,1.3,1.4,1.6,1.7,1.8,1.9]
+rlist = [0.6,0.7,0.8,0.9,1.1,1.2,1.3,1.4]
 adtype = 'fcc'
 x0 = (1.576+4.727+3.151)/3.0
 y0 = (4.548+4.548+7.278)/3.0
@@ -253,7 +253,7 @@ for r in rlist:
 os.chdir('../')
 
 # hcp
-rlist = [1.0,1.1,1.2,1.3,1.4,1.6,1.7,1.8,1.9]
+rlist = [0.6,0.7,0.8,0.9,1.1,1.2,1.3,1.4]
 adtype = 'hcp'
 x0 = 1.576
 y0 = 6.368
@@ -272,9 +272,9 @@ for r in rlist:
     os.chdir('../')
 os.chdir('../')
 # 吸着モデル ポテンシャル計算終了
+
+
 """
-
-
 # 吸着モデル 構造最適化
 ecutwfc0=77.0
 ecutrho0=539.0
@@ -460,7 +460,7 @@ for r in rlist:
     #mk_qe_input_dos(adsorp,'pbe','paw',level='high',ecutwfc=ecutwfc,ecutrho=ecutrho,mixing_beta=0.2,kpts=(k0,k0,1),ecut='manual',options={'vdw_corr':'dft-d3','dftd3_version':4,'assume_isolated':'esm','esm_bc':'bc1'},nspin=False)
 os.chdir('../')
 # 吸着モデル 構造最適化計算終了
-
+"""
 
 
 """
@@ -747,7 +747,7 @@ k0 = kpoint
 mpid = 1434
 #mpid = 2815
 
-adelm = 'Pd'
+adelm = 'H'
 site = 'hcp'
 
 #cell = read('/home/A23321P/work/myPython/AtomicVirtuaLab/pwos/MoS2_catalysis/bulk/optimize/mp'+str(mpid)+'/qe_vc-relax.pwo')
