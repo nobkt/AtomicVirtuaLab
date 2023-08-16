@@ -16,13 +16,37 @@ g.siesta_pot = '/home/A23321P/work/myPython/AtomicVirtuaLab/siesta_pseudo'
 g.cifdir = '/home/A23321P/work/myPython/AtomicVirtuaLab/cifs'
 
 
-# Zn-Pc アモルファスモデル読み込み
+# Zn-Pc アモルファスWannier
 os.makedirs('./dp_raman_test',exist_ok=True)
 os.chdir('./dp_raman_test')
 os.makedirs('Zn-Pc-amo',exist_ok=True)
 os.chdir('Zn-Pc-amo')
+os.makedirs('wannier',exist_ok=True)
+os.chdir('wannier')
 
-cell = read(g.cifdir+'/Zn-Pc_10.data',format='lammps-data',sort_by_id=True,Z_of_type={1:6,2:1,3:7,4:30})
+#cell = read(g.cifdir+'/Zn-Pc_10.data',format='lammps-data',sort_by_id=True,Z_of_type={1:6,2:1,3:7,4:30})
+cell = read('/home/A23321P/work/mySiesta/dipole_and_polarizability/Zn-Pc-amo/8/cell-opt/siesta.STRUCT_OUT',format='struct_out')
+
+view(cell)
+
+#mk_siesta_input_optimize(cell,'PBE','SZ',50.0,None,2000,g.siesta_pot,SolutionMethod='diagon',MaxSCFIterations=2000,spin='non-polarized')
+
+#mk_siesta_input_cellopt(cell,'PBE','SZ',50.0,None,2000,g.siesta_pot,SolutionMethod='diagon',MaxSCFIterations=2000,spin='non-polarized')
+
+mk_siesta_input_scf_withEfield_wannier(cell,'PBE','SZ',50.0,None,g.siesta_pot,bandscale=30,ex=0.0,ey=0.0,ez=0.0,SolutionMethod='diagon',MaxSCFIterations=2000,spin='non-polarized')
+
+
+# Zn-Pc アモルファスWannier 終了
+
+
+"""
+# Zn-Pc アモルファスモデル読み込み
+os.makedirs('./dp_raman_test',exist_ok=True)
+os.chdir('./dp_raman_test')
+os.makedirs('Zn-Pc-allBr-amo',exist_ok=True)
+os.chdir('Zn-Pc-allBr-amo')
+
+cell = read(g.cifdir+'/Zn-Pc-allBr_10.data',format='lammps-data',sort_by_id=True,Z_of_type={1:35,2:6,3:7,4:30})
 
 view(cell)
 
@@ -31,6 +55,7 @@ view(cell)
 mk_siesta_input_cellopt(cell,'PBE','SZ',50.0,None,2000,g.siesta_pot,SolutionMethod='diagon',MaxSCFIterations=2000,spin='non-polarized')
 
 # Zn-Pc アモルファスモデル読み込み 終了
+"""
 
 """
 # Zn-Pc 結晶モデル作成
@@ -217,18 +242,20 @@ os.makedirs('./dp_raman_test',exist_ok=True)
 os.chdir('./dp_raman_test')
 os.makedirs('./ZincPhthalocyanine_2mol_test',exist_ok=True)
 os.chdir('./ZincPhthalocyanine_2mol_test')
-allBr = read(g.cifdir+'/Zn-Pc_1mer.xyz')
+allBr = read(g.cifdir+'/Zn-Pc-allBr.xyz')
+#allBr = read(g.cifdir+'/Zn-Pc_1mer.xyz')
+
 allBr_sorted = sort(allBr)
 
 allBr_sorted.write('./test.xyz')
 
 mollist={
-    'test':15
+    'test':8
 }
 
-x_box=50.0
-y_box=50.0
-z_box=50.0
+x_box=100.0
+y_box=100.0
+z_box=100.0
 
 mk_packmol_random(mollist,x_box,y_box,z_box)
 os.system('packmol < packmol.inp 1> log_packmol 2> err_packmol')

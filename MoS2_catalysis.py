@@ -62,7 +62,7 @@ mk_qe_input_dos(slab,'pbe','paw',level='high',ecutwfc=ecutwfc,ecutrho=ecutrho,mi
 """
 
 
-
+"""
 # 吸着モデル ポテンシャル計算
 ecutwfc0=77.0
 ecutrho0=539.0
@@ -233,7 +233,7 @@ for r in rlist:
 os.chdir('../')
 
 # fcc
-rlist = [0.6,0.7,0.8,0.9,1.1,1.2,1.3,1.4]
+rlist = [1.0]
 adtype = 'fcc'
 x0 = (1.576+4.727+3.151)/3.0
 y0 = (4.548+4.548+7.278)/3.0
@@ -253,7 +253,7 @@ for r in rlist:
 os.chdir('../')
 
 # hcp
-rlist = [0.6,0.7,0.8,0.9,1.1,1.2,1.3,1.4]
+rlist = [1.0]
 adtype = 'hcp'
 x0 = 1.576
 y0 = 6.368
@@ -272,7 +272,7 @@ for r in rlist:
     os.chdir('../')
 os.chdir('../')
 # 吸着モデル ポテンシャル計算終了
-
+"""
 
 """
 # 吸着モデル 構造最適化
@@ -692,12 +692,12 @@ mpid='1434'
 #mpid='2815'
 style='adsorp'
 mill='001'
-elm='Pd'
+elm='H'
 site='hcp'
 g.dos_rusult_dir = '/home/A23321P/work/myPython/AtomicVirtuaLab/pwos/MoS2_catalysis/absorp/dos/mp'+str(mpid)+'/'+str(mill)+'/'+str(elm)+'_adsorp/'+str(site)
 os.makedirs('./MoS2_catalysis/'+str(style)+'/plot_dos/mp-'+str(mpid)+'/'+str(mill)+'/'+str(elm)+'_adsorp/'+str(site),exist_ok=True)
 os.chdir('./MoS2_catalysis/'+str(style)+'/plot_dos/mp-'+str(mpid)+'/'+str(mill)+'/'+str(elm)+'_adsorp/'+str(site))
-plot_qe_dos(g.dos_rusult_dir,-4.5472,['Mo','S','Pd'],nspin=False)
+plot_qe_dos(g.dos_rusult_dir,-4.9381,['Mo','S','H'],nspin=False)
 # DOSプロット 吸着モデル 終了
 """
 
@@ -733,7 +733,7 @@ mk_qe_input_vcrelax(cell,'pbe','paw',level='high',nosym=True,ecutwfc=ecutwfc,ecu
 # 単体の構造最適化終了
 """
 
-"""
+
 # DOS計算
 ecutwfc0=77.0
 ecutrho0=539.0
@@ -744,10 +744,10 @@ ecutwfc=77.0*scale
 ecutrho=539.0*scale
 k0 = kpoint
 
-mpid = 1434
-#mpid = 2815
+#mpid = 1434
+mpid = 2815
 
-adelm = 'H'
+adelm = 'Pd'
 site = 'hcp'
 
 #cell = read('/home/A23321P/work/myPython/AtomicVirtuaLab/pwos/MoS2_catalysis/bulk/optimize/mp'+str(mpid)+'/qe_vc-relax.pwo')
@@ -786,7 +786,7 @@ os.chdir('../')
 #os.chdir('./dos')
 #mk_qe_input_dos(cell,'pbe','paw',level='high',ecutwfc=ecutwfc,ecutrho=ecutrho,mixing_beta=0.2,kpts=(12,12,12),ecut='manual',options={'vdw_corr':'dft-d3','dftd3_version':4})
 # DOS計算終了
-"""
+
 
 
 
