@@ -1,0 +1,4 @@
+&DOS
+outdir = "./outdir"
+deltae  =  0.01
+/

@@ -31,6 +31,7 @@ def mk_siesta_input_npt(cell,xc,basis_set,mesh_cutoff,kpts,temp,press,nstep,pseu
                              #'WriteHirshfeldPop':True,
                              #'WriteVoronoiPop':True,
                              #'PartialChargesAtEveryGeometry':True,
+                             'Geometry.Constraints':[('stress','4,5,6')],
                              'SCF.Mixers':['broyden'],
                              'SCF.Mixer.broyden':[('method','broyden'),('weight',0.01),('weight.linear',0.005)]
                              }
@@ -296,3 +297,24 @@ def mk_siesta_input_scf_withEfield_wannier(cell,xc,basis_set,mesh_cutoff,kpts,ps
     f.write('\n')
     f.write('Siesta2Wannier90.NumberOfBands   '+str(int(tot_nelc/2+bandscale))+'\n')
     f.close()
+
+def get_valence(dir_):
+    import os
+    os.chdir(dir_)
+    dnelc = {}
+    for file in os.listdir():
+        base,ext = os.path.splitext(file)
+        if ext == '.psf':
+            #print(base+ext)
+            fpsf = open(base+ext,'r')
+            lines = fpsf.readlines()
+            fpsf.close()
+            #print(lines[3].split()[5])
+            tmp = str(lines[3].split()[5])
+            tmp = float(tmp)
+            nelc = int(tmp)
+            #print(nelc)
+            elm = lines[0].split()[0]
+            #print(elm)
+            dnelc[elm] = nelc
+    return dnelc

@@ -3,9 +3,9 @@ from ase.io import read, write
 from ase.visualize import view
 from ase.build import sort, make_supercell
 from AtomicVirtuaLab.espresso import mk_qe_input_relax
-from AtomicVirtuaLab.siesta import mk_siesta_input_optimize,mk_siesta_input_nvt,mk_siesta_input_scf_withEfield,mk_siesta_input_scf_withEfield_wannier,mk_siesta_input_cellopt
+from AtomicVirtuaLab.siesta import mk_siesta_input_optimize,mk_siesta_input_nvt,mk_siesta_input_scf_withEfield,mk_siesta_input_scf_withEfield_wannier,mk_siesta_input_cellopt,get_valence,mk_siesta_input_npt
 from AtomicVirtuaLab.packmol import mk_packmol_random
-from AtomicVirtuaLab.lammps import mk_nvt_input_uff_rigid
+from AtomicVirtuaLab.lammps import mk_nvt_input_uff_rigid_scale
 import AtomicVirtuaLab.globalv as g
 from AtomicVirtuaLab.build import sortmol
 import os
@@ -15,7 +15,69 @@ g.qepot = '/home/A23321P/work/myPython/AtomicVirtuaLab/qe_pseudo'
 g.siesta_pot = '/home/A23321P/work/myPython/AtomicVirtuaLab/siesta_pseudo'
 g.cifdir = '/home/A23321P/work/myPython/AtomicVirtuaLab/cifs'
 
+"""
+# dipleおよびpolarizability解析
+#test
+C = 1.602176634e-19
+A2m = 1.0e-10
+Cm2Deb = 3.33564e-30
+dir_ = '/home/A23321P/work/mySiesta/dipole_and_polarizability/Zn-Pc-amo/8/wannier/10'
 
+atomic_mu=[]
+grobal_mu=[]
+
+wxyz = read(dir_+'/siesta_centres.xyz')
+strout = read(dir_+'/siesta.STRUCT_OUT',format='struct_out')
+lat = strout.get_cell()
+
+wxyz.set_cell(lat)
+
+#view(wxyz)
+
+wxyz = sortmol(wxyz)
+nmol = max(wxyz.arrays['mol-id'])
+wxyz.set_tags(wxyz.arrays['mol-id'])
+
+wxyz.write('test.cif')
+
+valence = get_valence(dir_)
+
+mu1=[]
+grobal_mux = 0.0
+grobal_muy = 0.0
+grobal_muz = 0.0
+for imol0 in range(nmol):
+    imol = imol0 + 1
+    ux = 0.0
+    uy = 0.0
+    uz = 0.0
+    for atom in wxyz:
+        if atom.tag == imol:
+            if atom.symbol != 'X':
+                ux = ux + valence[atom.symbol]*atom.position[0]*C*A2m/Cm2Deb
+                uy = uy + valence[atom.symbol]*atom.position[1]*C*A2m/Cm2Deb
+                uz = uz + valence[atom.symbol]*atom.position[2]*C*A2m/Cm2Deb
+            if atom.symbol == 'X':
+                ux = ux - 2.0*atom.position[0]*C*A2m/Cm2Deb
+                uy = uy - 2.0*atom.position[1]*C*A2m/Cm2Deb
+                uz = uz - 2.0*atom.position[2]*C*A2m/Cm2Deb
+    mu1.append([ux,uy,uz])
+    grobal_mux = grobal_mux + ux
+    grobal_muy = grobal_muy + uy
+    grobal_muz = grobal_muz + uz
+
+grobal_mu.append([grobal_mux,grobal_muy,grobal_muz])
+
+atomic_mu.append(mu1)
+
+print(atomic_mu[0])
+print(grobal_mu[0])
+print(sum(grobal_mu[0]))
+
+# dipleおよびpolarizability解析終了
+"""
+
+"""
 # Zn-Pc アモルファスWannier
 os.makedirs('./dp_raman_test',exist_ok=True)
 os.chdir('./dp_raman_test')
@@ -25,7 +87,8 @@ os.makedirs('wannier',exist_ok=True)
 os.chdir('wannier')
 
 #cell = read(g.cifdir+'/Zn-Pc_10.data',format='lammps-data',sort_by_id=True,Z_of_type={1:6,2:1,3:7,4:30})
-cell = read('/home/A23321P/work/mySiesta/dipole_and_polarizability/Zn-Pc-amo/8/cell-opt/siesta.STRUCT_OUT',format='struct_out')
+#cell = read('/home/A23321P/work/mySiesta/dipole_and_polarizability/Zn-Pc-amo/8/cell-opt/siesta.STRUCT_OUT',format='struct_out')
+cell = read('/home/A23321P/work/mySiesta/dipole_and_polarizability/Zn-Pc-allBr-amo/cell-opt/siesta.STRUCT_OUT',format='struct_out')
 
 view(cell)
 
@@ -33,11 +96,15 @@ view(cell)
 
 #mk_siesta_input_cellopt(cell,'PBE','SZ',50.0,None,2000,g.siesta_pot,SolutionMethod='diagon',MaxSCFIterations=2000,spin='non-polarized')
 
-mk_siesta_input_scf_withEfield_wannier(cell,'PBE','SZ',50.0,None,g.siesta_pot,bandscale=30,ex=0.0,ey=0.0,ez=0.0,SolutionMethod='diagon',MaxSCFIterations=2000,spin='non-polarized')
+for bandscale in range(31):
+    os.makedirs('./'+str(bandscale),exist_ok=True)
+    os.chdir('./'+str(bandscale))
+    mk_siesta_input_scf_withEfield_wannier(cell,'PBE','SZ',50.0,None,g.siesta_pot,bandscale=bandscale,ex=0.0,ey=0.0,ez=0.0,SolutionMethod='diagon',MaxSCFIterations=2000,spin='non-polarized')
+    os.chdir('../')
 
 
 # Zn-Pc アモルファスWannier 終了
-
+"""
 
 """
 # Zn-Pc アモルファスモデル読み込み
@@ -46,13 +113,13 @@ os.chdir('./dp_raman_test')
 os.makedirs('Zn-Pc-allBr-amo',exist_ok=True)
 os.chdir('Zn-Pc-allBr-amo')
 
-cell = read(g.cifdir+'/Zn-Pc-allBr_10.data',format='lammps-data',sort_by_id=True,Z_of_type={1:35,2:6,3:7,4:30})
+cell = read(g.cifdir+'/Zn-Pc-allBr_8.data',format='lammps-data',sort_by_id=True,Z_of_type={1:35,2:6,3:7,4:30})
 
 view(cell)
 
 #mk_siesta_input_optimize(cell,'PBE','SZ',50.0,None,2000,g.siesta_pot,SolutionMethod='diagon',MaxSCFIterations=2000,spin='non-polarized')
 
-mk_siesta_input_cellopt(cell,'PBE','SZ',50.0,None,2000,g.siesta_pot,SolutionMethod='diagon',MaxSCFIterations=2000,spin='non-polarized')
+#mk_siesta_input_cellopt(cell,'PBE','SZ',50.0,None,2000,g.siesta_pot,SolutionMethod='diagon',MaxSCFIterations=2000,spin='non-polarized')
 
 # Zn-Pc アモルファスモデル読み込み 終了
 """
@@ -238,57 +305,107 @@ for mol in mollist:
             
 """
 # Zn-フタロシアニンのパッキングモデル作成
+
+T_list = [300,500,700,900,1100]
+
 os.makedirs('./dp_raman_test',exist_ok=True)
 os.chdir('./dp_raman_test')
-os.makedirs('./ZincPhthalocyanine_2mol_test',exist_ok=True)
-os.chdir('./ZincPhthalocyanine_2mol_test')
-allBr = read(g.cifdir+'/Zn-Pc-allBr.xyz')
-#allBr = read(g.cifdir+'/Zn-Pc_1mer.xyz')
+os.makedirs('./Zn-Pc_train',exist_ok=True)
+os.chdir('./Zn-Pc_train')
 
-allBr_sorted = sort(allBr)
+os.makedirs('./Zn-Pc-allBr',exist_ok=True)
+os.chdir('./Zn-Pc-allBr')
 
-allBr_sorted.write('./test.xyz')
+os.makedirs('./lammps',exist_ok=True)
+os.chdir('./lammps')
+
+xyz = read(g.cifdir+'/Zn-Pc-allBr.xyz')
+#xyz = read(g.cifdir+'/Zn-Pc_1mer.xyz')
+
+xyz = sort(xyz)
+
+#xyz.write('mols.xyz')
 
 mollist={
-    'test':8
+    'mols':8
 }
 
 x_box=100.0
 y_box=100.0
 z_box=100.0
 
-mk_packmol_random(mollist,x_box,y_box,z_box)
-os.system('packmol < packmol.inp 1> log_packmol 2> err_packmol')
-
-cell = read('./system.xyz')
-cell.set_cell([x_box,y_box,z_box])
-cell = sortmol(cell)
-cell.write('test.cif')
-
-#mk_siesta_input_scf_withEfield_wannier(cell,'PBE','SZ',50.0,None,g.siesta_pot,bandscale=30,ex=0.0,ey=0.0,ez=-0.0,SolutionMethod='diagon',MaxSCFIterations=2000,spin='non-polarized')
-#mk_qe_input_relax(cell,'pbe','us',level='high',estep=1000,nstep=1000,nosym=True,ecutwfc=36,ecutrho=400,mixing_beta=0.2,kpts=None,ecut='manual',tstress=False,options={'vdw_corr':'dft-d3','dftd3_version':4},nspin=False)
-mk_nvt_input_uff_rigid(cell,0.0005,100,100,20000,300.0,12345)
-view(cell)
-
-unitcell = read(g.cifdir+'/ZincPhthalocyanine.cif')
-
-volume = unitcell.get_volume()
-masses = unitcell.get_masses()
-tot_mass = sum(masses)
-dens = tot_mass/volume
-print(dens)
-
-volume1 = cell.get_volume()
-masses1 = cell.get_masses()
-tot_mass1 = sum(masses1)
-dens1 = tot_mass1/volume1
-print(dens1)
-
-scale = (volume1/(dens/dens1))**(1/3)
-print(scale)
+for T0 in T_list:
+    os.makedirs('./T_'+str(T0),exist_ok=True)
+    os.chdir('./T_'+str(T0))
+    xyz.write('mols.xyz')
+    mk_packmol_random(mollist,x_box,y_box,z_box)
+    os.system('packmol < packmol.inp 1> log_packmol 2> err_packmol')
+    #
+    cell = read('./system.xyz')
+    cell.set_cell([x_box,y_box,z_box])
+    cell = sortmol(cell)
+    cell.write('system.cif')
+    #
+    #view(cell)
+    #sys.exit()
+    #
+    unitcell = read(g.cifdir+'/ZincPhthalocyanine.cif')
+    #
+    volume = unitcell.get_volume()
+    masses = unitcell.get_masses()
+    tot_mass = sum(masses)
+    dens = tot_mass/volume
+    print(dens)
+    #
+    volume1 = cell.get_volume()
+    masses1 = cell.get_masses()
+    tot_mass1 = sum(masses1)
+    dens1 = tot_mass1/volume1
+    print(dens1)
+    #
+    lat = (volume1/(dens/dens1))**(1/3)
+    print(lat)
+    #
+    mk_nvt_input_uff_rigid_scale(cell,0.0005,100,100,lat,200000,200000,300,12345)
+    os.chdir('../')
 
 # Zn-フタロシアニンのパッキングモデル作成終了
 """
+
+# Zn-フタロシアニンの学習データ作成
+
+T_list = [300,500,700,900,1100]
+
+os.makedirs('./dp_raman_test',exist_ok=True)
+os.chdir('./dp_raman_test')
+os.makedirs('./Zn-Pc_train',exist_ok=True)
+os.chdir('./Zn-Pc_train')
+
+os.makedirs('./Zn-Pc-allBr',exist_ok=True)
+os.chdir('./Zn-Pc-allBr')
+
+os.makedirs('./siesta',exist_ok=True)
+os.chdir('./siesta')
+
+for xc in ['PBE','BH']:
+    os.makedirs('./xc_'+str(xc),exist_ok=True)
+    os.chdir('./xc_'+str(xc))
+    for basis in ['SZ','SZP','DZ','DZP']:
+        os.makedirs('./basis_'+str(basis),exist_ok=True)
+        os.chdir('./basis_'+str(basis))
+        for T0 in T_list:
+            os.makedirs('./T_'+str(T0),exist_ok=True)
+            os.chdir('./T_'+str(T0))
+            cell = read('/home/A23321P/work/myLAMMPS/dp_raman_test/Zn-Pc_train/Zn-Pc-allBr/lammps/T_'+str(T0)+'/result.data',format='lammps-data',sort_by_id=True,Z_of_type={1:35,2:6,3:7,4:30})
+            #view(cell)
+            mk_siesta_input_npt(cell,xc,basis,50.0,None,T0,0.0,2000,g.siesta_pot,SolutionMethod='diagon',MaxSCFIterations=2000,dt=0.5,spin='non-polarized')
+            os.chdir('../')
+        os.chdir('../')
+    os.chdir('../')
+os.chdir('../')
+
+# Zn-フタロシアニンの学習データ作成終了
+
 
 """
 # Zn-Pc Br置換モデル構造最適化

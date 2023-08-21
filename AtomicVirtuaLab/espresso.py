@@ -1,4 +1,4 @@
-def mk_qe_input_scf(cell,xc,pot,level='low',estep=1000,ecutwfc=25,ecutrho=225,mixing_beta=0.2,kpts=None,ecut='manual',tstress=True,options={},nspin=False):
+def mk_qe_input_scf(cell,xc,pot,level='low',estep=1000,ecutwfc=25,ecutrho=225,mixing_beta=0.2,kpts=None,ecut='manual',tstress=True,nosym=False,options={},nspin=False):
     from ase.io import write
     import AtomicVirtuaLab.globalv as g
     import shutil
@@ -36,6 +36,7 @@ def mk_qe_input_scf(cell,xc,pot,level='low',estep=1000,ecutwfc=25,ecutrho=225,mi
         'tstress'          : tstress,\
         'tprnfor'          : True,\
         'outdir'           : './outdir',\
+        'nosym'            : nosym,\
         'occupations'      : 'smearing',\
         'smearing'         : 'gaussian',\
         'degauss'          : 0.01,\

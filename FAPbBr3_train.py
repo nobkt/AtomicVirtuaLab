@@ -24,7 +24,7 @@ cell = make_supercell(cell,([nx,0,0],[0,ny,0],[0,0,nz]),wrap=True)
 #print(len(cell))
 #sys.exit()
 P = [100.0,50.0,0.0,-50.0,-100.0]
-T=[100,300,500,1000,2000,3000,4000,5000]
+T=[100,500,1000,2000,3000,4000,5000]
 
 for P0 in P:
     for T0 in T:
