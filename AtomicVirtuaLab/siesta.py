@@ -19,6 +19,7 @@ def mk_siesta_input_npt(cell,xc,basis_set,mesh_cutoff,kpts,temp,press,nstep,pseu
                              'WriteMDXmol':True,
                              'MD.UseSaveXV':True,
                              'MD.TypeOfRun':'NoseParrinelloRahman',
+                             'MD.ParrinelloRahmanMass':'1000 Ry*fs**2',
                              'MD.Target-pressure':str(press)+' GPa',
                              'MD.Target-temperature':str(temp)+' K',
                              'MD.Initial-temperature':str(temp)+' K',
@@ -31,7 +32,7 @@ def mk_siesta_input_npt(cell,xc,basis_set,mesh_cutoff,kpts,temp,press,nstep,pseu
                              #'WriteHirshfeldPop':True,
                              #'WriteVoronoiPop':True,
                              #'PartialChargesAtEveryGeometry':True,
-                             'Geometry.Constraints':[('stress','4,5,6')],
+                             'Geometry.Constraints':[('stress','4 5 6')],
                              'SCF.Mixers':['broyden'],
                              'SCF.Mixer.broyden':[('method','broyden'),('weight',0.01),('weight.linear',0.005)]
                              }
@@ -98,10 +99,10 @@ def mk_siesta_input_optimize(cell,xc,basis_set,mesh_cutoff,kpts,nstep,pseudo_pat
                              'MD.NumCGsteps':int(nstep),
                              'SolutionMethod':str(SolutionMethod),
                              'SCFMustConverge':True,
-                             #'WriteMullikenPop':1,
-                             #'WriteHirshfeldPop':True,
-                             #'WriteVoronoiPop':True,
-                             #'PartialChargesAtEveryGeometry':True,
+                             'WriteMullikenPop':1,
+                             'WriteHirshfeldPop':True,
+                             'WriteVoronoiPop':True,
+                             'PartialChargesAtEveryGeometry':True,
                              'SCF.Mixers':['broyden'],
                              'SCF.Mixer.broyden':[('method','broyden'),('weight',0.01),('weight.linear',0.005)]
                              }

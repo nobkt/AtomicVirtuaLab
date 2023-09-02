@@ -1,0 +1,57 @@
+
+     Program DOS v.7.2 starts on 17Aug2023 at  1:15: 6 
+
+     This program is part of the open-source Quantum ESPRESSO suite
+     for quantum simulation of materials; please cite
+         "P. Giannozzi et al., J. Phys.:Condens. Matter 21 395502 (2009);
+         "P. Giannozzi et al., J. Phys.:Condens. Matter 29 465901 (2017);
+         "P. Giannozzi et al., J. Chem. Phys. 152 154105 (2020);
+          URL http://www.quantum-espresso.org", 
+     in publications or presentations arising from this work. More details at
+     http://www.quantum-espresso.org/quote
+
+     Parallel version (MPI), running on    36 processors
+
+     MPI processes distributed on     1 nodes
+     R & G space division:  proc/nbgrp/npool/nimage =      36
+     768959 MiB available memory on the printing compute node when the environment starts
+ 
+
+     Reading xml data from directory:
+
+     ./outdir/pwscf.save/
+     file Mo.pbe-spn-kjpaw_psl.1.0.0.UPF: wavefunction(s)  4S 4D renormalized
+     file S.pbe-n-kjpaw_psl.1.0.0.UPF: wavefunction(s)  3S 3P renormalized
+     file Pd.pbe-spn-kjpaw_psl.1.0.0.UPF: wavefunction(s)  4S 5S 4D renormalized
+
+     IMPORTANT: XC functional enforced from input :
+     Exchange-correlation= PBE
+                           (   1   4   3   4   0   0   0)
+     Any further DFT definition will be discarded
+     Please, verify this is what you really want
+
+ 
+     Parallelization info
+     --------------------
+     sticks:   dense  smooth     PW     G-vecs:    dense   smooth      PW
+     Min         585     334     89               198743    85850   11735
+     Max         586     335     90               198750    85861   11748
+     Sum       21073   12049   3205              7154885  3090769  422587
+ 
+     Using Slab Decomposition
+ 
+
+     negative rho (up, down):  9.076E-04 0.000E+00
+
+     Gaussian broadening (read from file): ngauss,degauss=   0    0.010000
+
+ 
+     DOS          :     11.86s CPU     13.49s WALL
+
+ 
+   This run was terminated on:   1:15:19  17Aug2023            
+
+=------------------------------------------------------------------------------=
+   JOB DONE.
+=------------------------------------------------------------------------------=
+Application 11048223 resources: utime ~433s, stime ~55s, Rss ~1096452, inblocks ~0, outblocks ~568

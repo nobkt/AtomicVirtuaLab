@@ -16,7 +16,7 @@ def smiles2xyz(smiles,molname,addH,smarts=False,userandom=False):
         AllChem.EmbedMolecule(m,useRandomCoords=True)
     else:
         AllChem.EmbedMolecule(m)
-    #AllChem.MMFFOptimizeMolecule(m)
+    AllChem.MMFFOptimizeMolecule(m)
     # molファイルとして出力
     Chem.MolToMolFile(m,molname+'.mol')
     # xyzファイルとして出力
@@ -112,6 +112,14 @@ def rd_lammpsdata(cell,fdata,charge):
     else:
         cell = read(fdata,format='lammps-data',style='atomic',sort_by_id=True)
     cell.set_chemical_symbols(symbols)
+    return cell
+
+def rd_lammpsdata_init(Z_of_type,fdata,charge):
+    from ase.io import read
+    if charge:
+        cell = read(fdata,format='lammps-data',style='full',sort_by_id=True,Z_of_type=Z_of_type)
+    else:
+        cell = read(fdata,format='lammps-data',style='atomic',sort_by_id=True,Z_of_type=Z_of_type)
     return cell
 
 

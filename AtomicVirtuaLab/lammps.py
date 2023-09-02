@@ -598,6 +598,112 @@ def mk_nvt_input_deepmd_friction(cell,dt,dmp_step,thermo_step,eq_step,md_step,na
     f.write('run '+str(md_step)+'\n')
     f.close()
 
+def mk_npt_melt_input_deepmd(cell,dt,dmp_step,thermo_step,eq_step,melt_step,md_step,Teq,Tmelt,T,P,z0,seed):
+    from AtomicVirtuaLab.io import cell2atomlist, mk_lammpsdata
+    from ase import Atom
+    mk_lammpsdata(cell,False,force_skew=True)
+    symbols = cell2atomlist(cell)
+    f = open('lammps.lmp','w')
+    f.write('units metal'+'\n')
+    f.write('boundary p p p'+'\n')
+    f.write('atom_style atomic'+'\n')
+    f.write('read_data lammps.data'+'\n')
+    i = 1
+    for symbol in symbols:
+        a = Atom(symbol)
+        f.write('mass '+str(i)+' '+str(a.mass)+'\n')
+        i = i + 1
+    f.write('pair_style deepmd graph.pb'+'\n')
+    f.write('pair_coeff * * ')
+    for symbol in symbols:
+        f.write(' '+str(symbol))
+    f.write('\n')
+    f.write('region freeze block INF INF INF INF INF '+str(z0)+'\n')
+    f.write('group lower region freeze'+'\n')
+    f.write('group upper subtract all lower'+'\n')
+    f.write('variable mytemp equal temp'+'\n')
+    f.write('variable myenthalpy equal enthalpy'+'\n')
+    f.write('variable mydensity equal density'+'\n')
+    f.write('variable myvol equal vol'+'\n')
+    f.write('variable mycella equal cella'+'\n')
+    f.write('variable mycellb equal cellb'+'\n')
+    f.write('variable mycellc equal cellc'+'\n')
+    f.write('variable mycellalpha equal cellalpha'+'\n')
+    f.write('variable mycellbeta equal cellbeta'+'\n')
+    f.write('variable mycellgamma equal cellgamma'+'\n')
+    f.write('dump dmp all custom '+str(dmp_step)+' traj_npt.lammpstrj id type element x y z ix iy iz'+'\n')
+    f.write('dump_modify dmp element')
+    for symbol in symbols:
+        f.write(' '+str(symbol))
+    f.write('\n')
+    f.write('thermo_style custom step etotal enthalpy pe ke temp press vol density cella cellb cellc cellalpha cellbeta cellgamma'+'\n')
+    f.write('thermo '+str(thermo_step)+'\n')
+    f.write('\n')
+    f.write('timestep '+str(dt)+'\n')
+    f.write('velocity all create '+str(Teq)+' '+str(seed)+'\n')
+    f.write('fix fmom all momentum 1 linear 1 1 1'+'\n')
+    f.write('fix fxnpt all npt temp '+str(Teq)+' '+str(Teq)+' $(dt*100.0) '+'aniso '+str(P)+' '+str(P)+' $(dt*1000.0)'+'\n')
+    f.write('run '+str(eq_step)+'\n')
+    f.write('unfix fxnpt'+'\n')
+    f.write('velocity upper scale '+str(Tmelt)+'\n')
+    f.write('fix fxnvt upper nvt temp '+str(Tmelt)+' '+str(Tmelt)+' $(dt*100.0)'+'\n')
+    f.write('run '+str(melt_step)+'\n')
+    f.write('unfix fxnvt'+'\n')
+    f.write('write_data result0.data'+'\n')
+    f.write('velocity all scale '+str(T)+'\n')
+    f.write('fix th all ave/time 1 '+str(int(md_step/2))+' '+str(md_step)+' v_mytemp v_myenthalpy v_mydensity v_myvol v_mycella v_mycellb v_mycellc v_mycellalpha v_mycellbeta v_mycellgamma file th'+str(T)+'.profile'+'\n')
+    f.write('fix fxnpt all npt temp '+str(T)+' '+str(T)+' $(dt*100.0) '+'aniso '+str(P)+' '+str(P)+' $(dt*1000.0)'+'\n')
+    f.write('run '+str(md_step)+'\n')
+    f.write('unfix fxnpt'+'\n')
+    f.write('unfix th'+'\n')
+    f.close()
+
+def mk_npt_input_deepmd(cell,dt,dmp_step,thermo_step,eq_step,Teq,P,seed):
+    from AtomicVirtuaLab.io import cell2atomlist, mk_lammpsdata
+    from ase import Atom
+    mk_lammpsdata(cell,False,force_skew=True)
+    symbols = cell2atomlist(cell)
+    f = open('lammps.lmp','w')
+    f.write('units metal'+'\n')
+    f.write('boundary p p p'+'\n')
+    f.write('atom_style atomic'+'\n')
+    f.write('read_data lammps.data'+'\n')
+    i = 1
+    for symbol in symbols:
+        a = Atom(symbol)
+        f.write('mass '+str(i)+' '+str(a.mass)+'\n')
+        i = i + 1
+    f.write('pair_style deepmd graph.pb'+'\n')
+    f.write('pair_coeff * * ')
+    for symbol in symbols:
+        f.write(' '+str(symbol))
+    f.write('\n')
+    f.write('variable mytemp equal temp'+'\n')
+    f.write('variable myenthalpy equal enthalpy'+'\n')
+    f.write('variable mydensity equal density'+'\n')
+    f.write('variable myvol equal vol'+'\n')
+    f.write('variable mycella equal cella'+'\n')
+    f.write('variable mycellb equal cellb'+'\n')
+    f.write('variable mycellc equal cellc'+'\n')
+    f.write('variable mycellalpha equal cellalpha'+'\n')
+    f.write('variable mycellbeta equal cellbeta'+'\n')
+    f.write('variable mycellgamma equal cellgamma'+'\n')
+    f.write('dump dmp all custom '+str(dmp_step)+' traj_npt.lammpstrj id type element x y z ix iy iz'+'\n')
+    f.write('dump_modify dmp element')
+    for symbol in symbols:
+        f.write(' '+str(symbol))
+    f.write('\n')
+    f.write('thermo_style custom step etotal enthalpy pe ke temp press vol density cella cellb cellc cellalpha cellbeta cellgamma'+'\n')
+    f.write('thermo '+str(thermo_step)+'\n')
+    f.write('\n')
+    f.write('timestep '+str(dt)+'\n')
+    f.write('velocity all create '+str(Teq)+' '+str(seed)+'\n')
+    f.write('fix fmom all momentum 1 linear 1 1 1'+'\n')
+    f.write('fix fxnpt all npt temp '+str(Teq)+' '+str(Teq)+' $(dt*100.0) '+'tri '+str(P)+' '+str(P)+' $(dt*1000.0)'+'\n')
+    f.write('run '+str(eq_step)+'\n')
+    f.write('write_data result.data'+'\n')
+    f.close()
+
 def mk_qeqfile(symbols):
     from pymatgen.core.periodic_table import Element
     f = open('my_qeq','w')

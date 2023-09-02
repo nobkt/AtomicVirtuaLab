@@ -1,17 +1,22 @@
 from AtomicVirtuaLab.espresso import mk_qe_input_npt
-from AtomicVirtuaLab.io import rd_cif
+from AtomicVirtuaLab.io import rd_cif, rd_lammpsdata
+from AtomicVirtuaLab.deepmd import qe2dp, get_deepmd_list, wt_deepmd_json
+from AtomicVirtuaLab.lammps import mk_npt_melt_input_deepmd, mk_nvt_input_uff
 from ase.build import make_supercell
 from ase.visualize import view
 from ase.units import mol
 import AtomicVirtuaLab.globalv as g
 from AtomicVirtuaLab.tools import add_displacement, deform_cell, scale_cell
 import os
+import shutil
 import sys
 
 g.qepot = '/home/A23321P/work/myPython/AtomicVirtuaLab/qe_pseudo'
 g.cifs = '/home/A23321P/work/myPython/AtomicVirtuaLab/cifs'
+g.forcedir = "/home/A23321P/work/myPython/AtomicVirtuaLab/lmp_potentials"
 
-# FAPbBr3.cif
+
+# 学習データ作成
 os.makedirs('./Al2O3_growth',exist_ok=True)
 os.chdir('./Al2O3_growth')
 
@@ -67,6 +72,60 @@ for P0 in P:
         #
         os.makedirs('./liquid_T'+str(T0)+'_P'+str(P0),exist_ok=True)
         os.chdir('./liquid_T'+str(T0)+'_P'+str(P0))
+        os.makedirs('./tmp',exist_ok=True)
+        os.chdir('./tmp')
+        mk_nvt_input_uff(cell_liquid,0.0005,200,200,20000,100.0,12345)
+        os.system('lmp -in lammps.lmp 1> log_lmp 2> err_lmp')
+        cell_liquid = rd_lammpsdata(cell_liquid,'./result.data',True)
+        view(cell_liquid)
+        os.chdir('../')
+        os.system('rm -rf tmp')
         mk_qe_input_npt(cell_liquid,'pbe','paw',float(T0),100.0,float(P0),dt=4.0,level='high',estep=9999,nstep=2000,ecut='auto',options={'vdw_corr':'dft-d3','dftd3_version':4})
         os.chdir('../')
+# 学習データ作成 終了
 
+
+"""
+# 学習データ変換
+os.makedirs('./Al2O3_growth',exist_ok=True)
+os.chdir('./Al2O3_growth')
+os.makedirs('train',exist_ok=True)
+os.chdir('./train')
+datadir = '/home/A23321P/work/myDeepMD/Al2O3/datas'
+qe2dp(datadir,'pwo')
+# 学習データ変換 終了
+"""
+
+"""
+# ポテンシャル学習
+os.makedirs('./Al2O3_growth',exist_ok=True)
+os.chdir('./Al2O3_growth')
+os.makedirs('train',exist_ok=True)
+os.chdir('./train')
+dpdir = './deepmd'
+dp_list=get_deepmd_list(dpdir)
+wt_deepmd_json(dpdir,dp_list,8.0,1000000,prec='high')
+# ポテンシャル学習 終了
+"""
+
+"""
+# 融点計算
+os.makedirs('./Al2O3_growth',exist_ok=True)
+os.chdir('./Al2O3_growth')
+os.makedirs('./md',exist_ok=True)
+os.chdir('./md')
+os.makedirs('./melt',exist_ok=True)
+os.chdir('./melt')
+
+cell = rd_cif(g.cifs+'/'+'Al2O3.cif')
+cell = make_supercell(cell,([5,0,0],[0,5,0],[0,0,4]),wrap=True)
+lat = cell.get_cell()
+z0 = lat[2][2]/2.0
+for T0 in [300,500,1000,1500,2000,2500,3000,3500,4000]:
+    os.makedirs('./T'+str(T0),exist_ok=True)
+    os.chdir('./T'+str(T0))
+    shutil.copy(g.forcedir+'/Al2O3_graph.pb','./graph.pb')
+    mk_npt_melt_input_deepmd(cell,0.0005,10000,10000,200000,200000,2000000,1000,5000,T0,0.0,z0,12345)
+    os.chdir('../')
+# 融点計算終了
+"""

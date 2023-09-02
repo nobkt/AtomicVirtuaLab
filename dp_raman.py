@@ -2,18 +2,52 @@ from ase.build import molecule
 from ase.io import read, write
 from ase.visualize import view
 from ase.build import sort, make_supercell
-from AtomicVirtuaLab.espresso import mk_qe_input_relax
+from AtomicVirtuaLab.espresso import mk_qe_input_relax, mk_qe_input_npt
 from AtomicVirtuaLab.siesta import mk_siesta_input_optimize,mk_siesta_input_nvt,mk_siesta_input_scf_withEfield,mk_siesta_input_scf_withEfield_wannier,mk_siesta_input_cellopt,get_valence,mk_siesta_input_npt
 from AtomicVirtuaLab.packmol import mk_packmol_random
-from AtomicVirtuaLab.lammps import mk_nvt_input_uff_rigid_scale
+from AtomicVirtuaLab.lammps import mk_nvt_input_uff_rigid_scale, mk_npt_input_deepmd
+from AtomicVirtuaLab.deepmd import get_deepmd_list, wt_deepmd_json
 import AtomicVirtuaLab.globalv as g
 from AtomicVirtuaLab.build import sortmol
+from AtomicVirtuaLab.io import rd_lammpsdata_init
+import shutil
 import os
 import sys
 
 g.qepot = '/home/A23321P/work/myPython/AtomicVirtuaLab/qe_pseudo'
 g.siesta_pot = '/home/A23321P/work/myPython/AtomicVirtuaLab/siesta_pseudo'
 g.cifdir = '/home/A23321P/work/myPython/AtomicVirtuaLab/cifs'
+g.forcedir = "/home/A23321P/work/myPython/AtomicVirtuaLab/lmp_potentials"
+
+
+# DeepMD NPT
+os.makedirs('./dp_raman_test',exist_ok=True)
+os.chdir('./dp_raman_test')
+
+os.makedirs('./deepmd',exist_ok=True)
+os.chdir('./deepmd')
+
+cell = rd_lammpsdata_init({1:35,2:6,3:7,4:30},g.cifdir+'/Zn-Pc-allBr_64.data',True)
+#view(cell)
+
+shutil.copy(g.forcedir+'/ZnPcBr_SZ_graph.pb','./graph.pb')
+mk_npt_input_deepmd(cell,0.0005,2000,2000,2000000,300,0.0,12345)
+
+
+# DeepMD NPT 終了
+
+"""
+# ポテンシャル学習
+os.makedirs('./dp_raman_test',exist_ok=True)
+os.chdir('./dp_raman_test')
+os.makedirs('train',exist_ok=True)
+os.chdir('./train')
+dpdir = './deepmd'
+dp_list=get_deepmd_list(dpdir)
+wt_deepmd_json(dpdir,dp_list,8.0,1000000,prec='high')
+# ポテンシャル学習 終了
+"""
+
 
 """
 # dipleおよびpolarizability解析
@@ -153,7 +187,7 @@ mk_siesta_input_scf_withEfield_wannier(cell_solid,'PBE','SZ',50.0,None,g.siesta_
 #cell.write('test.lmp',format='lammps-data',atom_style='full')
 #view(cell)
 
-# Zn-Pc 結晶モデル作成
+# Zn-Pc 結晶モデル作成 終了
 """
 
 
@@ -161,7 +195,7 @@ mk_siesta_input_scf_withEfield_wannier(cell_solid,'PBE','SZ',50.0,None,g.siesta_
 # 双極子モーメントと分極率テンソルの試計算
 au2v=51.4220632
 epsilon=0.001*au2v
-xc='PBE'
+xc='BH'
 os.makedirs('./dp_raman_test',exist_ok=True)
 os.chdir('./dp_raman_test')
 os.makedirs('./dipole_and_polarizability',exist_ok=True)
@@ -169,6 +203,7 @@ os.chdir('./dipole_and_polarizability')
 
 path = os.getcwd()
 os.chdir(path)
+
 
 # 水クラスター
 os.makedirs('./water_clusters/'+str(xc),exist_ok=True)
@@ -235,17 +270,19 @@ for mol in mollist:
     os.chdir('../')                   
 # 水クラスター終了
 
-# Zn-フタロシアニン
+
+# Zn-Pc-allBr
 os.chdir(path)
-os.makedirs('./Zn-Pc/'+str(xc),exist_ok=True)
-os.chdir('./Zn-Pc/'+str(xc))
-mollist=['Zn-Pc_1mer','Zn-Pc_2mer']
+os.makedirs('./Zn-Pc-allBr/'+str(xc),exist_ok=True)
+os.chdir('./Zn-Pc-allBr/'+str(xc))
+mollist=['Zn-Pc-allBr']
 lat=[30.0,30.0,30.0]
+bandscale=0
 for mol in mollist:
-    if mol == 'Zn-Pc_1mer':
-        bandscale=30
-    elif mol == 'Zn-Pc_2mer':
-        bandscale=30
+    #if mol == 'Zn-Pc_1mer':
+    #    bandscale=30
+    #elif mol == 'Zn-Pc_2mer':
+    #    bandscale=30
     os.makedirs(str(mol),exist_ok=True)
     os.chdir(str(mol))
     xyz = read(g.cifdir+'/'+str(mol)+'.xyz')
@@ -256,7 +293,7 @@ for mol in mollist:
     xyz.translate(shift)
     xyz.set_cell(lat)
     #view(xyz)
-    for basis in ['SZ']:
+    for basis in ['SZ', 'SZP', 'DZ', 'DZP']:
         os.makedirs(str(basis),exist_ok=True)
         os.chdir(str(basis))
         for cutoff in [50.0]:
@@ -306,12 +343,16 @@ for mol in mollist:
 """
 # Zn-フタロシアニンのパッキングモデル作成
 
-T_list = [300,500,700,900,1100]
+T_list = [1100]
 
 os.makedirs('./dp_raman_test',exist_ok=True)
 os.chdir('./dp_raman_test')
-os.makedirs('./Zn-Pc_train',exist_ok=True)
-os.chdir('./Zn-Pc_train')
+
+#os.makedirs('./Zn-Pc_train',exist_ok=True)
+#os.chdir('./Zn-Pc_train')
+
+os.makedirs('./Zn-Pc_md',exist_ok=True)
+os.chdir('./Zn-Pc_md')
 
 os.makedirs('./Zn-Pc-allBr',exist_ok=True)
 os.chdir('./Zn-Pc-allBr')
@@ -327,12 +368,12 @@ xyz = sort(xyz)
 #xyz.write('mols.xyz')
 
 mollist={
-    'mols':8
+    'mols':1000
 }
 
-x_box=100.0
-y_box=100.0
-z_box=100.0
+x_box=500.0
+y_box=500.0
+z_box=500.0
 
 for T0 in T_list:
     os.makedirs('./T_'+str(T0),exist_ok=True)
@@ -372,6 +413,7 @@ for T0 in T_list:
 # Zn-フタロシアニンのパッキングモデル作成終了
 """
 
+"""
 # Zn-フタロシアニンの学習データ作成
 
 T_list = [300,500,700,900,1100]
@@ -387,7 +429,8 @@ os.chdir('./Zn-Pc-allBr')
 os.makedirs('./siesta',exist_ok=True)
 os.chdir('./siesta')
 
-for xc in ['PBE','BH']:
+
+for xc in ['BLYP','PBE','BH']:
     os.makedirs('./xc_'+str(xc),exist_ok=True)
     os.chdir('./xc_'+str(xc))
     for basis in ['SZ','SZP','DZ','DZP']:
@@ -403,9 +446,8 @@ for xc in ['PBE','BH']:
         os.chdir('../')
     os.chdir('../')
 os.chdir('../')
-
 # Zn-フタロシアニンの学習データ作成終了
-
+"""
 
 """
 # Zn-Pc Br置換モデル構造最適化
