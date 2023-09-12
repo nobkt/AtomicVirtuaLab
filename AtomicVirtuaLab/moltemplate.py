@@ -11,9 +11,16 @@ def cp_rdlt():
     shutil.copy(os.environ.get('RDLTPATH')+'/lopls_lt_dict.pkl', './')
     shutil.copy(os.environ.get('RDLTPATH')+'/lopls_lt.fdefn', './')
 
-def mklt(smiles,molname):
+def mklt(smiles,molname,random=False):
     import os
-    os.system('python3 rdlt.py --smi "'+str(smiles)+'" -n '+str(molname)+' -l > '+str(molname)+'.lt')
+    if random:
+        os.system('python3 rdlt.py --smi "'+str(smiles)+'" --random True -n '+str(molname)+' -l > '+str(molname)+'.lt')
+    else:
+        os.system('python3 rdlt.py --smi "'+str(smiles)+'" -n '+str(molname)+' -l > '+str(molname)+'.lt')
+
+def mklt_fr_mol(molfile,molname):
+    import os
+    os.system('python3 rdlt.py --smi "'+str(molfile)+'" -n '+str(molname)+' > '+str(molname)+'.lt')
 
 def mk_system_lt(mollist,x_box,y_box,z_box):
     f = open('system.lt','w')

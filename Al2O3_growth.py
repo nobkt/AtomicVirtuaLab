@@ -16,6 +16,7 @@ g.cifs = '/home/A23321P/work/myPython/AtomicVirtuaLab/cifs'
 g.forcedir = "/home/A23321P/work/myPython/AtomicVirtuaLab/lmp_potentials"
 
 
+"""
 # 学習データ作成
 os.makedirs('./Al2O3_growth',exist_ok=True)
 os.chdir('./Al2O3_growth')
@@ -83,7 +84,7 @@ for P0 in P:
         mk_qe_input_npt(cell_liquid,'pbe','paw',float(T0),100.0,float(P0),dt=4.0,level='high',estep=9999,nstep=2000,ecut='auto',options={'vdw_corr':'dft-d3','dftd3_version':4})
         os.chdir('../')
 # 学習データ作成 終了
-
+"""
 
 """
 # 学習データ変換
@@ -108,7 +109,7 @@ wt_deepmd_json(dpdir,dp_list,8.0,1000000,prec='high')
 # ポテンシャル学習 終了
 """
 
-"""
+
 # 融点計算
 os.makedirs('./Al2O3_growth',exist_ok=True)
 os.chdir('./Al2O3_growth')
@@ -121,11 +122,10 @@ cell = rd_cif(g.cifs+'/'+'Al2O3.cif')
 cell = make_supercell(cell,([5,0,0],[0,5,0],[0,0,4]),wrap=True)
 lat = cell.get_cell()
 z0 = lat[2][2]/2.0
-for T0 in [300,500,1000,1500,2000,2500,3000,3500,4000]:
+for T0 in [300,500,1000,1500,2000,2100,2200,2300,2400,2500,2600,2700,2800,2900,3000,3500,4000]:
     os.makedirs('./T'+str(T0),exist_ok=True)
     os.chdir('./T'+str(T0))
     shutil.copy(g.forcedir+'/Al2O3_graph.pb','./graph.pb')
-    mk_npt_melt_input_deepmd(cell,0.0005,10000,10000,200000,200000,2000000,1000,5000,T0,0.0,z0,12345)
+    mk_npt_melt_input_deepmd(cell,0.0005,10000,10000,200000,200000,10000000,1000,5000,T0,0.0,z0,12345)
     os.chdir('../')
 # 融点計算終了
-"""

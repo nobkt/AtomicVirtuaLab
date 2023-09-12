@@ -19,7 +19,7 @@ g.siesta_pot = '/home/A23321P/work/myPython/AtomicVirtuaLab/siesta_pseudo'
 g.cifdir = '/home/A23321P/work/myPython/AtomicVirtuaLab/cifs'
 g.forcedir = "/home/A23321P/work/myPython/AtomicVirtuaLab/lmp_potentials"
 
-
+"""
 # DeepMD NPT
 os.makedirs('./dp_raman_test',exist_ok=True)
 os.chdir('./dp_raman_test')
@@ -35,6 +35,7 @@ mk_npt_input_deepmd(cell,0.0005,2000,2000,2000000,300,0.0,12345)
 
 
 # DeepMD NPT 終了
+"""
 
 """
 # ポテンシャル学習
@@ -343,16 +344,17 @@ for mol in mollist:
 """
 # Zn-フタロシアニンのパッキングモデル作成
 
-T_list = [1100]
+T_list = [300, 500, 700, 900,1100]
+nset = 10
 
 os.makedirs('./dp_raman_test',exist_ok=True)
 os.chdir('./dp_raman_test')
 
-#os.makedirs('./Zn-Pc_train',exist_ok=True)
-#os.chdir('./Zn-Pc_train')
+os.makedirs('./Zn-Pc_train',exist_ok=True)
+os.chdir('./Zn-Pc_train')
 
-os.makedirs('./Zn-Pc_md',exist_ok=True)
-os.chdir('./Zn-Pc_md')
+#os.makedirs('./Zn-Pc_md',exist_ok=True)
+#os.chdir('./Zn-Pc_md')
 
 os.makedirs('./Zn-Pc-allBr',exist_ok=True)
 os.chdir('./Zn-Pc-allBr')
@@ -368,55 +370,60 @@ xyz = sort(xyz)
 #xyz.write('mols.xyz')
 
 mollist={
-    'mols':1000
+    'mols':8
 }
 
-x_box=500.0
-y_box=500.0
-z_box=500.0
+x_box=100.0
+y_box=100.0
+z_box=100.0
 
 for T0 in T_list:
     os.makedirs('./T_'+str(T0),exist_ok=True)
     os.chdir('./T_'+str(T0))
-    xyz.write('mols.xyz')
-    mk_packmol_random(mollist,x_box,y_box,z_box)
-    os.system('packmol < packmol.inp 1> log_packmol 2> err_packmol')
-    #
-    cell = read('./system.xyz')
-    cell.set_cell([x_box,y_box,z_box])
-    cell = sortmol(cell)
-    cell.write('system.cif')
-    #
-    #view(cell)
-    #sys.exit()
-    #
-    unitcell = read(g.cifdir+'/ZincPhthalocyanine.cif')
-    #
-    volume = unitcell.get_volume()
-    masses = unitcell.get_masses()
-    tot_mass = sum(masses)
-    dens = tot_mass/volume
-    print(dens)
-    #
-    volume1 = cell.get_volume()
-    masses1 = cell.get_masses()
-    tot_mass1 = sum(masses1)
-    dens1 = tot_mass1/volume1
-    print(dens1)
-    #
-    lat = (volume1/(dens/dens1))**(1/3)
-    print(lat)
-    #
-    mk_nvt_input_uff_rigid_scale(cell,0.0005,100,100,lat,200000,200000,300,12345)
+    for n in range(nset):
+        os.makedirs('./set'+str(n),exist_ok=True)
+        os.chdir('./set'+str(n))
+        xyz.write('mols.xyz')
+        mk_packmol_random(mollist,x_box,y_box,z_box)
+        os.system('packmol < packmol.inp 1> log_packmol 2> err_packmol')
+        #
+        cell = read('./system.xyz')
+        cell.set_cell([x_box,y_box,z_box])
+        cell = sortmol(cell)
+        cell.write('system.cif')
+        #
+        #view(cell)
+        #sys.exit()
+        #
+        unitcell = read(g.cifdir+'/ZincPhthalocyanine.cif')
+        #
+        volume = unitcell.get_volume()
+        masses = unitcell.get_masses()
+        tot_mass = sum(masses)
+        dens = tot_mass/volume
+        print(dens)
+        #
+        volume1 = cell.get_volume()
+        masses1 = cell.get_masses()
+        tot_mass1 = sum(masses1)
+        dens1 = tot_mass1/volume1
+        print(dens1)
+        #
+        lat = (volume1/(dens/dens1))**(1/3)
+        print(lat)
+        #
+        mk_nvt_input_uff_rigid_scale(cell,0.0005,1000,1000,lat,200000,200000,T0,12345)
+        os.chdir('../')
     os.chdir('../')
 
 # Zn-フタロシアニンのパッキングモデル作成終了
 """
 
-"""
+
 # Zn-フタロシアニンの学習データ作成
 
 T_list = [300,500,700,900,1100]
+nset = 1
 
 os.makedirs('./dp_raman_test',exist_ok=True)
 os.chdir('./dp_raman_test')
@@ -429,25 +436,29 @@ os.chdir('./Zn-Pc-allBr')
 os.makedirs('./siesta',exist_ok=True)
 os.chdir('./siesta')
 
-
-for xc in ['BLYP','PBE','BH']:
+for xc in ['KBM']:
     os.makedirs('./xc_'+str(xc),exist_ok=True)
     os.chdir('./xc_'+str(xc))
-    for basis in ['SZ','SZP','DZ','DZP']:
+    for basis in ['DZP']:
         os.makedirs('./basis_'+str(basis),exist_ok=True)
         os.chdir('./basis_'+str(basis))
         for T0 in T_list:
             os.makedirs('./T_'+str(T0),exist_ok=True)
             os.chdir('./T_'+str(T0))
-            cell = read('/home/A23321P/work/myLAMMPS/dp_raman_test/Zn-Pc_train/Zn-Pc-allBr/lammps/T_'+str(T0)+'/result.data',format='lammps-data',sort_by_id=True,Z_of_type={1:35,2:6,3:7,4:30})
-            #view(cell)
-            mk_siesta_input_npt(cell,xc,basis,50.0,None,T0,0.0,2000,g.siesta_pot,SolutionMethod='diagon',MaxSCFIterations=2000,dt=0.5,spin='non-polarized')
+            for n in range(nset):
+                os.makedirs('set'+str(n),exist_ok=True)
+                os.chdir('set'+str(n))
+                cell = read('/home/A23321P/work/myLAMMPS/dp_raman_test/Zn-Pc_train/Zn-Pc-allBr/lammps/T_'+str(T0)+'/set'+str(n)+'/result.data',format='lammps-data',sort_by_id=True,Z_of_type={1:35,2:6,3:7,4:30})
+                #view(cell)
+                #sys.exit()
+                mk_siesta_input_npt(cell,xc,basis,100.0,None,T0,0.0,500,g.siesta_pot,SolutionMethod='diagon',MaxSCFIterations=2000,dt=0.5,spin='non-polarized')
+                os.chdir('../')
             os.chdir('../')
         os.chdir('../')
     os.chdir('../')
 os.chdir('../')
 # Zn-フタロシアニンの学習データ作成終了
-"""
+
 
 """
 # Zn-Pc Br置換モデル構造最適化

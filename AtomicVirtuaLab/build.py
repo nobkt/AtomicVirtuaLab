@@ -65,3 +65,22 @@ def sortmol(cell):
     cell = sort(cell,tags=component_list)
     return cell
     
+def sortmol_bond_break(cell,blist):
+    from ase import neighborlist
+    from ase.build import sort
+    from ase.io import write
+    from scipy import sparse
+    import numpy as np
+    cutoff = neighborlist.natural_cutoffs(cell)
+    neighborList = neighborlist.NeighborList(cutoff, self_interaction=False, bothways=True)
+    neighborList.update(cell)
+    matrix = neighborList.get_connectivity_matrix()
+    for list in blist:
+        matrix[list[0],list[1]] = 0
+    n_components, component_list = sparse.csgraph.connected_components(matrix)
+    tmp = []
+    for l in component_list:
+        tmp.append(l+1)
+    component_list = np.array(tmp)
+    cell.arrays['mol-id'] = component_list
+    return component_list,cell

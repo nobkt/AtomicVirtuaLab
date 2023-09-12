@@ -13,10 +13,11 @@ def smiles2xyz(smiles,molname,addH,smarts=False,userandom=False):
         m = Chem.AddHs(m)
     # 構造最適化
     if userandom:
-        AllChem.EmbedMolecule(m,useRandomCoords=True)
+        AllChem.EmbedMolecule(m,useRandomCoords=True,randomSeed = 12345)
+        AllChem.MMFFOptimizeMolecule(m)
     else:
         AllChem.EmbedMolecule(m)
-    AllChem.MMFFOptimizeMolecule(m)
+        AllChem.MMFFOptimizeMolecule(m)
     # molファイルとして出力
     Chem.MolToMolFile(m,molname+'.mol')
     # xyzファイルとして出力

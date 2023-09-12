@@ -146,6 +146,9 @@ def main():
     parser.add_argument("-s", "--smi",
                         help="Smiles string of the molecule to be atom-typed",
                         required=True)
+    parser.add_argument("-p", "--random",
+                        help="Smiles string of the molecule to be atom-typed",
+                        default=False)
     parser.add_argument("-n", "--name",
                         help="Name of the molecule to be typed",
                         default="LIG")
@@ -171,8 +174,12 @@ def main():
 
     #Build rdkit molecule from smiles and generate a conformer
     m = AllChem.AddHs(Chem.MolFromSmiles(args.smi))
-    AllChem.EmbedMolecule(m)
-    #AllChem.EmbedMolecule(m,useRandomCoords=True)
+    if args.random:
+        AllChem.EmbedMolecule(m,useRandomCoords=True, randomSeed = 12345)
+        AllChem.MMFFOptimizeMolecule(m)
+    else:
+        AllChem.EmbedMolecule(m)
+        AllChem.MMFFOptimizeMolecule(m)
     # Optimize
     #AllChem.MMFFOptimizeMolecule(m)
     # WARNING: This part is dumb. Will update the lopls definitions ONLY

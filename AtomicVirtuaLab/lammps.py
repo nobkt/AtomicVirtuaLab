@@ -48,7 +48,7 @@ def mk_nvt_input_fr_moltemplate(symbols,minimize,dt,dmp_step,thermo_step,md_step
     f.write('write_data system_after_nvt.data'+'\n')
     f.close()
     
-def mk_npt_input_fr_moltemplate(symbols,minimize,dt,dmp_step,thermo_step,md_step,T,P,dof_type,seed,restart):
+def mk_npt_input_fr_moltemplate(symbols,minimize,dt,dmp_step,thermo_step,md_step,T,P,dof_type,seed,restart,qeq=False):
     f = open('input_npt.lmp','w')
     f.write('# ------------------------------- Initialization Section -------------------'+'\n')
     f.write('\n')
@@ -61,7 +61,11 @@ def mk_npt_input_fr_moltemplate(symbols,minimize,dt,dmp_step,thermo_step,md_step
     else:
         f.write('read_data "system.data"'+'\n')
         f.write('\n')
-        f.write('include "system.in.charges"'+'\n')
+        if qeq:
+            f.write('set atom 1 charge 0.0001'+'\n')
+            f.write('set atom 2 charge -0.0001'+'\n')
+        else:
+            f.write('include "system.in.charges"'+'\n')
         f.write('\n')
         f.write('# ------------------------------- Settings Section --------------------------'+'\n')
         f.write('\n')
@@ -69,6 +73,9 @@ def mk_npt_input_fr_moltemplate(symbols,minimize,dt,dmp_step,thermo_step,md_step
     f.write('\n')
     f.write('# ------------------------------- Run Section -------------------------------'+'\n')
     f.write('\n')
+    if qeq:
+        mk_qeqfile(symbols,unit='real')
+        f.write('fix fxqeq all qeq/point 1 10 1.0e-6 100 my_qeq'+'\n')
     if not restart:
         if minimize:
             f.write('# -- minimization protocol --'+'\n')
@@ -92,6 +99,96 @@ def mk_npt_input_fr_moltemplate(symbols,minimize,dt,dmp_step,thermo_step,md_step
     f.write('\n')
     if not restart:
         f.write('velocity all create '+str(T)+' '+str(seed)+'\n')
+    f.write('fix fxnpt all npt temp '+str(T)+' '+str(T)+' $(dt*100.0) '+str(dof_type)+' '+str(P)+' '+str(P)+' $(dt*1000.0)'+'\n')
+    f.write('\n')
+    f.write('run '+str(md_step)+'\n')
+    f.write('write_data system_after_npt.data'+'\n')
+    f.close()
+
+def mk_npt_compress_input_fr_moltemplate(symbols,minimize,dt,dmp_step,thermo_step,ncomp,comp_step,Tcomp,Pcomp,hT_step,hT,md_step,T,P,dof_type,seed,restart,qeq=False):
+    f = open('input_npt.lmp','w')
+    f.write('# ------------------------------- Initialization Section -------------------'+'\n')
+    f.write('\n')
+    f.write('include "system.in.init"'+'\n')
+    f.write('\n')
+    f.write('# ------------------------------- Atom Definition Section -------------------'+'\n')
+    f.write('\n')
+    if restart:
+        f.write('read_data "restart.data"'+'\n')
+    else:
+        f.write('read_data "system.data"'+'\n')
+        f.write('\n')
+        if qeq:
+            f.write('set atom 1 charge 0.0001'+'\n')
+            f.write('set atom 2 charge -0.0001'+'\n')
+        else:
+            f.write('include "system.in.charges"'+'\n')
+        f.write('\n')
+        f.write('# ------------------------------- Settings Section --------------------------'+'\n')
+        f.write('\n')
+        f.write('include "system.in.settings"'+'\n')
+    f.write('\n')
+    f.write('# ------------------------------- Run Section -------------------------------'+'\n')
+    f.write('\n')
+    if qeq:
+        mk_qeqfile(symbols,unit='real')
+        f.write('fix fxqeq all qeq/point 1 10 1.0e-6 100 my_qeq'+'\n')
+    f.write('fix fxmom all momentum 1 linear 1 1 1'+'\n')
+    if not restart:
+        if minimize:
+            f.write('# -- minimization protocol --'+'\n')
+            f.write('\n')
+            f.write('minimize 1.0e-4 1.0e-6 100000 400000'+'\n')
+            f.write('\n')
+    f.write('# -- simulation protocol --'+'\n')
+    f.write('\n')
+    f.write('timestep '+str(dt)+'\n')
+    f.write('\n')
+    f.write('print "----------------------------------------------------------------"'+'\n')
+    f.write('print "--- Run a simulation using a Nose-Hoover Thermostat/Barostat ---"'+'\n')
+    f.write('print "----------------------------------------------------------------"'+'\n')
+    f.write('dump dmp all custom '+str(dmp_step)+' traj_comp.lammpstrj id mol type element x y z ix iy iz'+'\n')
+    f.write('dump_modify dmp element')
+    for symbol in symbols:
+        f.write(' '+str(symbol))
+    f.write('\n')
+    f.write('thermo_style custom step etotal enthalpy pe ke temp press vol density cella cellb cellc cellalpha cellbeta cellgamma'+'\n')
+    f.write('thermo '+str(thermo_step)+'\n')
+    f.write('\n')
+    if not restart:
+        f.write('velocity all create '+str(Tcomp)+' '+str(seed)+'\n')
+    f.write('fix fxnpt all npt temp '+str(Tcomp)+' '+str(Tcomp)+' $(dt*100.0) '+str(dof_type)+' '+str(Pcomp)+' '+str(Pcomp)+' $(dt*1000.0)'+'\n')
+    f.write('\n')
+    f.write('run '+str(comp_step)+'\n')
+    f.write('unfix fxnpt'+'\n')
+    f.write('velocity all scale '+str(Tcomp)+'\n')
+    f.write('fix fxnvt all nvt temp '+str(hT)+' '+str(hT)+' $(dt*100.0)'+'\n')
+    f.write('\n')
+    f.write('run '+str(hT_step)+'\n')
+    f.write('unfix fxnvt'+'\n')
+    #
+    f.write('label loopa'+'\n')
+    f.write('variable a loop '+str(ncomp-1)+'\n')
+    f.write('fix fxnpt all npt temp '+str(Tcomp)+' '+str(Tcomp)+' $(dt*100.0) '+str(dof_type)+' '+str(Pcomp)+' '+str(Pcomp)+' $(dt*1000.0)'+'\n')
+    f.write('\n')
+    f.write('run '+str(comp_step)+'\n')
+    f.write('unfix fxnpt'+'\n')
+    f.write('velocity all scale '+str(Tcomp)+'\n')
+    f.write('fix fxnvt all nvt temp '+str(hT)+' '+str(hT)+' $(dt*100.0)'+'\n')
+    f.write('\n')
+    f.write('run '+str(hT_step)+'\n')
+    f.write('unfix fxnvt'+'\n')
+    f.write('next a'+'\n')
+    f.write('jump SELF loopa'+'\n')
+    f.write('undump dmp'+'\n')
+    #
+    f.write('reset_timestep 0'+'\n')
+    f.write('dump dmp all custom '+str(dmp_step)+' traj_npt.lammpstrj id mol type element x y z ix iy iz'+'\n')
+    f.write('dump_modify dmp element')
+    for symbol in symbols:
+        f.write(' '+str(symbol))
+    f.write('\n')
+    f.write('velocity all scale '+str(T)+'\n')
     f.write('fix fxnpt all npt temp '+str(T)+' '+str(T)+' $(dt*100.0) '+str(dof_type)+' '+str(P)+' '+str(P)+' $(dt*1000.0)'+'\n')
     f.write('\n')
     f.write('run '+str(md_step)+'\n')
@@ -642,7 +739,7 @@ def mk_npt_melt_input_deepmd(cell,dt,dmp_step,thermo_step,eq_step,melt_step,md_s
     f.write('timestep '+str(dt)+'\n')
     f.write('velocity all create '+str(Teq)+' '+str(seed)+'\n')
     f.write('fix fmom all momentum 1 linear 1 1 1'+'\n')
-    f.write('fix fxnpt all npt temp '+str(Teq)+' '+str(Teq)+' $(dt*100.0) '+'aniso '+str(P)+' '+str(P)+' $(dt*1000.0)'+'\n')
+    f.write('fix fxnpt all npt temp '+str(Teq)+' '+str(Teq)+' $(dt*100.0) '+'tri '+str(P)+' '+str(P)+' $(dt*1000.0)'+'\n')
     f.write('run '+str(eq_step)+'\n')
     f.write('unfix fxnpt'+'\n')
     f.write('velocity upper scale '+str(Tmelt)+'\n')
@@ -652,7 +749,7 @@ def mk_npt_melt_input_deepmd(cell,dt,dmp_step,thermo_step,eq_step,melt_step,md_s
     f.write('write_data result0.data'+'\n')
     f.write('velocity all scale '+str(T)+'\n')
     f.write('fix th all ave/time 1 '+str(int(md_step/2))+' '+str(md_step)+' v_mytemp v_myenthalpy v_mydensity v_myvol v_mycella v_mycellb v_mycellc v_mycellalpha v_mycellbeta v_mycellgamma file th'+str(T)+'.profile'+'\n')
-    f.write('fix fxnpt all npt temp '+str(T)+' '+str(T)+' $(dt*100.0) '+'aniso '+str(P)+' '+str(P)+' $(dt*1000.0)'+'\n')
+    f.write('fix fxnpt all npt temp '+str(T)+' '+str(T)+' $(dt*100.0) '+'tri '+str(P)+' '+str(P)+' $(dt*1000.0)'+'\n')
     f.write('run '+str(md_step)+'\n')
     f.write('unfix fxnpt'+'\n')
     f.write('unfix th'+'\n')
@@ -704,16 +801,22 @@ def mk_npt_input_deepmd(cell,dt,dmp_step,thermo_step,eq_step,Teq,P,seed):
     f.write('write_data result.data'+'\n')
     f.close()
 
-def mk_qeqfile(symbols):
+def mk_qeqfile(symbols,unit='metal'):
     from pymatgen.core.periodic_table import Element
     f = open('my_qeq','w')
-    f.write('# UNITS: metal'+'\n')
+    if unit == 'metal':
+        f.write('# UNITS: metal'+'\n')
+    elif unit == 'real':
+        f.write('# UNITS: real'+'\n')
     i = 1
     for symbol in symbols:
         IP = Element(symbol).data['Ionization energies'][0]
         EA = Element(symbol).data['Electron affinity']
         CHI = (IP+EA)/2.0
         ETA = (IP-EA)/2.0
+        if unit == 'real':
+            CHI = CHI*23.06000
+            ETA = ETA*23.06000
         f.write(str(i)+' '+str(CHI)+' '+str(ETA)+' '+'0.0 0.0 0.0'+'\n')
         i = i + 1
     f.close()

@@ -32,7 +32,6 @@ def mk_siesta_input_npt(cell,xc,basis_set,mesh_cutoff,kpts,temp,press,nstep,pseu
                              #'WriteHirshfeldPop':True,
                              #'WriteVoronoiPop':True,
                              #'PartialChargesAtEveryGeometry':True,
-                             'Geometry.Constraints':[('stress','4 5 6')],
                              'SCF.Mixers':['broyden'],
                              'SCF.Mixer.broyden':[('method','broyden'),('weight',0.01),('weight.linear',0.005)]
                              }
@@ -75,10 +74,35 @@ def mk_siesta_input_nvt(cell,xc,basis_set,mesh_cutoff,kpts,temp,nstep,pseudo_pat
                              }
               ).write_input(cell,'siesta')
 
-def mk_siesta_input_optimize(cell,xc,basis_set,mesh_cutoff,kpts,nstep,pseudo_path,SolutionMethod='diagon',MaxSCFIterations=2000,spin='non-polarized'):
+def mk_siesta_input_optimize(cell,xc,basis_set,mesh_cutoff,kpts,nstep,pseudo_path,SolutionMethod='diagon',MaxSCFIterations=2000,options={},spin='non-polarized'):
     from ase.calculators.siesta import Siesta
     from ase.units import Ry
+
+    fdf_arguments0={
+                    'MaxSCFIterations':int(MaxSCFIterations),
+                    'WriteCoorStep':True,
+                    'WriteForces':True,
+                    'WriteMDHistory':True,
+                    'WriteCoorXmol':True,
+                    'WriteCoorCerius':True,
+                    'WriteMDXmol':True,
+                    'MD.UseSaveXV':True,
+                    'MD.TypeOfRun':'CG',
+                    'MD.NumCGsteps':int(nstep),
+                    'SolutionMethod':str(SolutionMethod),
+                    'SCFMustConverge':True,
+                    'WriteMullikenPop':1,
+                    'WriteHirshfeldPop':True,
+                    'WriteVoronoiPop':True,
+                    'PartialChargesAtEveryGeometry':True,
+                    'SCF.Mixers':['broyden'],
+                    'SCF.Mixer.broyden':[('method','broyden'),('weight',0.01),('weight.linear',0.005)]
+                    }
     
+    if len(options) != 0:
+        for option in options:
+            fdf_arguments0[option] = options[option]
+
     calc = Siesta(label='siesta',
               xc=str(xc),
               mesh_cutoff=float(mesh_cutoff)*Ry,
@@ -86,26 +110,7 @@ def mk_siesta_input_optimize(cell,xc,basis_set,mesh_cutoff,kpts,nstep,pseudo_pat
               kpts=kpts,
               spin=spin,
               pseudo_path=pseudo_path,
-              fdf_arguments={
-                             'MaxSCFIterations':int(MaxSCFIterations),
-                             'WriteCoorStep':True,
-                             'WriteForces':True,
-                             'WriteMDHistory':True,
-                             'WriteCoorXmol':True,
-                             'WriteCoorCerius':True,
-                             'WriteMDXmol':True,
-                             'MD.UseSaveXV':True,
-                             'MD.TypeOfRun':'CG',
-                             'MD.NumCGsteps':int(nstep),
-                             'SolutionMethod':str(SolutionMethod),
-                             'SCFMustConverge':True,
-                             'WriteMullikenPop':1,
-                             'WriteHirshfeldPop':True,
-                             'WriteVoronoiPop':True,
-                             'PartialChargesAtEveryGeometry':True,
-                             'SCF.Mixers':['broyden'],
-                             'SCF.Mixer.broyden':[('method','broyden'),('weight',0.01),('weight.linear',0.005)]
-                             }
+              fdf_arguments=fdf_arguments0
               ).write_input(cell,'siesta')
 
 def mk_siesta_input_cellopt(cell,xc,basis_set,mesh_cutoff,kpts,nstep,pseudo_path,SolutionMethod='diagon',MaxSCFIterations=2000,spin='non-polarized'):
