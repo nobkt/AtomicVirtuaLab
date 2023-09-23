@@ -13,7 +13,7 @@ import sys
 
 g.cifs = '/home/A23321P/work/myPython/AtomicVirtuaLab/cifs'
 
-nmol = 64
+nmol = 128
 
 os.makedirs('./uv_risin_md',exist_ok=True)
 os.chdir('./uv_risin_md')
@@ -36,9 +36,9 @@ for mol in mols:
     mollist={
         'mol'+str(i):nmol
     }
-    x_box=200.0
-    y_box=200.0
-    z_box=200.0
+    x_box=300.0
+    y_box=300.0
+    z_box=300.0
     os.makedirs('./packmol',exist_ok=True)
     os.chdir('./packmol')
     smiles2xyz(smiles,'mol'+str(i),True,smarts=False,userandom=rnd)
@@ -67,7 +67,18 @@ for mol in mols:
     shutil.copy('../moltemplate/system.in.init','./')
     shutil.copy('../moltemplate/system.in.settings','./')
     #mk_npt_input_fr_moltemplate(symbols,True,0.5,200,200,200000,400,100,'iso',12345,False,qeq=True)
-    mk_npt_compress_input_fr_moltemplate(symbols,True,0.5,200,200,10,10000,400,100,10000,400,2000000,300,1.0,'iso',12345,False,qeq=True)
+    f = open('system.data','r')
+    lines = f.readlines()
+    f.close()
+    for line in lines:
+        if 'atom types' in line:
+            line = line.split()
+            ntype = int(line[0])
+    rdfpairs=[]
+    for ipair in range(ntype-1):
+        for jpair in range(ipair,ntype):
+            rdfpairs.append([ipair+1,jpair+1])
+    mk_npt_compress_input_fr_moltemplate(symbols,True,0.5,2000,2000,10,10000,400,100,10000,400,2000000,300,1.0,'iso',12345,False,qeq=True,rdfpairs=rdfpairs)
     os.chdir('../')
     i+=1
     os.chdir('../')

@@ -462,7 +462,7 @@ def mk_qe_input_nvt(cell,xc,pot,tempw,tolp,dt=0.5,level='low',estep=1000,nstep=1
         input_data['nbnd'] = nbnd
     cell.write('qe_nvt.pwi',input_data=input_data,pseudopotentials=pseudo,kpts=kpts,crystal_coordinates=False)
 
-def mk_qe_input_npt(cell,xc,pot,tempw,tolp,press,dt=0.5,level='low',estep=1000,nstep=1000,ecutwfc=25,ecutrho=225,mixing_beta=0.2,kpts=None,ecut='manual',cell_dofree='all',options={},nspin=False):
+def mk_qe_input_npt(cell,xc,pot,tempw,tolp,press,dt=0.5,level='low',estep=1000,nstep=1000,ecutwfc=25,ecutrho=225,mixing_beta=0.2,kpts=None,ecut='manual',cell_dofree='all',options={},nspin=False,magElm=None):
     from ase.io import write
     import AtomicVirtuaLab.globalv as g
     import shutil
@@ -527,10 +527,20 @@ def mk_qe_input_npt(cell,xc,pot,tempw,tolp,press,dt=0.5,level='low',estep=1000,n
             input_data[option] = options[option]
     if nspin == True:
         input_data['nspin'] = 2
-        valence, magmom = get_valence(cell,pseudo,level)
-        cell.set_initial_magnetic_moments(magmom)
-        nbnd = int(valence/2.0*2.0)
-        input_data['nbnd'] = nbnd
+        valence, magmom0 = get_valence(cell,pseudo,level)
+        if magElm is not None:
+            i = 0
+            magmom=[]
+            for atom in cell:
+                if atom.symbol in magElm:
+                    magmom.append(magmom0[i])
+                else:
+                    magmom.append(0)
+                i = i + 1
+            magmom0 = magmom    
+        cell.set_initial_magnetic_moments(magmom0)
+        #nbnd = int(valence/2.0*1.2)
+        #input_data['nbnd'] = nbnd
     cell.write('qe_npt.pwi',input_data=input_data,pseudopotentials=pseudo,kpts=kpts,crystal_coordinates=False)
 
 def mk_qe_input_phonon(cell,nq=(4,4,4),nk=(16,16,16)):

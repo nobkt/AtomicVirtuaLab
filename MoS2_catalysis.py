@@ -20,7 +20,7 @@ g.siesta_pot = '/home/A23321P/work/myPython/AtomicVirtuaLab/siesta_pseudo'
 g.cifdir='./cifs'
 
 
-"""
+
 # one Pd吸着後スラブ 吸着モデル ポテンシャル計算
 ecutwfc0=77.0
 ecutrho0=539.0
@@ -33,7 +33,7 @@ k0 = kpoint
 
 rlist = [0.5,1.0,1.5,2.0,2.5,3.0,3.5,4.0]
 
-elm = 'H'
+elm = 'Pd'
 
 path = os.getcwd()
 os.chdir(path)
@@ -58,7 +58,7 @@ slab.set_constraint(c)
 #sys.exit()
 
 # Pd_ontop
-rlist = [1.6,1.7,1.8,1.9,2.0,2.1,2.2,2.3,2.4,2.5]
+rlist = [2.1,2.2,2.3,2.4,2.6,2.7,2.8,2.9]
 adtype = 'Pd_ontop'
 x0 = 3.154
 y0 = 5.463
@@ -72,12 +72,12 @@ for r in rlist:
     adsorp = slab+atm
     #view(adsorp)
     mk_qe_input_scf(adsorp,'pbe','paw',level='high',ecutwfc=ecutwfc,ecutrho=ecutrho,mixing_beta=0.2,kpts=(k0,k0,1),ecut='manual',nosym=True,tstress=False,options={'vdw_corr':'dft-d3','dftd3_version':4,'assume_isolated':'esm','esm_bc':'bc1'},nspin=False)
-    mk_qe_input_dos(adsorp,'pbe','paw',level='high',ecutwfc=ecutwfc,ecutrho=ecutrho,mixing_beta=0.2,kpts=(k0,k0,1),ecut='manual',options={'vdw_corr':'dft-d3','dftd3_version':4,'assume_isolated':'esm','esm_bc':'bc1'},nspin=False)
+    #mk_qe_input_dos(adsorp,'pbe','paw',level='high',ecutwfc=ecutwfc,ecutrho=ecutrho,mixing_beta=0.2,kpts=(k0,k0,1),ecut='manual',options={'vdw_corr':'dft-d3','dftd3_version':4,'assume_isolated':'esm','esm_bc':'bc1'},nspin=False)
     os.chdir('../')
 os.chdir('../')
 
 # S_ontop_1
-rlist = [1.6,1.7,1.8,1.9,2.0,2.1,2.2,2.3,2.4,2.5]
+rlist = [2.6,2.7,2.8,2.9,3.1,3.2,3.3,3.4,3.5]
 adtype = 'S_ontop_1'
 x0 = 4.828
 y0 = 4.496
@@ -91,12 +91,12 @@ for r in rlist:
     adsorp = slab+atm
     #view(adsorp)
     mk_qe_input_scf(adsorp,'pbe','paw',level='high',ecutwfc=ecutwfc,ecutrho=ecutrho,mixing_beta=0.2,kpts=(k0,k0,1),ecut='manual',nosym=True,tstress=False,options={'vdw_corr':'dft-d3','dftd3_version':4,'assume_isolated':'esm','esm_bc':'bc1'},nspin=False)
-    mk_qe_input_dos(adsorp,'pbe','paw',level='high',ecutwfc=ecutwfc,ecutrho=ecutrho,mixing_beta=0.2,kpts=(k0,k0,1),ecut='manual',options={'vdw_corr':'dft-d3','dftd3_version':4,'assume_isolated':'esm','esm_bc':'bc1'},nspin=False)
+    #mk_qe_input_dos(adsorp,'pbe','paw',level='high',ecutwfc=ecutwfc,ecutrho=ecutrho,mixing_beta=0.2,kpts=(k0,k0,1),ecut='manual',options={'vdw_corr':'dft-d3','dftd3_version':4,'assume_isolated':'esm','esm_bc':'bc1'},nspin=False)
     os.chdir('../')
 os.chdir('../')
 
 # S_ontop_2
-rlist = [1.6,1.7,1.8,1.9,2.0,2.1,2.2,2.3,2.4,2.5]
+rlist = [1.6,1.7,1.8,1.9,2.1,2.2,2.3,2.4]
 adtype = 'S_ontop_2'
 x0 = -0.006
 y0 = 7.287
@@ -110,12 +110,12 @@ for r in rlist:
     adsorp = slab+atm
     #view(adsorp)
     mk_qe_input_scf(adsorp,'pbe','paw',level='high',ecutwfc=ecutwfc,ecutrho=ecutrho,mixing_beta=0.2,kpts=(k0,k0,1),ecut='manual',nosym=True,tstress=False,options={'vdw_corr':'dft-d3','dftd3_version':4,'assume_isolated':'esm','esm_bc':'bc1'},nspin=False)
-    mk_qe_input_dos(adsorp,'pbe','paw',level='high',ecutwfc=ecutwfc,ecutrho=ecutrho,mixing_beta=0.2,kpts=(k0,k0,1),ecut='manual',options={'vdw_corr':'dft-d3','dftd3_version':4,'assume_isolated':'esm','esm_bc':'bc1'},nspin=False)
+    #mk_qe_input_dos(adsorp,'pbe','paw',level='high',ecutwfc=ecutwfc,ecutrho=ecutrho,mixing_beta=0.2,kpts=(k0,k0,1),ecut='manual',options={'vdw_corr':'dft-d3','dftd3_version':4,'assume_isolated':'esm','esm_bc':'bc1'},nspin=False)
     os.chdir('../')
 os.chdir('../')
 
 # S_ontop_3
-rlist = [1.6,1.7,1.8,1.9,2.0,2.1,2.2,2.3,2.4,2.5]
+rlist = [1.6,1.7,1.8,1.9,2.1,2.2,2.3,2.4]
 adtype = 'S_ontop_3'
 x0 = -0.012
 y0 = 1.808
@@ -129,13 +129,13 @@ for r in rlist:
     adsorp = slab+atm
     #view(adsorp)
     mk_qe_input_scf(adsorp,'pbe','paw',level='high',ecutwfc=ecutwfc,ecutrho=ecutrho,mixing_beta=0.2,kpts=(k0,k0,1),ecut='manual',nosym=True,tstress=False,options={'vdw_corr':'dft-d3','dftd3_version':4,'assume_isolated':'esm','esm_bc':'bc1'},nspin=False)
-    mk_qe_input_dos(adsorp,'pbe','paw',level='high',ecutwfc=ecutwfc,ecutrho=ecutrho,mixing_beta=0.2,kpts=(k0,k0,1),ecut='manual',options={'vdw_corr':'dft-d3','dftd3_version':4,'assume_isolated':'esm','esm_bc':'bc1'},nspin=False)
+    #mk_qe_input_dos(adsorp,'pbe','paw',level='high',ecutwfc=ecutwfc,ecutrho=ecutrho,mixing_beta=0.2,kpts=(k0,k0,1),ecut='manual',options={'vdw_corr':'dft-d3','dftd3_version':4,'assume_isolated':'esm','esm_bc':'bc1'},nspin=False)
     os.chdir('../')
 os.chdir('../')
 
 
 # bridge_1
-rlist = [0.0,0.1,0.2,0.3,0.4]
+rlist = [2.6,2.7,2.8,2.9,3.1,3.2,3.3,3.4,3.5]
 adtype = 'bridge_1'
 x0 = (3.154+1.480)/2.0
 y0 = (7.396+4.496)/2.0
@@ -149,12 +149,12 @@ for r in rlist:
     adsorp = slab+atm
     #view(adsorp)
     mk_qe_input_scf(adsorp,'pbe','paw',level='high',ecutwfc=ecutwfc,ecutrho=ecutrho,mixing_beta=0.2,kpts=(k0,k0,1),ecut='manual',nosym=True,tstress=False,options={'vdw_corr':'dft-d3','dftd3_version':4,'assume_isolated':'esm','esm_bc':'bc1'},nspin=False)
-    mk_qe_input_dos(adsorp,'pbe','paw',level='high',ecutwfc=ecutwfc,ecutrho=ecutrho,mixing_beta=0.2,kpts=(k0,k0,1),ecut='manual',options={'vdw_corr':'dft-d3','dftd3_version':4,'assume_isolated':'esm','esm_bc':'bc1'},nspin=False)
+    #mk_qe_input_dos(adsorp,'pbe','paw',level='high',ecutwfc=ecutwfc,ecutrho=ecutrho,mixing_beta=0.2,kpts=(k0,k0,1),ecut='manual',options={'vdw_corr':'dft-d3','dftd3_version':4,'assume_isolated':'esm','esm_bc':'bc1'},nspin=False)
     os.chdir('../')
 os.chdir('../')
 
 # bridge_2
-rlist = [0.5,0.6,0.7,0.8,0.9,1.0,1.1,1.2,1.3,1.4,1.5]
+rlist = [1.6,1.7,1.8,1.9,2.1,2.2,2.3,2.4]
 adtype = 'bridge_2'
 x0 = (3.154-0.006)/2.0
 y0 = (7.396+7.287)/2.0
@@ -168,12 +168,12 @@ for r in rlist:
     adsorp = slab+atm
     #view(adsorp)
     mk_qe_input_scf(adsorp,'pbe','paw',level='high',ecutwfc=ecutwfc,ecutrho=ecutrho,mixing_beta=0.2,kpts=(k0,k0,1),ecut='manual',nosym=True,tstress=False,options={'vdw_corr':'dft-d3','dftd3_version':4,'assume_isolated':'esm','esm_bc':'bc1'},nspin=False)
-    mk_qe_input_dos(adsorp,'pbe','paw',level='high',ecutwfc=ecutwfc,ecutrho=ecutrho,mixing_beta=0.2,kpts=(k0,k0,1),ecut='manual',options={'vdw_corr':'dft-d3','dftd3_version':4,'assume_isolated':'esm','esm_bc':'bc1'},nspin=False)
+    #mk_qe_input_dos(adsorp,'pbe','paw',level='high',ecutwfc=ecutwfc,ecutrho=ecutrho,mixing_beta=0.2,kpts=(k0,k0,1),ecut='manual',options={'vdw_corr':'dft-d3','dftd3_version':4,'assume_isolated':'esm','esm_bc':'bc1'},nspin=False)
     os.chdir('../')
 os.chdir('../')
 
 # bridge_3
-rlist = [0.5,0.6,0.7,0.8,0.9,1.0,1.1,1.2,1.3,1.4,1.5]
+rlist = [1.6,1.7,1.8,1.9,2.1,2.2,2.3,2.4]
 adtype = 'bridge_3'
 x0 = (3.154+1.572)/2.0
 y0 = (7.396+10.031)/2.0
@@ -187,12 +187,12 @@ for r in rlist:
     adsorp = slab+atm
     #view(adsorp)
     mk_qe_input_scf(adsorp,'pbe','paw',level='high',ecutwfc=ecutwfc,ecutrho=ecutrho,mixing_beta=0.2,kpts=(k0,k0,1),ecut='manual',nosym=True,tstress=False,options={'vdw_corr':'dft-d3','dftd3_version':4,'assume_isolated':'esm','esm_bc':'bc1'},nspin=False)
-    mk_qe_input_dos(adsorp,'pbe','paw',level='high',ecutwfc=ecutwfc,ecutrho=ecutrho,mixing_beta=0.2,kpts=(k0,k0,1),ecut='manual',options={'vdw_corr':'dft-d3','dftd3_version':4,'assume_isolated':'esm','esm_bc':'bc1'},nspin=False)
+    #mk_qe_input_dos(adsorp,'pbe','paw',level='high',ecutwfc=ecutwfc,ecutrho=ecutrho,mixing_beta=0.2,kpts=(k0,k0,1),ecut='manual',options={'vdw_corr':'dft-d3','dftd3_version':4,'assume_isolated':'esm','esm_bc':'bc1'},nspin=False)
     os.chdir('../')
 os.chdir('../')
 
 # fcc_1
-rlist = [0.5,0.6,0.7,0.8,0.9,1.0,1.1,1.2,1.3,1.4,1.5]
+rlist = [1.1,1.2,1.3,1.4,1.6,1.7,1.8,1.9]
 adtype = 'fcc_1'
 x0 = (1.480-1.594-0.006)/3.0
 y0 = (4.496+4.548+7.287)/3.0
@@ -206,12 +206,12 @@ for r in rlist:
     adsorp = slab+atm
     #view(adsorp)
     mk_qe_input_scf(adsorp,'pbe','paw',level='high',ecutwfc=ecutwfc,ecutrho=ecutrho,mixing_beta=0.2,kpts=(k0,k0,1),ecut='manual',nosym=True,tstress=False,options={'vdw_corr':'dft-d3','dftd3_version':4,'assume_isolated':'esm','esm_bc':'bc1'},nspin=False)
-    mk_qe_input_dos(adsorp,'pbe','paw',level='high',ecutwfc=ecutwfc,ecutrho=ecutrho,mixing_beta=0.2,kpts=(k0,k0,1),ecut='manual',options={'vdw_corr':'dft-d3','dftd3_version':4,'assume_isolated':'esm','esm_bc':'bc1'},nspin=False)
+    #mk_qe_input_dos(adsorp,'pbe','paw',level='high',ecutwfc=ecutwfc,ecutrho=ecutrho,mixing_beta=0.2,kpts=(k0,k0,1),ecut='manual',options={'vdw_corr':'dft-d3','dftd3_version':4,'assume_isolated':'esm','esm_bc':'bc1'},nspin=False)
     os.chdir('../')
 os.chdir('../')
 
 # hcp_1
-rlist = [1.6,1.7,1.8,1.9,2.0,2.1,2.2,2.3,2.4,2.5]
+rlist = [2.6,2.7,2.8,2.9,3.1,3.2,3.3,3.4,3.5]
 adtype = 'hcp_1'
 x0 = (1.480+3.154-0.006)/3.0
 y0 = (4.496+7.396+7.287)/3.0
@@ -225,12 +225,12 @@ for r in rlist:
     adsorp = slab+atm
     #view(adsorp)
     mk_qe_input_scf(adsorp,'pbe','paw',level='high',ecutwfc=ecutwfc,ecutrho=ecutrho,mixing_beta=0.2,kpts=(k0,k0,1),ecut='manual',nosym=True,tstress=False,options={'vdw_corr':'dft-d3','dftd3_version':4,'assume_isolated':'esm','esm_bc':'bc1'},nspin=False)
-    mk_qe_input_dos(adsorp,'pbe','paw',level='high',ecutwfc=ecutwfc,ecutrho=ecutrho,mixing_beta=0.2,kpts=(k0,k0,1),ecut='manual',options={'vdw_corr':'dft-d3','dftd3_version':4,'assume_isolated':'esm','esm_bc':'bc1'},nspin=False)
+    #mk_qe_input_dos(adsorp,'pbe','paw',level='high',ecutwfc=ecutwfc,ecutrho=ecutrho,mixing_beta=0.2,kpts=(k0,k0,1),ecut='manual',options={'vdw_corr':'dft-d3','dftd3_version':4,'assume_isolated':'esm','esm_bc':'bc1'},nspin=False)
     os.chdir('../')
 os.chdir('../')
 
 # hcp_2
-rlist = [0.5,0.6,0.7,0.8,0.9,1.0,1.1,1.2,1.3,1.4,1.5]
+rlist = [1.1,1.2,1.3,1.4,1.6,1.7,1.8,1.9]
 adtype = 'hcp_2'
 x0 = (1.480-0.012-1.594)/3.0
 y0 = (4.496+1.808+4.568)/3.0
@@ -245,7 +245,7 @@ for r in rlist:
     #view(adsorp)
     #sys.exit()
     mk_qe_input_scf(adsorp,'pbe','paw',level='high',ecutwfc=ecutwfc,ecutrho=ecutrho,mixing_beta=0.2,kpts=(k0,k0,1),ecut='manual',nosym=True,tstress=False,options={'vdw_corr':'dft-d3','dftd3_version':4,'assume_isolated':'esm','esm_bc':'bc1'},nspin=False)
-    mk_qe_input_dos(adsorp,'pbe','paw',level='high',ecutwfc=ecutwfc,ecutrho=ecutrho,mixing_beta=0.2,kpts=(k0,k0,1),ecut='manual',options={'vdw_corr':'dft-d3','dftd3_version':4,'assume_isolated':'esm','esm_bc':'bc1'},nspin=False)
+    #mk_qe_input_dos(adsorp,'pbe','paw',level='high',ecutwfc=ecutwfc,ecutrho=ecutrho,mixing_beta=0.2,kpts=(k0,k0,1),ecut='manual',options={'vdw_corr':'dft-d3','dftd3_version':4,'assume_isolated':'esm','esm_bc':'bc1'},nspin=False)
     os.chdir('../')
 os.chdir('../')
 
@@ -271,7 +271,7 @@ slab.set_constraint(c)
 #sys.exit()
 
 # Pd_ontop
-rlist = [1.6,1.7,1.8,1.9,2.0,2.1,2.2,2.3,2.4,2.5]
+rlist = [1.0,1.5,2.0,2.5,3.0]
 adtype = 'Pd_ontop'
 x0 = 1.576
 y0 = 6.386
@@ -286,12 +286,12 @@ for r in rlist:
     #view(adsorp)
     #sys.exit()
     mk_qe_input_scf(adsorp,'pbe','paw',level='high',ecutwfc=ecutwfc,ecutrho=ecutrho,mixing_beta=0.2,kpts=(k0,k0,1),ecut='manual',nosym=True,tstress=False,options={'vdw_corr':'dft-d3','dftd3_version':4,'assume_isolated':'esm','esm_bc':'bc1'},nspin=False)
-    mk_qe_input_dos(adsorp,'pbe','paw',level='high',ecutwfc=ecutwfc,ecutrho=ecutrho,mixing_beta=0.2,kpts=(k0,k0,1),ecut='manual',options={'vdw_corr':'dft-d3','dftd3_version':4,'assume_isolated':'esm','esm_bc':'bc1'},nspin=False)
+    #mk_qe_input_dos(adsorp,'pbe','paw',level='high',ecutwfc=ecutwfc,ecutrho=ecutrho,mixing_beta=0.2,kpts=(k0,k0,1),ecut='manual',options={'vdw_corr':'dft-d3','dftd3_version':4,'assume_isolated':'esm','esm_bc':'bc1'},nspin=False)
     os.chdir('../')
 os.chdir('../')
 
 # S_ontop_1
-rlist = [1.6,1.7,1.8,1.9,2.0,2.1,2.2,2.3,2.4,2.5]
+rlist = [1.0,1.5,2.0,2.5,3.0]
 adtype = 'S_ontop_1'
 x0 = 3.249
 y0 = 7.334
@@ -306,12 +306,12 @@ for r in rlist:
     #view(adsorp)
     #sys.exit()
     mk_qe_input_scf(adsorp,'pbe','paw',level='high',ecutwfc=ecutwfc,ecutrho=ecutrho,mixing_beta=0.2,kpts=(k0,k0,1),ecut='manual',nosym=True,tstress=False,options={'vdw_corr':'dft-d3','dftd3_version':4,'assume_isolated':'esm','esm_bc':'bc1'},nspin=False)
-    mk_qe_input_dos(adsorp,'pbe','paw',level='high',ecutwfc=ecutwfc,ecutrho=ecutrho,mixing_beta=0.2,kpts=(k0,k0,1),ecut='manual',options={'vdw_corr':'dft-d3','dftd3_version':4,'assume_isolated':'esm','esm_bc':'bc1'},nspin=False)
+    #mk_qe_input_dos(adsorp,'pbe','paw',level='high',ecutwfc=ecutwfc,ecutrho=ecutrho,mixing_beta=0.2,kpts=(k0,k0,1),ecut='manual',options={'vdw_corr':'dft-d3','dftd3_version':4,'assume_isolated':'esm','esm_bc':'bc1'},nspin=False)
     os.chdir('../')
 os.chdir('../')
 
 # S_ontop_2
-rlist = [1.6,1.7,1.8,1.9,2.0,2.1,2.2,2.3,2.4,2.5]
+rlist = [1.0,1.5,2.0,2.5,3.0]
 adtype = 'S_ontop_2'
 x0 = 4.733
 y0 = 4.545
@@ -326,12 +326,12 @@ for r in rlist:
     #view(adsorp)
     #sys.exit()
     mk_qe_input_scf(adsorp,'pbe','paw',level='high',ecutwfc=ecutwfc,ecutrho=ecutrho,mixing_beta=0.2,kpts=(k0,k0,1),ecut='manual',nosym=True,tstress=False,options={'vdw_corr':'dft-d3','dftd3_version':4,'assume_isolated':'esm','esm_bc':'bc1'},nspin=False)
-    mk_qe_input_dos(adsorp,'pbe','paw',level='high',ecutwfc=ecutwfc,ecutrho=ecutrho,mixing_beta=0.2,kpts=(k0,k0,1),ecut='manual',options={'vdw_corr':'dft-d3','dftd3_version':4,'assume_isolated':'esm','esm_bc':'bc1'},nspin=False)
+    #mk_qe_input_dos(adsorp,'pbe','paw',level='high',ecutwfc=ecutwfc,ecutrho=ecutrho,mixing_beta=0.2,kpts=(k0,k0,1),ecut='manual',options={'vdw_corr':'dft-d3','dftd3_version':4,'assume_isolated':'esm','esm_bc':'bc1'},nspin=False)
     os.chdir('../')
 os.chdir('../')
 
 # S_ontop_3
-rlist = [1.6,1.7,1.8,1.9,2.0,2.1,2.2,2.3,2.4,2.5]
+rlist = [1.0,1.5,2.0,2.5,3.0]
 adtype = 'S_ontop_3'
 x0 = 3.157
 y0 = 1.804
@@ -346,13 +346,13 @@ for r in rlist:
     #view(adsorp)
     #sys.exit()
     mk_qe_input_scf(adsorp,'pbe','paw',level='high',ecutwfc=ecutwfc,ecutrho=ecutrho,mixing_beta=0.2,kpts=(k0,k0,1),ecut='manual',nosym=True,tstress=False,options={'vdw_corr':'dft-d3','dftd3_version':4,'assume_isolated':'esm','esm_bc':'bc1'},nspin=False)
-    mk_qe_input_dos(adsorp,'pbe','paw',level='high',ecutwfc=ecutwfc,ecutrho=ecutrho,mixing_beta=0.2,kpts=(k0,k0,1),ecut='manual',options={'vdw_corr':'dft-d3','dftd3_version':4,'assume_isolated':'esm','esm_bc':'bc1'},nspin=False)
+    #mk_qe_input_dos(adsorp,'pbe','paw',level='high',ecutwfc=ecutwfc,ecutrho=ecutrho,mixing_beta=0.2,kpts=(k0,k0,1),ecut='manual',options={'vdw_corr':'dft-d3','dftd3_version':4,'assume_isolated':'esm','esm_bc':'bc1'},nspin=False)
     os.chdir('../')
 os.chdir('../')
 
 
 # bridge_1
-rlist = [0.0,0.1,0.2,0.3,0.4]
+rlist = [1.0,1.5,2.0,2.5,3.0]
 adtype = 'bridge_1'
 x0 = (3.249+1.576)/2.0
 y0 = (7.334+4.436)/2.0
@@ -367,12 +367,12 @@ for r in rlist:
     #view(adsorp)
     #sys.exit()
     mk_qe_input_scf(adsorp,'pbe','paw',level='high',ecutwfc=ecutwfc,ecutrho=ecutrho,mixing_beta=0.2,kpts=(k0,k0,1),ecut='manual',nosym=True,tstress=False,options={'vdw_corr':'dft-d3','dftd3_version':4,'assume_isolated':'esm','esm_bc':'bc1'},nspin=False)
-    mk_qe_input_dos(adsorp,'pbe','paw',level='high',ecutwfc=ecutwfc,ecutrho=ecutrho,mixing_beta=0.2,kpts=(k0,k0,1),ecut='manual',options={'vdw_corr':'dft-d3','dftd3_version':4,'assume_isolated':'esm','esm_bc':'bc1'},nspin=False)
+    #mk_qe_input_dos(adsorp,'pbe','paw',level='high',ecutwfc=ecutwfc,ecutrho=ecutrho,mixing_beta=0.2,kpts=(k0,k0,1),ecut='manual',options={'vdw_corr':'dft-d3','dftd3_version':4,'assume_isolated':'esm','esm_bc':'bc1'},nspin=False)
     os.chdir('../')
 os.chdir('../')
 
 # bridge_2
-rlist = [0.5,0.6,0.7,0.8,0.9,1.0,1.1,1.2,1.3,1.4,1.5]
+rlist = [1.0,1.5,2.0,2.5,3.0]
 adtype = 'bridge_2'
 x0 = (1.576+4.733)/2.0
 y0 = (4.436+4.545)/2.0
@@ -387,12 +387,12 @@ for r in rlist:
     #view(adsorp)
     #sys.exit()
     mk_qe_input_scf(adsorp,'pbe','paw',level='high',ecutwfc=ecutwfc,ecutrho=ecutrho,mixing_beta=0.2,kpts=(k0,k0,1),ecut='manual',nosym=True,tstress=False,options={'vdw_corr':'dft-d3','dftd3_version':4,'assume_isolated':'esm','esm_bc':'bc1'},nspin=False)
-    mk_qe_input_dos(adsorp,'pbe','paw',level='high',ecutwfc=ecutwfc,ecutrho=ecutrho,mixing_beta=0.2,kpts=(k0,k0,1),ecut='manual',options={'vdw_corr':'dft-d3','dftd3_version':4,'assume_isolated':'esm','esm_bc':'bc1'},nspin=False)
+    #mk_qe_input_dos(adsorp,'pbe','paw',level='high',ecutwfc=ecutwfc,ecutrho=ecutrho,mixing_beta=0.2,kpts=(k0,k0,1),ecut='manual',options={'vdw_corr':'dft-d3','dftd3_version':4,'assume_isolated':'esm','esm_bc':'bc1'},nspin=False)
     os.chdir('../')
 os.chdir('../')
 
 # bridge_3
-rlist = [0.5,0.6,0.7,0.8,0.9,1.0,1.1,1.2,1.3,1.4,1.5]
+rlist = [1.0,1.5,2.0,2.5,3.0]
 adtype = 'bridge_3'
 x0 = (1.576+3.157)/2.0
 y0 = (4.436+1.804)/2.0
@@ -407,12 +407,12 @@ for r in rlist:
     #view(adsorp)
     #sys.exit()
     mk_qe_input_scf(adsorp,'pbe','paw',level='high',ecutwfc=ecutwfc,ecutrho=ecutrho,mixing_beta=0.2,kpts=(k0,k0,1),ecut='manual',nosym=True,tstress=False,options={'vdw_corr':'dft-d3','dftd3_version':4,'assume_isolated':'esm','esm_bc':'bc1'},nspin=False)
-    mk_qe_input_dos(adsorp,'pbe','paw',level='high',ecutwfc=ecutwfc,ecutrho=ecutrho,mixing_beta=0.2,kpts=(k0,k0,1),ecut='manual',options={'vdw_corr':'dft-d3','dftd3_version':4,'assume_isolated':'esm','esm_bc':'bc1'},nspin=False)
+    #mk_qe_input_dos(adsorp,'pbe','paw',level='high',ecutwfc=ecutwfc,ecutrho=ecutrho,mixing_beta=0.2,kpts=(k0,k0,1),ecut='manual',options={'vdw_corr':'dft-d3','dftd3_version':4,'assume_isolated':'esm','esm_bc':'bc1'},nspin=False)
     os.chdir('../')
 os.chdir('../')
 
 # fcc_1
-rlist = [1.6,1.7,1.8,1.9,2.0,2.1,2.2,2.3,2.4,2.5]
+rlist = [1.0,1.5,2.0,2.5,3.0]
 adtype = 'fcc_1'
 x0 = (1.576+3.249+4.733)/3.0
 y0 = (4.436+7.334+4.545)/3.0
@@ -427,12 +427,12 @@ for r in rlist:
     #view(adsorp)
     #sys.exit()
     mk_qe_input_scf(adsorp,'pbe','paw',level='high',ecutwfc=ecutwfc,ecutrho=ecutrho,mixing_beta=0.2,kpts=(k0,k0,1),ecut='manual',nosym=True,tstress=False,options={'vdw_corr':'dft-d3','dftd3_version':4,'assume_isolated':'esm','esm_bc':'bc1'},nspin=False)
-    mk_qe_input_dos(adsorp,'pbe','paw',level='high',ecutwfc=ecutwfc,ecutrho=ecutrho,mixing_beta=0.2,kpts=(k0,k0,1),ecut='manual',options={'vdw_corr':'dft-d3','dftd3_version':4,'assume_isolated':'esm','esm_bc':'bc1'},nspin=False)
+    #mk_qe_input_dos(adsorp,'pbe','paw',level='high',ecutwfc=ecutwfc,ecutrho=ecutrho,mixing_beta=0.2,kpts=(k0,k0,1),ecut='manual',options={'vdw_corr':'dft-d3','dftd3_version':4,'assume_isolated':'esm','esm_bc':'bc1'},nspin=False)
     os.chdir('../')
 os.chdir('../')
 
 # fcc_2
-rlist = [0.5,0.6,0.7,0.8,0.9,1.0,1.1,1.2,1.3,1.4,1.5]
+rlist = [1.0,1.5,2.0,2.5,3.0]
 adtype = 'fcc_2'
 x0 = (1.576-0.005+3.157)/3.0
 y0 = (4.436+1.804+1.084)/3.0
@@ -447,12 +447,12 @@ for r in rlist:
     #view(adsorp)
     #sys.exit()
     mk_qe_input_scf(adsorp,'pbe','paw',level='high',ecutwfc=ecutwfc,ecutrho=ecutrho,mixing_beta=0.2,kpts=(k0,k0,1),ecut='manual',nosym=True,tstress=False,options={'vdw_corr':'dft-d3','dftd3_version':4,'assume_isolated':'esm','esm_bc':'bc1'},nspin=False)
-    mk_qe_input_dos(adsorp,'pbe','paw',level='high',ecutwfc=ecutwfc,ecutrho=ecutrho,mixing_beta=0.2,kpts=(k0,k0,1),ecut='manual',options={'vdw_corr':'dft-d3','dftd3_version':4,'assume_isolated':'esm','esm_bc':'bc1'},nspin=False)
+    #mk_qe_input_dos(adsorp,'pbe','paw',level='high',ecutwfc=ecutwfc,ecutrho=ecutrho,mixing_beta=0.2,kpts=(k0,k0,1),ecut='manual',options={'vdw_corr':'dft-d3','dftd3_version':4,'assume_isolated':'esm','esm_bc':'bc1'},nspin=False)
     os.chdir('../')
 os.chdir('../')
 
 # hcp_1
-rlist = [0.5,0.6,0.7,0.8,0.9,1.0,1.1,1.2,1.3,1.4,1.5]
+rlist = [1.0,1.5,2.0,2.5,3.0]
 adtype = 'hcp_1'
 x0 = (3.249+4.733+6.319)/3.0
 y0 = (7.334+4.545+7.281)/3.0
@@ -467,11 +467,11 @@ for r in rlist:
     #view(adsorp)
     #sys.exit()
     mk_qe_input_scf(adsorp,'pbe','paw',level='high',ecutwfc=ecutwfc,ecutrho=ecutrho,mixing_beta=0.2,kpts=(k0,k0,1),ecut='manual',nosym=True,tstress=False,options={'vdw_corr':'dft-d3','dftd3_version':4,'assume_isolated':'esm','esm_bc':'bc1'},nspin=False)
-    mk_qe_input_dos(adsorp,'pbe','paw',level='high',ecutwfc=ecutwfc,ecutrho=ecutrho,mixing_beta=0.2,kpts=(k0,k0,1),ecut='manual',options={'vdw_corr':'dft-d3','dftd3_version':4,'assume_isolated':'esm','esm_bc':'bc1'},nspin=False)
+    #mk_qe_input_dos(adsorp,'pbe','paw',level='high',ecutwfc=ecutwfc,ecutrho=ecutrho,mixing_beta=0.2,kpts=(k0,k0,1),ecut='manual',options={'vdw_corr':'dft-d3','dftd3_version':4,'assume_isolated':'esm','esm_bc':'bc1'},nspin=False)
     os.chdir('../')
 os.chdir('../')
 # one Pd吸着後スラブ 吸着モデル ポテンシャル計算 終了
-"""
+
 
 """
 # one Pd吸着後スラブ 吸着モデル 構造最適化
@@ -1668,7 +1668,7 @@ mk_qe_input_vcrelax(cell,'pbe','paw',level='high',nosym=True,ecutwfc=ecutwfc,ecu
 # 単体の構造最適化終了
 """
 
-
+"""
 # DOS計算
 ecutwfc0=77.0
 ecutrho0=539.0
@@ -1728,7 +1728,7 @@ os.chdir('../')
 #os.chdir('./dos')
 #mk_qe_input_dos(cell,'pbe','paw',level='high',ecutwfc=ecutwfc,ecutrho=ecutrho,mixing_beta=0.2,kpts=(12,12,12),ecut='manual',options={'vdw_corr':'dft-d3','dftd3_version':4})
 # DOS計算終了
-
+"""
 
 
 

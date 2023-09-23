@@ -383,6 +383,7 @@ for atom in slab4[0]:
     if atom.symbol == 'O' and atom.position[2] > z0:
         lowH = Atom('H',(atom.position[0],atom.position[1],atom.position[2]+rOH))
         slab4_.append(lowH)
+    slab4_ = read('/home/A23321P/work/myPython/AtomicVirtuaLab/cifs/SiO2_101_model4.cif')
 
 #view(slab1_)
 #view(slab2_)

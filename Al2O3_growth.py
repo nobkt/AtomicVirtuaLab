@@ -122,7 +122,7 @@ cell = rd_cif(g.cifs+'/'+'Al2O3.cif')
 cell = make_supercell(cell,([5,0,0],[0,5,0],[0,0,4]),wrap=True)
 lat = cell.get_cell()
 z0 = lat[2][2]/2.0
-for T0 in [300,500,1000,1500,2000,2100,2200,2300,2400,2500,2600,2700,2800,2900,3000,3500,4000]:
+for T0 in [2310,2320,2330,2340,2350,2360,2370,2380,2390]:
     os.makedirs('./T'+str(T0),exist_ok=True)
     os.chdir('./T'+str(T0))
     shutil.copy(g.forcedir+'/Al2O3_graph.pb','./graph.pb')

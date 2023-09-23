@@ -19,6 +19,15 @@ def qe2dp(dir_,ext):
     #os.system('rm deepmd.traj')
     #os.system('rm -rf tmp')
 
+def siesta2dp():
+    import dpdata
+    d_siesta=dpdata.MultiSystems.from_dir(dir_name='./*',file_name='log_siesta', fmt='siesta/aimd_output')
+    print(d_siesta)
+    d_siesta.to_deepmd_raw('deepmd')
+    d_siesta.to_deepmd_npy('deepmd')
+    #os.system('rm deepmd.traj')
+    #os.system('rm -rf tmp')
+
 def get_deepmd_list(dir_):
     import os
     dp_list=os.listdir(path=dir_)

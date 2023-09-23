@@ -1,6 +1,6 @@
 def mk_packmol_random(mollist,x_box,y_box,z_hox):
     f = open('packmol.inp','w')
-    f.write('tolerance 2.0'+'\n')
+    f.write('tolerance 3.0'+'\n')
     f.write('seed -1'+'\n')
     #f.write('randominitialpoint'+'\n')
     f.write('filetype xyz'+'\n')

@@ -105,7 +105,7 @@ def mk_npt_input_fr_moltemplate(symbols,minimize,dt,dmp_step,thermo_step,md_step
     f.write('write_data system_after_npt.data'+'\n')
     f.close()
 
-def mk_npt_compress_input_fr_moltemplate(symbols,minimize,dt,dmp_step,thermo_step,ncomp,comp_step,Tcomp,Pcomp,hT_step,hT,md_step,T,P,dof_type,seed,restart,qeq=False):
+def mk_npt_compress_input_fr_moltemplate(symbols,minimize,dt,dmp_step,thermo_step,ncomp,comp_step,Tcomp,Pcomp,hT_step,hT,md_step,T,P,dof_type,seed,restart,qeq=False,rdfpairs=None):
     f = open('input_npt.lmp','w')
     f.write('# ------------------------------- Initialization Section -------------------'+'\n')
     f.write('\n')
@@ -183,6 +183,23 @@ def mk_npt_compress_input_fr_moltemplate(symbols,minimize,dt,dmp_step,thermo_ste
     f.write('undump dmp'+'\n')
     #
     f.write('reset_timestep 0'+'\n')
+    f.write('variable mytemp equal temp'+'\n')
+    f.write('variable myenthalpy equal enthalpy'+'\n')
+    f.write('variable mydensity equal density'+'\n')
+    f.write('variable myvol equal vol'+'\n')
+    f.write('variable mycella equal cella'+'\n')
+    f.write('variable mycellb equal cellb'+'\n')
+    f.write('variable mycellc equal cellc'+'\n')
+    f.write('variable mycellalpha equal cellalpha'+'\n')
+    f.write('variable mycellbeta equal cellbeta'+'\n')
+    f.write('variable mycellgamma equal cellgamma'+'\n')
+    if rdfpairs is not None:
+        f.write('compute myRDF all rdf 1000')
+        for rdfpair in rdfpairs:
+            f.write(' '+str(rdfpair[0])+' '+str(rdfpair[1]))
+        f.write('\n')
+        f.write('fix trdf all ave/time 1 '+str(int(md_step/2))+' '+str(md_step)+' c_myRDF[*] file tmp.rdf mode vector'+'\n')
+    f.write('fix th all ave/time 1 '+str(int(md_step/2))+' '+str(md_step)+' v_mytemp v_myenthalpy v_mydensity v_myvol v_mycella v_mycellb v_mycellc v_mycellalpha v_mycellbeta v_mycellgamma file th.profile'+'\n')
     f.write('dump dmp all custom '+str(dmp_step)+' traj_npt.lammpstrj id mol type element x y z ix iy iz'+'\n')
     f.write('dump_modify dmp element')
     for symbol in symbols:
@@ -755,10 +772,10 @@ def mk_npt_melt_input_deepmd(cell,dt,dmp_step,thermo_step,eq_step,melt_step,md_s
     f.write('unfix th'+'\n')
     f.close()
 
-def mk_npt_input_deepmd(cell,dt,dmp_step,thermo_step,eq_step,Teq,P,seed):
+def mk_npt_input_deepmd(cell,dt,dmp_step,thermo_step,eq_step,Teq,P,seed,mol=False):
     from AtomicVirtuaLab.io import cell2atomlist, mk_lammpsdata
     from ase import Atom
-    mk_lammpsdata(cell,False,force_skew=True)
+    mk_lammpsdata(cell,False,force_skew=True,mol=mol)
     symbols = cell2atomlist(cell)
     f = open('lammps.lmp','w')
     f.write('units metal'+'\n')

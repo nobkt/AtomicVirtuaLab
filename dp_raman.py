@@ -6,7 +6,7 @@ from AtomicVirtuaLab.espresso import mk_qe_input_relax, mk_qe_input_npt
 from AtomicVirtuaLab.siesta import mk_siesta_input_optimize,mk_siesta_input_nvt,mk_siesta_input_scf_withEfield,mk_siesta_input_scf_withEfield_wannier,mk_siesta_input_cellopt,get_valence,mk_siesta_input_npt
 from AtomicVirtuaLab.packmol import mk_packmol_random
 from AtomicVirtuaLab.lammps import mk_nvt_input_uff_rigid_scale, mk_npt_input_deepmd
-from AtomicVirtuaLab.deepmd import get_deepmd_list, wt_deepmd_json
+from AtomicVirtuaLab.deepmd import get_deepmd_list, wt_deepmd_json, siesta2dp
 import AtomicVirtuaLab.globalv as g
 from AtomicVirtuaLab.build import sortmol
 from AtomicVirtuaLab.io import rd_lammpsdata_init
@@ -27,11 +27,13 @@ os.chdir('./dp_raman_test')
 os.makedirs('./deepmd',exist_ok=True)
 os.chdir('./deepmd')
 
-cell = rd_lammpsdata_init({1:35,2:6,3:7,4:30},g.cifdir+'/Zn-Pc-allBr_64.data',True)
-#view(cell)
+#cell = rd_lammpsdata_init({1:35,2:6,3:7,4:30},g.cifdir+'/Zn-Pc-allBr_64.data',True)
+cell = read(g.cifdir+'/Zn-Pc-allBr_64.cif')
+view(cell)
+cell = sortmol(cell)
 
 shutil.copy(g.forcedir+'/ZnPcBr_SZ_graph.pb','./graph.pb')
-mk_npt_input_deepmd(cell,0.0005,2000,2000,2000000,300,0.0,12345)
+mk_npt_input_deepmd(cell,0.0005,2000,2000,2000000,300,0.0,12345,mol=True)
 
 
 # DeepMD NPT 終了
@@ -43,12 +45,19 @@ os.makedirs('./dp_raman_test',exist_ok=True)
 os.chdir('./dp_raman_test')
 os.makedirs('train',exist_ok=True)
 os.chdir('./train')
+dpdata=True
+if dpdata:
+    path = os.getcwd()
+    datadir_ = '/home/A23321P/work/mySiesta/dipole_and_polarizability/Zn-Pc-allBr/datas/KBM'
+    os.chdir(datadir_)
+    siesta2dp()
+    os.system('cp -r '+str(datadir_)+'/deepmd '+str(path))
+    sys.exit()
 dpdir = './deepmd'
 dp_list=get_deepmd_list(dpdir)
 wt_deepmd_json(dpdir,dp_list,8.0,1000000,prec='high')
 # ポテンシャル学習 終了
 """
-
 
 """
 # dipleおよびpolarizability解析
@@ -56,7 +65,7 @@ wt_deepmd_json(dpdir,dp_list,8.0,1000000,prec='high')
 C = 1.602176634e-19
 A2m = 1.0e-10
 Cm2Deb = 3.33564e-30
-dir_ = '/home/A23321P/work/mySiesta/dipole_and_polarizability/Zn-Pc-amo/8/wannier/10'
+dir_ = '/home/A23321P/work/mySiesta/dipole_and_polarizability/Zn-Pc-allBr/wannier/DZP/cutoff_100.0/ez-'
 
 atomic_mu=[]
 grobal_mu=[]
@@ -66,8 +75,6 @@ strout = read(dir_+'/siesta.STRUCT_OUT',format='struct_out')
 lat = strout.get_cell()
 
 wxyz.set_cell(lat)
-
-#view(wxyz)
 
 wxyz = sortmol(wxyz)
 nmol = max(wxyz.arrays['mol-id'])
@@ -81,6 +88,7 @@ mu1=[]
 grobal_mux = 0.0
 grobal_muy = 0.0
 grobal_muz = 0.0
+imol = 0
 for imol0 in range(nmol):
     imol = imol0 + 1
     ux = 0.0
@@ -92,7 +100,7 @@ for imol0 in range(nmol):
                 ux = ux + valence[atom.symbol]*atom.position[0]*C*A2m/Cm2Deb
                 uy = uy + valence[atom.symbol]*atom.position[1]*C*A2m/Cm2Deb
                 uz = uz + valence[atom.symbol]*atom.position[2]*C*A2m/Cm2Deb
-            if atom.symbol == 'X':
+            elif atom.symbol == 'X':
                 ux = ux - 2.0*atom.position[0]*C*A2m/Cm2Deb
                 uy = uy - 2.0*atom.position[1]*C*A2m/Cm2Deb
                 uz = uz - 2.0*atom.position[2]*C*A2m/Cm2Deb
@@ -196,7 +204,7 @@ mk_siesta_input_scf_withEfield_wannier(cell_solid,'PBE','SZ',50.0,None,g.siesta_
 # 双極子モーメントと分極率テンソルの試計算
 au2v=51.4220632
 epsilon=0.001*au2v
-xc='BH'
+xc='KBM'
 os.makedirs('./dp_raman_test',exist_ok=True)
 os.chdir('./dp_raman_test')
 os.makedirs('./dipole_and_polarizability',exist_ok=True)
@@ -204,73 +212,6 @@ os.chdir('./dipole_and_polarizability')
 
 path = os.getcwd()
 os.chdir(path)
-
-
-# 水クラスター
-os.makedirs('./water_clusters/'+str(xc),exist_ok=True)
-os.chdir('./water_clusters/'+str(xc))
-mollist=['H2O_1mer','H2O_5mer','H2O_10mer','H2O_20mer']
-lat=[30.0,30.0,30.0]
-for mol in mollist:
-    if mol == 'H2O_1mer':
-        bandscale = 0
-    else:
-        bandscale = 0
-    os.makedirs(str(mol),exist_ok=True)
-    os.chdir(str(mol))
-    xyz = read(g.cifdir+'/'+str(mol)+'.xyz')
-    xyz = sortmol(xyz)
-    com = xyz.get_center_of_mass()
-    shift=[lat[0]/2.0,lat[1]/2.0,lat[2]/2.0]-com
-    xyz.translate(shift)
-    xyz.set_cell(lat)
-    #view(xyz)
-    for basis in ['SZ']:
-        os.makedirs(str(basis),exist_ok=True)
-        os.chdir(str(basis))
-        for cutoff in [50.0]:
-            os.makedirs('cutoff_'+str(cutoff),exist_ok=True)
-            os.chdir('cutoff_'+str(cutoff))
-            # no efield
-            os.makedirs('e0',exist_ok=True)
-            os.chdir('e0')            
-            mk_siesta_input_scf_withEfield_wannier(xyz,xc,basis,cutoff,None,g.siesta_pot,bandscale=bandscale,ex=0.0,ey=0.0,ez=0.0,SolutionMethod='diagon',MaxSCFIterations=2000,spin='non-polarized')
-            os.chdir('../')
-            # ex+
-            os.makedirs('ex+',exist_ok=True)
-            os.chdir('ex+')            
-            mk_siesta_input_scf_withEfield_wannier(xyz,xc,basis,cutoff,None,g.siesta_pot,bandscale=bandscale,ex=epsilon,ey=0.0,ez=0.0,SolutionMethod='diagon',MaxSCFIterations=2000,spin='non-polarized')
-            os.chdir('../')
-            # ex-
-            os.makedirs('ex-',exist_ok=True)
-            os.chdir('ex-')            
-            mk_siesta_input_scf_withEfield_wannier(xyz,xc,basis,cutoff,None,g.siesta_pot,bandscale=bandscale,ex=-epsilon,ey=0.0,ez=0.0,SolutionMethod='diagon',MaxSCFIterations=2000,spin='non-polarized')
-            os.chdir('../')
-            # ey+
-            os.makedirs('ey+',exist_ok=True)
-            os.chdir('ey+')            
-            mk_siesta_input_scf_withEfield_wannier(xyz,xc,basis,cutoff,None,g.siesta_pot,bandscale=bandscale,ex=0.0,ey=epsilon,ez=0.0,SolutionMethod='diagon',MaxSCFIterations=2000,spin='non-polarized')
-            os.chdir('../')
-            # ey-
-            os.makedirs('ey-',exist_ok=True)
-            os.chdir('ey-')            
-            mk_siesta_input_scf_withEfield_wannier(xyz,xc,basis,cutoff,None,g.siesta_pot,bandscale=bandscale,ex=0.0,ey=-epsilon,ez=0.0,SolutionMethod='diagon',MaxSCFIterations=2000,spin='non-polarized')
-            os.chdir('../')            
-            # ez+
-            os.makedirs('ez+',exist_ok=True)
-            os.chdir('ez+')            
-            mk_siesta_input_scf_withEfield_wannier(xyz,xc,basis,cutoff,None,g.siesta_pot,bandscale=bandscale,ex=0.0,ey=0.0,ez=epsilon,SolutionMethod='diagon',MaxSCFIterations=2000,spin='non-polarized')
-            os.chdir('../')
-            # ez-
-            os.makedirs('ez-',exist_ok=True)
-            os.chdir('ez-')            
-            mk_siesta_input_scf_withEfield_wannier(xyz,xc,basis,cutoff,None,g.siesta_pot,bandscale=bandscale,ex=0.0,ey=0.0,ez=-epsilon,SolutionMethod='diagon',MaxSCFIterations=2000,spin='non-polarized')
-            os.chdir('../')
-            os.chdir('../')
-        os.chdir('../')
-    os.chdir('../')                   
-# 水クラスター終了
-
 
 # Zn-Pc-allBr
 os.chdir(path)
@@ -294,10 +235,10 @@ for mol in mollist:
     xyz.translate(shift)
     xyz.set_cell(lat)
     #view(xyz)
-    for basis in ['SZ', 'SZP', 'DZ', 'DZP']:
+    for basis in ['DZP']:
         os.makedirs(str(basis),exist_ok=True)
         os.chdir(str(basis))
-        for cutoff in [50.0]:
+        for cutoff in [100.0]:
             os.makedirs('cutoff_'+str(cutoff),exist_ok=True)
             os.chdir('cutoff_'+str(cutoff))
             # no efield
@@ -344,8 +285,9 @@ for mol in mollist:
 """
 # Zn-フタロシアニンのパッキングモデル作成
 
-T_list = [300, 500, 700, 900,1100]
-nset = 10
+#T_list = [300, 500, 700, 900,1100]
+T_list = [1100]
+nset = 1
 
 os.makedirs('./dp_raman_test',exist_ok=True)
 os.chdir('./dp_raman_test')
@@ -370,7 +312,7 @@ xyz = sort(xyz)
 #xyz.write('mols.xyz')
 
 mollist={
-    'mols':8
+    'mols':64
 }
 
 x_box=100.0
@@ -410,6 +352,7 @@ for T0 in T_list:
         print(dens1)
         #
         lat = (volume1/(dens/dens1))**(1/3)
+        #lat = lat*(2.0)**(1/3)
         print(lat)
         #
         mk_nvt_input_uff_rigid_scale(cell,0.0005,1000,1000,lat,200000,200000,T0,12345)
@@ -421,6 +364,47 @@ for T0 in T_list:
 
 
 # Zn-フタロシアニンの学習データ作成
+
+T_list = [300,500,700,900,1100]
+nset = 1
+
+os.makedirs('./dp_raman_test',exist_ok=True)
+os.chdir('./dp_raman_test')
+os.makedirs('./Zn-Pc_train',exist_ok=True)
+os.chdir('./Zn-Pc_train')
+
+os.makedirs('./Zn-Pc-allBr',exist_ok=True)
+os.chdir('./Zn-Pc-allBr')
+
+os.makedirs('./siesta',exist_ok=True)
+os.chdir('./siesta')
+
+for xc in ['BLYP']:
+    os.makedirs('./xc_'+str(xc),exist_ok=True)
+    os.chdir('./xc_'+str(xc))
+    for basis in ['DZP']:
+        os.makedirs('./basis_'+str(basis),exist_ok=True)
+        os.chdir('./basis_'+str(basis))
+        for T0 in T_list:
+            os.makedirs('./T_'+str(T0),exist_ok=True)
+            os.chdir('./T_'+str(T0))
+            for n in range(nset):
+                os.makedirs('set'+str(n),exist_ok=True)
+                os.chdir('set'+str(n))
+                cell = read('/home/A23321P/work/myLAMMPS/dp_raman_test/Zn-Pc_train/Zn-Pc-allBr/lammps/T_'+str(T0)+'/set'+str(n)+'/result.data',format='lammps-data',sort_by_id=True,Z_of_type={1:35,2:6,3:7,4:30})
+                #view(cell)
+                #sys.exit()
+                mk_siesta_input_npt(cell,xc,basis,100.0,None,T0,0.0,2000,g.siesta_pot,SolutionMethod='diagon',MaxSCFIterations=2000,dt=0.5,spin='non-polarized')
+                os.chdir('../')
+            os.chdir('../')
+        os.chdir('../')
+    os.chdir('../')
+os.chdir('../')
+# Zn-フタロシアニンの学習データ作成終了
+
+
+"""
+# Zn-フタロシアニンの学習データ作成(リスタート)
 
 T_list = [300,500,700,900,1100]
 nset = 1
@@ -448,7 +432,7 @@ for xc in ['KBM']:
             for n in range(nset):
                 os.makedirs('set'+str(n),exist_ok=True)
                 os.chdir('set'+str(n))
-                cell = read('/home/A23321P/work/myLAMMPS/dp_raman_test/Zn-Pc_train/Zn-Pc-allBr/lammps/T_'+str(T0)+'/set'+str(n)+'/result.data',format='lammps-data',sort_by_id=True,Z_of_type={1:35,2:6,3:7,4:30})
+                cell = read('/home/A23321P/work/mySiesta/dipole_and_polarizability/Zn-Pc-allBr/datas/'+str(xc)+'/set3/siesta/xc_'+str(xc)+'/basis_'+str(basis)+'/T_'+str(T0)+'/set'+str(n)+'/siesta.STRUCT_OUT',format='struct_out')
                 #view(cell)
                 #sys.exit()
                 mk_siesta_input_npt(cell,xc,basis,100.0,None,T0,0.0,500,g.siesta_pot,SolutionMethod='diagon',MaxSCFIterations=2000,dt=0.5,spin='non-polarized')
@@ -457,8 +441,8 @@ for xc in ['KBM']:
         os.chdir('../')
     os.chdir('../')
 os.chdir('../')
-# Zn-フタロシアニンの学習データ作成終了
-
+# Zn-フタロシアニンの学習データ作成(リスタート)終了
+"""
 
 """
 # Zn-Pc Br置換モデル構造最適化

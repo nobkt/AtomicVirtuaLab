@@ -98,9 +98,11 @@ def cell2atomlist(cell):
     #symbols = [l for l in symbols if l != '']
     return symbols
 
-def mk_lammpsdata(cell,charge,force_skew=False):
+def mk_lammpsdata(cell,charge,force_skew=False,mol=False):
     from ase.io import write
     if charge:
+        cell.write('lammps.data',format='lammps-data',force_skew=force_skew,atom_style='charge')
+    elif mol:
         cell.write('lammps.data',format='lammps-data',force_skew=force_skew,atom_style='full')
     else:
         cell.write('lammps.data',format='lammps-data',force_skew=force_skew)
