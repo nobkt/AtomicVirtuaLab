@@ -9,19 +9,21 @@ from ase.visualize import view
 import os
 import codecs
 import numpy as np
+import sys
 
 
 
 os.makedirs('./polymer_build',exist_ok=True)
 os.chdir('./polymer_build')
 
-smiles_3mer = 'SC1=CC=C(SC2=CC=C(SC3=CC=CC=C3)C=C2)C=C1'
+#smiles_3mer = 'SC1=CC=C(SC2=CC=C(SC3=CC=CC=C3)C=C2)C=C1'
+smiles_3mer = 'C[Si](C)(O)O[Si](O)(OC1=CC=CC=C1)O[Si](O)(O)OCCOCC1CO1'
 
 cp_rdlt()
-mklt(smiles_3mer,'3mer')
+#mklt(smiles_3mer,'3mer',random=True)
 
 mol_3mer = smiles2xyz(smiles_3mer,'3mer',True,smarts=False,userandom=False)
-
+sys.exit()
 cell = read('./3mer.mol')
 #view(cell)
 

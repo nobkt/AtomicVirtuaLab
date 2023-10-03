@@ -21,12 +21,12 @@ cell2 = rd_cif(g.cifdir+'/MoS2_mp2815.cif')
 
 
 # 6-layers
-#nx=9
-#ny=5
-#nz1=2
-#nz2=3
-#nlayer1=6
-#nlayer2=6
+nx=9
+ny=5
+nz1=2
+nz2=3
+nlayer1=6
+nlayer2=6
 
 # 6-layers xy expand
 #nx=18
@@ -37,24 +37,24 @@ cell2 = rd_cif(g.cifdir+'/MoS2_mp2815.cif')
 #nlayer2=6
 
 # 20-layers
-nx=9
-ny=5
-nz1=7
-nz2=10
-nlayer1=21
-nlayer2=20
+#nx=9
+#ny=5
+#nz1=7
+#nz2=10
+#nlayer1=21
+#nlayer2=20
 
 os.makedirs('./MoS2_friction',exist_ok=True)
 os.chdir('./MoS2_friction')
 
 cell1 = slabgen(cell1,0,0,1,1,1,nz1,10.0,10.0)
-os.system('atomsk slab_3.cif -orthogonal-cell MoS2_mp1434_slab_3_ortho.cfg')
+os.system('atomsk slab3.cif -orthogonal-cell MoS2_mp1434_slab_3_ortho.cfg')
 #view(cell1)
 cell1 = read('MoS2_mp1434_slab_3_ortho.cfg')
 
 cell2 = slabgen(cell2,0,0,1,1,1,nz2,10.0,10.0)
 #view(cell2)
-os.system('atomsk slab_1.cif -orthogonal-cell MoS2_mp2815_slab_1_ortho.cfg')
+os.system('atomsk slab1.cif -orthogonal-cell MoS2_mp2815_slab_1_ortho.cfg')
 cell2 = read('MoS2_mp2815_slab_1_ortho.cfg')
 
 #cell1 = make_supercell(cell1,([nx,0,0],[0,ny,0],[0,0,1]),wrap=True)

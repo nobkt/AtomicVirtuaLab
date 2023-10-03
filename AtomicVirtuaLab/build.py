@@ -82,13 +82,14 @@ def interface_from_slab(substrate_cell0,id0,h_sub,k_sub,l_sub,nx_sub,ny_sub,nz_s
     return interface_slab
 
 
-def sortmol(cell):
+def sortmol(cell,sort_atom=True):
     from ase import neighborlist
     from ase.build import sort
     from ase.io import write
     from scipy import sparse
     import numpy as np
-    cell = sort(cell)
+    if sort_atom:
+        cell = sort(cell)
     cutoff = neighborlist.natural_cutoffs(cell)
     neighborList = neighborlist.NeighborList(cutoff, self_interaction=False, bothways=True)
     neighborList.update(cell)

@@ -2,12 +2,15 @@ from AtomicVirtuaLab.io import smiles2xyz
 from AtomicVirtuaLab.siesta import mk_siesta_input_optimize
 import AtomicVirtuaLab.globalv as g
 from AtomicVirtuaLab.build import sortmol, slabgen
+from AtomicVirtuaLab.lammps import mk_mimize_input_uff_adsorp
 from ase.io import read, write
 from ase.visualize import view
 from ase import Atom, Atoms
 import os
 import math
 import sys
+import random
+import pandas as pd
 
 g.siesta_pot = '/home/A23321P/work/myPython/AtomicVirtuaLab/siesta_pseudo'
 g.cifdir = '/home/A23321P/work/myPython/AtomicVirtuaLab/cifs'
@@ -16,6 +19,7 @@ g.cifdir = '/home/A23321P/work/myPython/AtomicVirtuaLab/cifs'
 os.makedirs('organo-metalic-complex',exist_ok=True)
 os.chdir('organo-metalic-complex')
 
+"""
 # optimize molA-Mg
 os.makedirs('mols',exist_ok=True)
 os.chdir('mols')
@@ -91,13 +95,13 @@ molA2.rotate(0.0,'x',center=(lat[0]/2.0,lat[1]/2.0,lat[2]/2.0))
 mg.translate([lat[0]/2.0,lat[1]/2.0,lat[2]/2.0])
 
 complex = mg+molA1+molA2
-complex = read('/home/A23321P/work/myPython/AtomicVirtuaLab/cifs/molA_Quench.mol')
+#complex = read('/home/A23321P/work/myPython/AtomicVirtuaLab/cifs/molA_Quench.mol')
 complex.set_cell(lat)
 complex = sortmol(complex)
 #view(complex)
 #sys.exit()
-shift = [lat[0]/2.0-complex[52].position[0],lat[1]/2.0-complex[52].position[1],lat[2]/2.0-complex[52].position[2]]
-complex.translate(shift)
+#shift = [lat[0]/2.0-complex[52].position[0],lat[1]/2.0-complex[52].position[1],lat[2]/2.0-complex[52].position[2]]
+#complex.translate(shift)
 view(complex)
 #complex = sortmol(complex)
 #view(complex)
@@ -109,7 +113,7 @@ for xc in ['BLYP']:
     os.makedirs('molA_opt',exist_ok=True)
     os.chdir('molA_opt')
     complex.write('test.xyz',format='xyz')
-    mk_siesta_input_optimize(complex,xc,'DZP',50.0,[1,1,1],2000,g.siesta_pot,SolutionMethod='diagon',MaxSCFIterations=2000,spin='non-polarized')
+    mk_siesta_input_optimize(complex,xc,'DZP',200.0,[1,1,1],2000,g.siesta_pot,SolutionMethod='diagon',MaxSCFIterations=2000,spin='non-polarized')
     os.chdir('../')
     os.chdir('../')
 
@@ -188,7 +192,7 @@ molB2.rotate(180.0,'x',center=(lat[0]/2.0,lat[1]/2.0,lat[2]/2.0))
 mg.translate([lat[0]/2.0,lat[1]/2.0,lat[2]/2.0])
 
 complex = mg+molB1+molB2
-complex = read('/home/A23321P/work/myPython/AtomicVirtuaLab/cifs/molB_Quench.mol')
+#complex = read('/home/A23321P/work/myPython/AtomicVirtuaLab/cifs/molB_Quench.mol')
 complex.set_cell(lat)
 complex = sortmol(complex)
 #view(complex)
@@ -198,7 +202,8 @@ complex.translate(shift)
 view(complex)
 #complex = sortmol(complex)
 #view(complex)
-#sys.exit()
+complex.write('test.xyz',format='xyz')
+sys.exit()
 
 for xc in ['BLYP']:
     os.makedirs(xc,exist_ok=True)
@@ -206,7 +211,7 @@ for xc in ['BLYP']:
     os.makedirs('MolB_opt',exist_ok=True)
     os.chdir('MolB_opt')
     complex.write('test.xyz',format='xyz')
-    mk_siesta_input_optimize(complex,xc,'DZP',50.0,[1,1,1],2000,g.siesta_pot,SolutionMethod='diagon',MaxSCFIterations=2000,spin='non-polarized')
+    mk_siesta_input_optimize(complex,xc,'DZP',200.0,[1,1,1],2000,g.siesta_pot,SolutionMethod='diagon',MaxSCFIterations=2000,spin='non-polarized')
     os.chdir('../')
     os.chdir('../')
 
@@ -324,7 +329,7 @@ complex = sortmol(complex)
 shift = [lat[0]/2.0-complex[70].position[0],lat[1]/2.0-complex[70].position[1],lat[2]/2.0-complex[70].position[2]]
 complex.translate(shift)
 view(complex)
-#sys.exit()
+
 
 for xc in ['BLYP']:
     os.makedirs(xc,exist_ok=True)
@@ -332,7 +337,7 @@ for xc in ['BLYP']:
     os.makedirs('molC_opt',exist_ok=True)
     os.chdir('molC_opt')
     complex.write('test.xyz',format='xyz')
-    mk_siesta_input_optimize(complex,xc,'DZP',50.0,[1,1,1],2000,g.siesta_pot,SolutionMethod='diagon',MaxSCFIterations=2000,spin='non-polarized')
+    mk_siesta_input_optimize(complex,xc,'DZP',200.0,[1,1,1],2000,g.siesta_pot,SolutionMethod='diagon',MaxSCFIterations=2000,spin='non-polarized')
     os.chdir('../')
     os.chdir('../')
 
@@ -340,7 +345,9 @@ os.chdir('../')
 os.chdir('../')
 # optimize molC-Mg 終了
 #sys.exit()
+"""
 
+"""
 # SiO2 001 slab
 os.makedirs('./SiO2_slab',exist_ok=True)
 os.chdir('./SiO2_slab')
@@ -383,7 +390,7 @@ for atom in slab4[0]:
     if atom.symbol == 'O' and atom.position[2] > z0:
         lowH = Atom('H',(atom.position[0],atom.position[1],atom.position[2]+rOH))
         slab4_.append(lowH)
-    slab4_ = read('/home/A23321P/work/myPython/AtomicVirtuaLab/cifs/SiO2_101_model4.cif')
+    #slab4_ = read('/home/A23321P/work/myPython/AtomicVirtuaLab/cifs/SiO2_101_model4.cif')
 
 #view(slab1_)
 #view(slab2_)
@@ -406,7 +413,7 @@ for xc in ['BLYP']:
         options['Slab.DipoleCorrection'] = True
         options['Slab.DipoleCorrection.Origin'] = [' '+str(com[0])+' '+str(com[1])+' '+str(com[2])+' Ang']
         options['Geometry.Constraints'] = constraint
-        mk_siesta_input_optimize(slabs,xc,'DZP',50.0,[1,1,1],2000,g.siesta_pot,SolutionMethod='diagon',MaxSCFIterations=2000,options=options,spin='non-polarized')
+        mk_siesta_input_optimize(slabs,xc,'DZP',200.0,[1,1,1],2000,g.siesta_pot,SolutionMethod='diagon',MaxSCFIterations=2000,options=options,spin='non-polarized')
         slabs.write('test.cif')
         os.chdir('../')
         i=i+1
@@ -415,132 +422,154 @@ os.chdir('../')
 #sys.exit()
 # SiO2 001 slab 終了
 sys.exit()
-# 吸着モデル作成
-os.makedirs('./adsorp',exist_ok=True)
-os.chdir('./adsorp')
+"""
+
+"""
+# ランダム吸着モデル作成
+os.makedirs('./adsorp1',exist_ok=True)
+os.chdir('./adsorp1')
 
 #slab1_ = read('/home/A23321P/work/mySiesta/organo-metalic-complex/BOC-Mg/SiO2_slab/BLYP_Hopt/siesta.STRUCT_OUT',format='struct_out')
 
-complex1 = complex.copy()
-complex2 = complex.copy()
-complex3 = complex.copy()
-complex4 = complex.copy()
+complex_list = ['A','B','C']
+slab_list = [3,2,1]
 
-slab1_lat = slab1_.get_cell()
-complex1.set_cell(slab1_lat)
+datas={}
+ncoord = 100
+for nslab in slab_list:
+    for ncomplex in complex_list:
+        os.makedirs('slab_'+str(nslab)+'-mol'+ncomplex,exist_ok=True)
+        os.chdir('slab_'+str(nslab)+'-mol'+ncomplex)
+        slab = read('/home/A23321P/work/mySiesta/organo-metalic-complex/SiO2_slab/BLYP/slab'+str(nslab)+'_opt/siesta.STRUCT_OUT',format='struct_out')
+        mol = read('/home/A23321P/work/mySiesta/organo-metalic-complex/mols/mol'+ncomplex+'/BLYP/mol'+ncomplex+'_opt/siesta.xyz',format='xyz')
+        lat = slab.get_cell()
+        zslab=[]
+        for atom in slab:
+            zslab.append(float(atom.position[2]))
+        zmax_slab=max(zslab)
+        slab_center = [(lat[0][0]+lat[1][0])/2.0,(lat[0][1]+lat[1][1])/2.0,zmax_slab]
+        mol_com = mol.get_center_of_mass()
+        mol.translate([-mol_com[0],-mol_com[1],-mol_com[2]])
+        for n in range(ncoord):
+            os.makedirs('nset'+str(n+1),exist_ok=True)
+            os.chdir('nset'+str(n+1))
+            xtheta = random.uniform(-180,180)
+            ytheta = random.uniform(-180,180)
+            ztheta = random.uniform(-180,180)
+            height = random.uniform(2.0,2.1)
+            mol0 = mol.copy()
+            mol0.rotate(xtheta,'x')
+            mol0.rotate(ytheta,'y')
+            mol0.rotate(ztheta,'z')
+            zmol=[]
+            for atom in mol0:
+                zmol.append(atom.position[2])
+            zmin_mol = min(zmol)
+            mol0.translate([slab_center[0],slab_center[1],(zmax_slab-zmin_mol)+height])
+            mol0.set_cell(lat)
+            adsorp = slab+mol0
+            adsorp = sortmol(adsorp,sort_atom=False)
+            mk_mimize_input_uff_adsorp(adsorp,200000,100000,100000)
+            os.system('mpirun -np 8 lmp -in lammps.lmp 1> log_lammps 2> err_lammps')
+            f = open('log_lammps','r')
+            lines = f.readlines()
+            f.close()
+            for line in lines:
+                if 'Potential Energy' in line:
+                    line = line.split()
+                    print(line[2])
+                    datas[('slab'+str(nslab),'mol'+ncomplex,'nset'+str(n+1),xtheta,ytheta,ztheta)] = float(line[2])
+                    break
+            #view(slab+mol0)
+            #sys.exit()
+            os.chdir('../')
+        os.chdir('../')
+df = pd.Series(datas)
+df.index.names = ['slab','mol','nset','xtheta','ytheta','ztheta']
+df.to_csv('potential_datas.csv')
 
-slab2_lat = slab2_.get_cell()
-complex2.set_cell(slab2_lat)
+# ランダム吸着モデル作成 終了        
+"""
 
-slab3_lat = slab3_.get_cell()
-complex3.set_cell(slab3_lat)
+        
+# ランダム吸着モデル構造最適化
+os.makedirs('./adsorp1',exist_ok=True)
+os.chdir('./adsorp1')
 
-slab4_lat = slab4_.get_cell()
-complex4.set_cell(slab4_lat)
+os.makedirs('./opt',exist_ok=True)
+os.chdir('./opt')
 
-#complex1.rotate(90.0,'y',center=(25,25,25))
-complex1.rotate(180.0,'x',center=(25,25,25))
-complex1.rotate(150.0,'z',center=(25,25,25))
+complex_list = ['A','B','C']
+slab_list = [1,2,3]    
+ncoord = 100
 
-#complex1.rotate(90.0,'y',center=(25,25,25))
-complex2.rotate(180.0,'x',center=(25,25,25))
-complex2.rotate(150.0,'z',center=(25,25,25))
+#nslab0=1
+#ncomp0='A'
+#opt_list=[61,34,92,6,81,26,47,35,83,10]
+#Z_of_type={1:6, 2:1, 3:12, 4:8, 5:14}
 
-#complex1.rotate(90.0,'y',center=(25,25,25))
-complex3.rotate(180.0,'x',center=(25,25,25))
-complex3.rotate(150.0,'z',center=(25,25,25))
+#ncomp0='B'
+#opt_list=[99,50,46,63,80,37,36,69,67,33]
+#Z_of_type={1:6, 2:1, 3:12, 4:7, 5:8, 6:14}
 
-#complex1.rotate(90.0,'y',center=(25,25,25))
-complex4.rotate(180.0,'x',center=(25,25,25))
-complex4.rotate(150.0,'z',center=(25,25,25))
+#ncomp0='C'
+#opt_list=[93, 36, 35, 18, 25, 13, 1, 76, 30, 23]
+#Z_of_type={1:6, 2:1, 3:12, 4:7, 5:8, 6:14}
 
-shift1 = slab1_[140].position - complex1[78].position
-shift2 = slab2_[264].position - complex2[78].position
-shift3 = slab3_[320].position - complex3[78].position
-shift4 = slab4_[498].position - complex4[78].position
+#nslab0=2
+#ncomp0='A'
+#opt_list=[89,71,66,97,39,99,19,93,29,92]
+#Z_of_type={1:6, 2:1, 3:12, 4:8, 5:14}
 
-#adsorp 1
-shift1[2] = shift1[2]+4.5
-shift2[2] = shift2[2]+4.5
-shift3[2] = shift3[2]+4.5
-shift4[2] = shift4[2]+4.5
+#ncomp0='B'
+#opt_list=[70,49,85,14,74,55,32,81,25,20]
+#Z_of_type={1:6, 2:1, 3:12, 4:7, 5:8, 6:14}
 
-#adsorp 2
-#shift[2] = shift[2]+11.0
+#ncomp0='C'
+#opt_list=[51,99,33,13,91,27,64,18,63,32]
+#Z_of_type={1:6, 2:1, 3:12, 4:7, 5:8, 6:14}
 
-#adsorp 3
-#shift[2] = shift[2]+15.5
+nslab0=3
+#ncomp0='A'
+#opt_list=[49,79,77,63,9,2,91,16,81,85,42,6,35,82,3,5,54,10,43,15,74]
+#Z_of_type={1:6, 2:1, 3:12, 4:8, 5:14}
 
-complex1.translate(shift1)
-complex2.translate(shift2)
-complex3.translate(shift3)
-complex4.translate(shift4)
+#ncomp0='B'
+#opt_list=[89,59,33,81,5,43,60,77,95,6,65,3,51,40,1,99,93,25,91,79,28,38,82,13,67,34,71,54,68,19,55,41,22,14,49,78,17,73,42]
+#Z_of_type={1:6, 2:1, 3:12, 4:7, 5:8, 6:14}
 
-adsorp1 = slab1_+complex1
-os.makedirs('./adsorp1_opt',exist_ok=True)
-os.chdir('./adsorp1_opt')
-com = slab1_.get_center_of_mass()
-constraint=[]
-for atom in adsorp1:
-    if atom.position[2] < 5.3:
-        constraint.append(('atom',atom.index+1))
-options={}
-options['Slab.DipoleCorrection'] = True
-options['Slab.DipoleCorrection.Origin'] = [' '+str(com[0])+' '+str(com[1])+' '+str(com[2])+' Ang']
-options['Geometry.Constraints'] = constraint
-mk_siesta_input_optimize(adsorp1,xc,'DZP',50.0,[1,1,1],2000,g.siesta_pot,SolutionMethod='diagon',MaxSCFIterations=2000,options=options,spin='non-polarized')
-view(adsorp1)
-os.chdir('../')
+ncomp0='C'
+opt_list=[56,31,34,92,86,4,30,51,41,91,1,52,65,63,9,10,60,16,55,58,49,97,5,64,19,90,81,96,87,61,24,77,36,54,80,98,21,22,50]
+Z_of_type={1:6, 2:1, 3:12, 4:7, 5:8, 6:14}
 
-adsorp2 = slab2_+complex2
-os.makedirs('./adsorp2_opt',exist_ok=True)
-os.chdir('./adsorp2_opt')
-com = slab2_.get_center_of_mass()
-constraint=[]
-for atom in adsorp2:
-    if atom.position[2] < 5.3:
-        constraint.append(('atom',atom.index+1))
-options={}
-options['Slab.DipoleCorrection'] = True
-options['Slab.DipoleCorrection.Origin'] = [' '+str(com[0])+' '+str(com[1])+' '+str(com[2])+' Ang']
-options['Geometry.Constraints'] = constraint
-mk_siesta_input_optimize(adsorp2,xc,'DZP',50.0,[1,1,1],2000,g.siesta_pot,SolutionMethod='diagon',MaxSCFIterations=2000,options=options,spin='non-polarized')
-view(adsorp2)
-os.chdir('../')
+for nslab in slab_list:
+    for ncomp in complex_list:
+        for n in range(ncoord):
+            if nslab == nslab0 and ncomp == ncomp0 and (n+1) in opt_list:
+                print(n+1)
+                os.makedirs('slab_'+str(nslab)+'-mol'+ncomp,exist_ok=True)
+                os.chdir('slab_'+str(nslab)+'-mol'+ncomp)
+                os.makedirs('nset'+str(n+1),exist_ok=True)
+                os.chdir('nset'+str(n+1))
+                dir_ = '/home/A23321P/work/myPython/AtomicVirtuaLab/organo-metalic-complex/adsorp1/slab_'+str(nslab)+'-mol'+ncomp+'/nset'+str(n+1)
+                adsorp = read(dir_+'/result.data',format='lammps-data',Z_of_type=Z_of_type)
+                #view(adsorp)
+                ii = 0
+                sio2 = adsorp.copy()
+                del sio2[[atom.index for atom in sio2 if sio2.arrays["mol-id"][atom.index] != 1]]
+                com = sio2.get_center_of_mass()
+                constraint=[]
+                for atom in adsorp:
+                    if atom.position[2] < 5.3:
+                        constraint.append(('atom',atom.index+1))
+                options={}
+                options['Slab.DipoleCorrection'] = True
+                options['Slab.DipoleCorrection.Origin'] = [' '+str(com[0])+' '+str(com[1])+' '+str(com[2])+' Ang']
+                options['Geometry.Constraints'] = constraint
+                mk_siesta_input_optimize(adsorp,'BLYP','DZP',200.0,[1,1,1],2000,g.siesta_pot,SolutionMethod='diagon',MaxSCFIterations=2000,options=options,spin='non-polarized')
+                adsorp.write('test.cif')                
+                #sys.exit()
+                os.chdir('../')
+                os.chdir('../')
 
-adsorp3 = slab3_+complex3
-os.makedirs('./adsorp3_opt',exist_ok=True)
-os.chdir('./adsorp3_opt')
-com = slab3_.get_center_of_mass()
-constraint=[]
-for atom in adsorp3:
-    if atom.position[2] < 5.3:
-        constraint.append(('atom',atom.index+1))
-options={}
-options['Slab.DipoleCorrection'] = True
-options['Slab.DipoleCorrection.Origin'] = [' '+str(com[0])+' '+str(com[1])+' '+str(com[2])+' Ang']
-options['Geometry.Constraints'] = constraint
-mk_siesta_input_optimize(adsorp3,xc,'DZP',50.0,[1,1,1],2000,g.siesta_pot,SolutionMethod='diagon',MaxSCFIterations=2000,options=options,spin='non-polarized')
-view(adsorp3)
-os.chdir('../')
-
-adsorp4 = slab4_+complex4
-os.makedirs('./adsorp4_opt',exist_ok=True)
-os.chdir('./adsorp4_opt')
-com = slab4_.get_center_of_mass()
-constraint=[]
-for atom in adsorp4:
-    if atom.position[2] < 5.3:
-        constraint.append(('atom',atom.index+1))
-options={}
-options['Slab.DipoleCorrection'] = True
-options['Slab.DipoleCorrection.Origin'] = [' '+str(com[0])+' '+str(com[1])+' '+str(com[2])+' Ang']
-options['Geometry.Constraints'] = constraint
-mk_siesta_input_optimize(adsorp3,xc,'DZP',50.0,[1,1,1],2000,g.siesta_pot,SolutionMethod='diagon',MaxSCFIterations=2000,options=options,spin='non-polarized')
-view(adsorp4)
-adsorp4.write('test.cif')
-os.chdir('../')
-
-os.chdir('../')
-
-# 吸着モデル作成 終了
+# ランダム吸着モデル構造最適化 終了

@@ -1,0 +1,129 @@
+LAMMPS (23 Jun 2022 - Update 4)
+  using 1 OpenMP thread(s) per MPI task
+units metal
+boundary p p f
+atom_style full
+read_data lammps.data
+Reading data file ...
+  triclinic box = (0 0 0) to (24.574831 20.701457 36.159325) with tilt (-7.3724493 0 0)
+  2 by 2 by 2 MPI processor grid
+  reading atoms ...
+  357 atoms
+Finding 1-2 1-3 1-4 neighbors ...
+  special bond factors lj:    0        0        0       
+  special bond factors coul:  0        0        0       
+     0 = max # of 1-2 neighbors
+     0 = max # of 1-3 neighbors
+     0 = max # of 1-4 neighbors
+     1 = max # of special neighbors
+  special bonds CPU = 0.001 seconds
+  read_data CPU = 0.004 seconds
+group mol molecule 2
+57 atoms in group mol
+mass 1 12.011
+mass 2 1.008
+mass 3 24.305
+mass 4 15.999
+mass 5 28.085
+pair_style lj/cut 10.0
+pair_coeff 1 1 0.0045532767 3.4308509635584463
+pair_coeff 2 2 0.0019080397599999998 2.5711337005530193
+pair_coeff 3 3 0.00481346394 2.6914050275019648
+pair_coeff 4 4 0.0026018724 3.1181455134911875
+pair_coeff 5 5 0.01743254508 3.826409994412757
+pair_modify mix geometric
+dump dmp all custom 100000 traj_nvt.lammpstrj id type element x y z ix iy iz
+dump_modify dmp element C H Mg O Si
+thermo_style custom step etotal enthalpy pe ke temp press vol density cella cellb cellc cellalpha cellbeta cellgamma
+thermo 100000
+
+velocity mol create 5.0 12345
+fix fxnvt mol rigid/nvt molecule temp 5.0 5.0 $(dt*100.0)
+fix fxnvt mol rigid/nvt molecule temp 5.0 5.0 0.10000000000000000555
+  1 rigid bodies with 57 atoms
+run 200000
+Generated 10 of 10 mixed pair_coeff terms from geometric mixing rule
+Neighbor list info ...
+  update every 1 steps, delay 10 steps, check yes
+  max neighbors/atom: 2000, page size: 100000
+  master list distance cutoff = 12
+  ghost atom cutoff = 12
+  binsize = 6, bins = 6 4 7
+  1 neighbor lists, perpetual/occasional/extra = 1 0 0
+  (1) pair lj/cut, perpetual
+      attributes: half, newton on
+      pair build: half/bin/newton/tri
+      stencil: half/bin/3d/tri
+      bin: standard
+Per MPI rank memory allocation (min/avg/max) = 8.599 | 8.602 | 8.605 Mbytes
+   Step         TotEng        Enthalpy        PotEng         KinEng          Temp          Press          Volume        Density         Cella          Cellb          Cellc        CellAlpha       CellBeta      CellGamma   
+         0   202906.6       788740.42      202906.6       0.00067491068  0.017346632    51023827       18395.507      0.52143556     24.574831      21.975061      36.159325      90             90             109.60244    
+    100000   202906.03      788736.17      202906.03      0.0012013937   0.03087836     51023507       18395.507      0.52143556     24.574831      21.975061      36.159325      90             90             109.60244    
+    200000   202906.03      788736.58      202906.03      0.0012709773   0.032666804    51023543       18395.507      0.52143556     24.574831      21.975061      36.159325      90             90             109.60244    
+Loop time of 35.7419 on 8 procs for 200000 steps with 357 atoms
+
+Performance: 483.466 ns/day, 0.050 hours/ns, 5595.677 timesteps/s
+78.2% CPU use with 8 MPI tasks x 1 OpenMP threads
+
+MPI task timing breakdown:
+Section |  min time  |  avg time  |  max time  |%varavg| %total
+---------------------------------------------------------------
+Pair    | 0.0099375  | 12.668     | 27.179     | 356.5 | 35.44
+Bond    | 0.0062672  | 0.0080219  | 0.010247   |   1.9 |  0.02
+Neigh   | 5.5745e-05 | 0.00078423 | 0.0016036  |   0.0 |  0.00
+Comm    | 6.8669     | 20.515     | 32.439     | 261.8 | 57.40
+Output  | 0.00070012 | 0.00070331 | 0.00071621 |   0.0 |  0.00
+Modify  | 1.1613     | 2.0224     | 3.0109     |  55.2 |  5.66
+Other   |            | 0.5272     |            |       |  1.47
+
+Nlocal:         44.625 ave         101 max           0 min
+Histogram: 4 0 0 0 0 0 1 0 2 1
+Nghost:        783.125 ave         843 max         732 min
+Histogram: 2 1 0 1 0 1 1 0 1 1
+Neighs:        5852.88 ave       12314 max           0 min
+Histogram: 4 0 0 0 0 0 0 0 1 3
+
+Total # of neighbors = 46823
+Ave neighs/atom = 131.15686
+Ave special neighs/atom = 0
+Neighbor list builds = 4
+Dangerous builds = 0
+write_data result.data
+System init for write_data ...
+Generated 10 of 10 mixed pair_coeff terms from geometric mixing rule
+variable mype equal pe
+run 0
+Generated 10 of 10 mixed pair_coeff terms from geometric mixing rule
+Per MPI rank memory allocation (min/avg/max) = 8.599 | 8.602 | 8.606 Mbytes
+   Step         TotEng        Enthalpy        PotEng         KinEng          Temp          Press          Volume        Density         Cella          Cellb          Cellc        CellAlpha       CellBeta      CellGamma   
+    200000   202906.03      788736.1       202906.03      0.0012709773   0.032666804    51023501       18395.507      0.52143556     24.574831      21.975061      36.159325      90             90             109.60244    
+Loop time of 1.42337e-06 on 8 procs for 0 steps with 357 atoms
+
+131.7% CPU use with 8 MPI tasks x 1 OpenMP threads
+
+MPI task timing breakdown:
+Section |  min time  |  avg time  |  max time  |%varavg| %total
+---------------------------------------------------------------
+Pair    | 0          | 0          | 0          |   0.0 |  0.00
+Bond    | 0          | 0          | 0          |   0.0 |  0.00
+Neigh   | 0          | 0          | 0          |   0.0 |  0.00
+Comm    | 0          | 0          | 0          |   0.0 |  0.00
+Output  | 0          | 0          | 0          |   0.0 |  0.00
+Modify  | 0          | 0          | 0          |   0.0 |  0.00
+Other   |            | 1.423e-06  |            |       |100.00
+
+Nlocal:         44.625 ave         100 max           0 min
+Histogram: 4 0 0 0 0 0 0 1 2 1
+Nghost:        788.375 ave         851 max         736 min
+Histogram: 1 1 2 0 0 1 1 0 1 1
+Neighs:           5900 ave       12400 max           0 min
+Histogram: 4 0 0 0 0 0 0 0 1 3
+
+Total # of neighbors = 47200
+Ave neighs/atom = 132.21289
+Ave special neighs/atom = 0
+Neighbor list builds = 0
+Dangerous builds = 0
+print "Potential Energy: ${mype}"
+Potential Energy: 202906.02833101
+Total wall time: 0:00:35

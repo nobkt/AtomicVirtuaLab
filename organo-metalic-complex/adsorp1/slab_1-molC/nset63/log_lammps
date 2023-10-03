@@ -1,0 +1,107 @@
+LAMMPS (23 Jun 2022 - Update 4)
+  using 1 OpenMP thread(s) per MPI task
+Reading data file ...
+  triclinic box = (0 0 0) to (24.574831 20.701457 36.159325) with tilt (-7.3724493 0 0)
+  2 by 2 by 2 MPI processor grid
+  reading atoms ...
+  377 atoms
+Finding 1-2 1-3 1-4 neighbors ...
+  special bond factors lj:    0        0        0       
+  special bond factors coul:  0        0        0       
+     0 = max # of 1-2 neighbors
+     0 = max # of 1-3 neighbors
+     0 = max # of 1-4 neighbors
+     1 = max # of special neighbors
+  special bonds CPU = 0.001 seconds
+  read_data CPU = 0.004 seconds
+77 atoms in group mol
+  1 rigid bodies with 77 atoms
+Generated 15 of 15 mixed pair_coeff terms from geometric mixing rule
+Neighbor list info ...
+  update every 1 steps, delay 10 steps, check yes
+  max neighbors/atom: 2000, page size: 100000
+  master list distance cutoff = 12
+  ghost atom cutoff = 12
+  binsize = 6, bins = 6 4 7
+  1 neighbor lists, perpetual/occasional/extra = 1 0 0
+  (1) pair lj/cut, perpetual
+      attributes: half, newton on
+      pair build: half/bin/newton/tri
+      stencil: half/bin/3d/tri
+      bin: standard
+Setting up Verlet run ...
+  Unit style    : metal
+  Current step  : 0
+  Time step     : 0.001
+Per MPI rank memory allocation (min/avg/max) = 8.588 | 8.596 | 8.601 Mbytes
+   Step         TotEng        Enthalpy        PotEng         KinEng          Temp          Press          Volume        Density         Cella          Cellb          Cellc        CellAlpha       CellBeta      CellGamma   
+         0   224281.72      810129.96      224281.72      0.0017576955   0.045176492    51025083       18395.507      0.53553445     24.574831      21.975061      36.159325      90             90             109.60244    
+    100000   224281.34      810111.52      224281.34      0.0011224277   0.028848766    51023510       18395.507      0.53553445     24.574831      21.975061      36.159325      90             90             109.60244    
+    200000   224281.34      810111.39      224281.34      0.0015705146   0.040365548    51023499       18395.507      0.53553445     24.574831      21.975061      36.159325      90             90             109.60244    
+Loop time of 34.992 on 8 procs for 200000 steps with 377 atoms
+
+Performance: 493.827 ns/day, 0.049 hours/ns, 5715.587 timesteps/s
+78.2% CPU use with 8 MPI tasks x 1 OpenMP threads
+
+MPI task timing breakdown:
+Section |  min time  |  avg time  |  max time  |%varavg| %total
+---------------------------------------------------------------
+Pair    | 0.079746   | 12.464     | 26.357     | 339.9 | 35.62
+Bond    | 0.0062834  | 0.0079977  | 0.010232   |   1.9 |  0.02
+Neigh   | 0.00041666 | 0.0038447  | 0.0078085  |   5.4 |  0.01
+Comm    | 6.9734     | 20.227     | 32.111     | 253.4 | 57.81
+Output  | 0.00062811 | 0.00063162 | 0.00064625 |   0.0 |  0.00
+Modify  | 1.1055     | 1.7858     | 2.6804     |  45.4 |  5.10
+Other   |            | 0.5028     |            |       |  1.44
+
+Nlocal:         47.125 ave          93 max           0 min
+Histogram: 3 0 0 1 0 0 0 1 1 2
+Nghost:        832.125 ave         920 max         730 min
+Histogram: 1 0 0 2 0 1 2 0 1 1
+Neighs:        5876.38 ave       12516 max           0 min
+Histogram: 4 0 0 0 0 0 0 1 0 3
+
+Total # of neighbors = 47011
+Ave neighs/atom = 124.69761
+Ave special neighs/atom = 0
+Neighbor list builds = 19
+Dangerous builds = 0
+System init for write_data ...
+Generated 15 of 15 mixed pair_coeff terms from geometric mixing rule
+Generated 15 of 15 mixed pair_coeff terms from geometric mixing rule
+Setting up Verlet run ...
+  Unit style    : metal
+  Current step  : 200000
+  Time step     : 0.001
+Per MPI rank memory allocation (min/avg/max) = 8.588 | 8.596 | 8.602 Mbytes
+   Step         TotEng        Enthalpy        PotEng         KinEng          Temp          Press          Volume        Density         Cella          Cellb          Cellc        CellAlpha       CellBeta      CellGamma   
+    200000   224281.34      810111.58      224281.34      0.0015705146   0.040365548    51023516       18395.507      0.53553445     24.574831      21.975061      36.159325      90             90             109.60244    
+Loop time of 1.92225e-06 on 8 procs for 0 steps with 377 atoms
+
+123.6% CPU use with 8 MPI tasks x 1 OpenMP threads
+
+MPI task timing breakdown:
+Section |  min time  |  avg time  |  max time  |%varavg| %total
+---------------------------------------------------------------
+Pair    | 0          | 0          | 0          |   0.0 |  0.00
+Bond    | 0          | 0          | 0          |   0.0 |  0.00
+Neigh   | 0          | 0          | 0          |   0.0 |  0.00
+Comm    | 0          | 0          | 0          |   0.0 |  0.00
+Output  | 0          | 0          | 0          |   0.0 |  0.00
+Modify  | 0          | 0          | 0          |   0.0 |  0.00
+Other   |            | 1.922e-06  |            |       |100.00
+
+Nlocal:         47.125 ave          92 max           1 min
+Histogram: 3 0 0 1 0 0 0 1 1 2
+Nghost:        830.875 ave         919 max         729 min
+Histogram: 1 0 0 2 0 1 2 0 1 1
+Neighs:         5876.5 ave       12474 max          21 min
+Histogram: 4 0 0 0 0 0 0 0 1 3
+
+Total # of neighbors = 47012
+Ave neighs/atom = 124.70027
+Ave special neighs/atom = 0
+Neighbor list builds = 0
+Dangerous builds = 0
+Potential Energy: 224281.339292828
+Total wall time: 0:00:35

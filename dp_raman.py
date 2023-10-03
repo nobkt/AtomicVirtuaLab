@@ -39,16 +39,16 @@ mk_npt_input_deepmd(cell,0.0005,2000,2000,2000000,300,0.0,12345,mol=True)
 # DeepMD NPT 終了
 """
 
-"""
+
 # ポテンシャル学習
 os.makedirs('./dp_raman_test',exist_ok=True)
 os.chdir('./dp_raman_test')
 os.makedirs('train',exist_ok=True)
 os.chdir('./train')
-dpdata=True
+dpdata=False
 if dpdata:
     path = os.getcwd()
-    datadir_ = '/home/A23321P/work/mySiesta/dipole_and_polarizability/Zn-Pc-allBr/datas/KBM'
+    datadir_ = '/home/A23321P/work/mySiesta/dipole_and_polarizability/Zn-Pc-allBr/datas/BLYP'
     os.chdir(datadir_)
     siesta2dp()
     os.system('cp -r '+str(datadir_)+'/deepmd '+str(path))
@@ -57,7 +57,7 @@ dpdir = './deepmd'
 dp_list=get_deepmd_list(dpdir)
 wt_deepmd_json(dpdir,dp_list,8.0,1000000,prec='high')
 # ポテンシャル学習 終了
-"""
+
 
 """
 # dipleおよびpolarizability解析
@@ -362,7 +362,7 @@ for T0 in T_list:
 # Zn-フタロシアニンのパッキングモデル作成終了
 """
 
-
+"""
 # Zn-フタロシアニンの学習データ作成
 
 T_list = [300,500,700,900,1100]
@@ -394,14 +394,14 @@ for xc in ['BLYP']:
                 cell = read('/home/A23321P/work/myLAMMPS/dp_raman_test/Zn-Pc_train/Zn-Pc-allBr/lammps/T_'+str(T0)+'/set'+str(n)+'/result.data',format='lammps-data',sort_by_id=True,Z_of_type={1:35,2:6,3:7,4:30})
                 #view(cell)
                 #sys.exit()
-                mk_siesta_input_npt(cell,xc,basis,100.0,None,T0,0.0,2000,g.siesta_pot,SolutionMethod='diagon',MaxSCFIterations=2000,dt=0.5,spin='non-polarized')
+                mk_siesta_input_npt(cell,xc,basis,200.0,None,T0,0.0,500,g.siesta_pot,SolutionMethod='diagon',MaxSCFIterations=2000,dt=0.5,spin='non-polarized')
                 os.chdir('../')
             os.chdir('../')
         os.chdir('../')
     os.chdir('../')
 os.chdir('../')
 # Zn-フタロシアニンの学習データ作成終了
-
+"""
 
 """
 # Zn-フタロシアニンの学習データ作成(リスタート)

@@ -384,6 +384,47 @@ def mk_nvt_input_uff(cell,dt,dmp_step,thermo_step,md_step,T,seed):
     f.write('write_data result.data'+'\n')
     f.close()
 
+def mk_mimize_input_uff_adsorp(cell,nstep,dmp_step,thermo_step):
+    from AtomicVirtuaLab.io import cell2atomlist, mk_lammpsdata
+    from ase import Atom
+    import random
+    mk_lammpsdata(cell,False,mol=True)
+    symbols = cell2atomlist(cell)
+    f = open('lammps.lmp','w')
+    f.write('units metal'+'\n')
+    f.write('boundary p p f'+'\n')
+    f.write('atom_style full'+'\n')
+    f.write('read_data lammps.data'+'\n')
+    f.write('group mol molecule 2'+'\n')
+    i = 1
+    for symbol in symbols:
+        a = Atom(symbol)
+        f.write('mass '+str(i)+' '+str(a.mass)+'\n')
+        i = i + 1
+    f.write('pair_style lj/cut 10.0'+'\n')
+    i = 1
+    for symbol in symbols:
+        sigma, epsilon = set_uff_lj(symbol)
+        f.write('pair_coeff '+str(i)+' '+str(i)+' '+str(epsilon)+' '+str(sigma)+'\n')
+        i = i + 1
+    f.write('pair_modify mix geometric'+'\n')
+    f.write('dump dmp all custom '+str(dmp_step)+' traj_nvt.lammpstrj id type element x y z ix iy iz'+'\n')
+    f.write('dump_modify dmp element')
+    for symbol in symbols:
+        f.write(' '+str(symbol))
+    f.write('\n')
+    f.write('thermo_style custom step etotal enthalpy pe ke temp press vol density cella cellb cellc cellalpha cellbeta cellgamma'+'\n')
+    f.write('thermo '+str(thermo_step)+'\n')
+    f.write('\n')
+    f.write('velocity mol create 5.0 12345'+'\n')
+    f.write('fix fxnvt mol rigid/nvt molecule temp 5.0 5.0 $(dt*100.0)'+'\n')
+    f.write('run '+str(nstep)+'\n')
+    f.write('write_data result.data'+'\n')
+    f.write('variable mype equal pe'+'\n')
+    f.write('run 0'+'\n')
+    f.write('print "Potential Energy: ${mype}"'+'\n')
+    f.close()
+
 def mk_nvt_input_uff_rigid(cell,dt,dmp_step,thermo_step,md_step,T,seed):
     from AtomicVirtuaLab.io import cell2atomlist, mk_lammpsdata
     from ase import Atom

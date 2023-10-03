@@ -109,7 +109,7 @@ wt_deepmd_json(dpdir,dp_list,8.0,1000000,prec='high')
 # ポテンシャル学習 終了
 """
 
-
+"""
 # 融点計算
 os.makedirs('./Al2O3_growth',exist_ok=True)
 os.chdir('./Al2O3_growth')
@@ -129,3 +129,4 @@ for T0 in [2310,2320,2330,2340,2350,2360,2370,2380,2390]:
     mk_npt_melt_input_deepmd(cell,0.0005,10000,10000,200000,200000,10000000,1000,5000,T0,0.0,z0,12345)
     os.chdir('../')
 # 融点計算終了
+"""
