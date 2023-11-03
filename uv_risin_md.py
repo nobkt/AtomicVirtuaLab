@@ -5,6 +5,9 @@ from AtomicVirtuaLab.lammps import mk_npt_input_fr_moltemplate, mk_npt_compress_
 import AtomicVirtuaLab.globalv as g
 from ase.visualize import view
 from ase.io import read
+from ase.geometry.analysis import Analysis
+import pandas as pd
+import sys
 from rdkit import Chem
 from rdkit.Chem import Draw, rdDistGeom
 import os
@@ -13,12 +16,16 @@ import sys
 
 g.cifs = '/home/A23321P/work/myPython/AtomicVirtuaLab/cifs'
 
+
+
+# モノマー溶液MD
 nmol = 128
 
 os.makedirs('./uv_risin_md',exist_ok=True)
 os.chdir('./uv_risin_md')
 
-mols = Chem.SDMolSupplier(g.cifs+'/uv_risin_molecules.sdf')
+#mols = Chem.SDMolSupplier(g.cifs+'/uv_risin_molecules.sdf')
+mols = Chem.SDMolSupplier(g.cifs+'/uv_risin_molecules2.sdf')
 i = 1
 for mol in mols:
     if i==7:
@@ -82,5 +89,56 @@ for mol in mols:
     os.chdir('../')
     i+=1
     os.chdir('../')
+# モノマー溶液MD 終了
+
+
+"""
+# RDF解析
+cell = read('./traj_npt.lammpstrj',format='lammps-dump-text',index=':')
+intra=True
+inter=True
+neq=20
+type1=4
+type2=4
+
+cell0=[]
+for atom in cell:
+  atom.wrap()
+  cell0.append(atom)
+
+i = 0
+nn=len(cell0)
+dn = int(nn/neq)
+for n in range(0,nn,dn):
+  atoms = cell0[n]
+  i = i + 1
+  if intra:
+      distribution1, distance = Analysis(atoms).get_rdf_intramol(rmax=15., nbins=100, return_dists=True, types=[type1,type2])[0]
+  if inter:
+      distribution2, distance = Analysis(atoms).get_rdf_intermol(rmax=15., nbins=100, return_dists=True, types=[type1,type2])[0]
+  if i == 1:
+    if intra:
+        intra_distribution = distribution1
+    if inter:
+        inter_distribution = distribution2
+  else:
+    if intra:
+        intra_distribution = [x+y for (x,y) in zip(intra_distribution,distribution1)]
+    if inter:
+        inter_distribution = [x+y for (x,y) in zip(inter_distribution,distribution2)]
+
+if intra:
+    intra_distribution = [x/float(i) for x in intra_distribution]
+if inter:
+    inter_distribution = [x/float(i) for x in inter_distribution]
+
+if intra:
+    intra_df = pd.DataFrame({'distance':distance,'rdf':intra_distribution})
+    intra_df.to_csv('intra_rdf_'+str(type1)+'_'+str(type2)+'.csv')
+if inter:
+    inter_df = pd.DataFrame({'distance':distance,'rdf':inter_distribution})
+    inter_df.to_csv('inter_rdf_'+str(type1)+'_'+str(type2)+'.csv')
+# RDF解析 終了
+"""
 
 

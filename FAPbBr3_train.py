@@ -72,7 +72,7 @@ for P0 in P:
 # ポテンシャル学習
 os.makedirs('./FAPbBr3/train',exist_ok=True)
 os.chdir('./FAPbBr3/train')
-dpdata=True
+dpdata=False
 if dpdata:
     path = os.getcwd()
     datadir_ = '/home/A23321P/work/mySiesta/FAPbBr3/data/bulk'

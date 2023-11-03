@@ -4,7 +4,7 @@ from ase.visualize import view
 
 molname='test'
 
-smiles = 'CCCCN1C[N+](C)=C=C1'
+smiles = 'COC1=CC(OC)=CC(OC)=C1'
 smiles2xyz(smiles,molname,True)
 mol = read(molname+'.xyz')
 view(mol)

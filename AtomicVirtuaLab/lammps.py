@@ -472,7 +472,7 @@ def mk_nvt_input_uff_rigid_scale(cell,dt,dmp_step,thermo_step,lat,df_step,md_ste
     from AtomicVirtuaLab.io import cell2atomlist, mk_lammpsdata
     from ase import Atom
     import random
-    mk_lammpsdata(cell,True)
+    mk_lammpsdata(cell,False,mol=True)
     symbols = cell2atomlist(cell)
     f = open('lammps.lmp','w')
     mk_qeqfile(symbols)

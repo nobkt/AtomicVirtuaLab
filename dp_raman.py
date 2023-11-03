@@ -10,14 +10,238 @@ from AtomicVirtuaLab.deepmd import get_deepmd_list, wt_deepmd_json, siesta2dp
 import AtomicVirtuaLab.globalv as g
 from AtomicVirtuaLab.build import sortmol
 from AtomicVirtuaLab.io import rd_lammpsdata_init
+from AtomicVirtuaLab.tools import add_displacement, deform_cell
+from AtomicVirtuaLab.io import cell2atomlist
+from AtomicVirtuaLab.gpaw import mk_gpaw_lcao_input_optimize,mk_gpaw_pw_input_optimize,mk_gpaw_pw_input_npt,mk_gpaw_lcao_input_npt
+from ase.data import atomic_numbers
 import shutil
 import os
 import sys
+import random
 
 g.qepot = '/home/A23321P/work/myPython/AtomicVirtuaLab/qe_pseudo'
 g.siesta_pot = '/home/A23321P/work/myPython/AtomicVirtuaLab/siesta_pseudo'
 g.cifdir = '/home/A23321P/work/myPython/AtomicVirtuaLab/cifs'
 g.forcedir = "/home/A23321P/work/myPython/AtomicVirtuaLab/lmp_potentials"
+
+
+"""
+# Zn-フタロシアニンの学習データ作成 Siesta
+
+T_list = [300, 500, 700, 900, 1100]
+#T_list = [1100]
+nset = 10
+nmols = 6
+subelm = 'Br'
+sublist = {'Cl':4,'H':4}
+
+os.makedirs('./dp_raman_test',exist_ok=True)
+os.chdir('./dp_raman_test')
+
+os.makedirs('./Zn-Pc_train',exist_ok=True)
+os.chdir('./Zn-Pc_train')
+
+xyz = read(g.cifdir+'/Zn-Pc-allBr.xyz')
+xyz = sort(xyz)
+
+mollist={
+    'mols':nmols
+}
+
+x_box=100.0
+y_box=100.0
+z_box=100.0
+
+for n in range(nset):
+    for T0 in T_list:
+        os.makedirs('./T_'+str(T0),exist_ok=True)
+        os.chdir('./T_'+str(T0))
+        os.makedirs('./set'+str(n),exist_ok=True)
+        os.chdir('./set'+str(n))
+        os.makedirs('./tmp',exist_ok=True)
+        os.chdir('./tmp')
+        xyz.write('mols.xyz')
+        mk_packmol_random(mollist,x_box,y_box,z_box)
+        os.system('packmol < packmol.inp 1> log_packmol 2> err_packmol')
+        #
+        cell = read('./system.xyz')
+        cell.set_cell([x_box,y_box,z_box])
+        cell = sortmol(cell)
+        symbols=[]
+        for atom in cell:
+            symbols.append(atom.symbol)
+        for imol in range(nmols):
+            ltmp=[]
+            aid=0
+            for symbol in symbols:
+                if cell.arrays['mol-id'][aid] == imol+1 and symbol == subelm:
+                    ltmp.append(aid)
+                aid=aid+1
+            #print(ltmp)
+            nsub=0
+            subnum={}
+            for elm0 in sublist:
+                n0 = random.randint(0, sublist[elm0])
+                subnum[elm0] = n0
+                nsub = nsub + n0
+            subs = random.sample(ltmp, nsub)
+            nn = 0
+            for elm0 in subnum:
+                n0 = subnum[elm0]
+                for i in range(nn,nn+n0):
+                    cell[subs[i]].symbol = elm0
+                nn = nn + n0
+        #cell = sortmol(cell)
+        cell.write('system.cif')
+        symbols = cell2atomlist(cell)
+        #
+        unitcell = read(g.cifdir+'/ZincPhthalocyanine.cif')
+        #
+        volume = unitcell.get_volume()
+        masses = unitcell.get_masses()
+        tot_mass = sum(masses)
+        dens = tot_mass/volume
+        #
+        volume1 = cell.get_volume()
+        masses1 = cell.get_masses()
+        tot_mass1 = sum(masses1)
+        dens1 = tot_mass1/volume1
+        #
+        lat = (volume1/(dens/dens1))**(1/3)
+        #
+        mk_nvt_input_uff_rigid_scale(cell,0.0005,1000,1000,lat,20000,2000,T0,12345)
+        os.system('mpirun -np 4 lmp -in lammps.lmp 1> log_lammps 2> err_lammps')
+        Z_of_type={}
+        i = 0
+        for symbol in symbols:
+            Z_of_type[i+1] = atomic_numbers[symbol]
+            i=i+1
+        cell = read('result.data',format='lammps-data',sort_by_id=True,Z_of_type=Z_of_type)
+        #view(cell)
+        os.chdir('../')
+        os.makedirs('opt',exist_ok=True)
+        os.chdir('opt')
+        mk_siesta_input_optimize(cell,'PBE','DZP',50.0,[1,1,1],50,g.siesta_pot,SolutionMethod='diagon',MaxSCFIterations=2000,options={},spin='non-polarized')
+        os.chdir('../')
+        os.makedirs('npt',exist_ok=True)
+        os.chdir('npt')
+        mk_siesta_input_npt(cell,'VDW','DZP',100,[1,1,1],T0,0.0,500,g.siesta_pot,SolutionMethod='diagon',MaxSCFIterations=2000,dt=0.5,spin='non-polarized')
+        os.chdir('../')
+        #mk_gpaw_pw_input_optimize(cell,xc='PBE',ecut=400,kpts={'size':(1,1,1),'gamma':True},maxiter=2000,dftd3=True)
+        #mk_gpaw_pw_input_npt(cell,T0,0.0,2000,xc='PBE',ecut=400,kpts={'size':(1,1,1),'gamma':True},maxiter=2000,dt=0.5,dftd3=True,berendsen=True,berandsen_nstep=400,restart=True)
+        #mk_gpaw_lcao_input_optimize(cell,xc='PBE',basis='dzp',kpts={'size':(1,1,1),'gamma':True},maxiter=2000,dftd3=True)
+        #sys.exit()
+        os.chdir('../')
+        os.chdir('../')
+
+# Zn-フタロシアニンの学習データ作成 Siesta
+"""
+
+
+
+# Zn-フタロシアニンの学習データ作成 GPAW
+
+T_list = [300, 500, 700, 900, 1100]
+#T_list = [1100]
+nset = 10
+nmols = 6
+subelm = 'Br'
+sublist = {'Cl':4,'H':4}
+
+os.makedirs('./dp_raman_test',exist_ok=True)
+os.chdir('./dp_raman_test')
+
+os.makedirs('./Zn-Pc_train',exist_ok=True)
+os.chdir('./Zn-Pc_train')
+
+xyz = read(g.cifdir+'/Zn-Pc-allBr.xyz')
+xyz = sort(xyz)
+
+mollist={
+    'mols':nmols
+}
+
+x_box=100.0
+y_box=100.0
+z_box=100.0
+
+for n in range(nset):
+    for T0 in T_list:
+        os.makedirs('./T_'+str(T0),exist_ok=True)
+        os.chdir('./T_'+str(T0))
+        os.makedirs('./set'+str(n),exist_ok=True)
+        os.chdir('./set'+str(n))
+        os.makedirs('./tmp',exist_ok=True)
+        os.chdir('./tmp')
+        xyz.write('mols.xyz')
+        mk_packmol_random(mollist,x_box,y_box,z_box)
+        os.system('packmol < packmol.inp 1> log_packmol 2> err_packmol')
+        #
+        cell = read('./system.xyz')
+        cell.set_cell([x_box,y_box,z_box])
+        cell = sortmol(cell)
+        symbols=[]
+        for atom in cell:
+            symbols.append(atom.symbol)
+        for imol in range(nmols):
+            ltmp=[]
+            aid=0
+            for symbol in symbols:
+                if cell.arrays['mol-id'][aid] == imol+1 and symbol == subelm:
+                    ltmp.append(aid)
+                aid=aid+1
+            #print(ltmp)
+            nsub=0
+            subnum={}
+            for elm0 in sublist:
+                n0 = random.randint(0, sublist[elm0])
+                subnum[elm0] = n0
+                nsub = nsub + n0
+            subs = random.sample(ltmp, nsub)
+            nn = 0
+            for elm0 in subnum:
+                n0 = subnum[elm0]
+                for i in range(nn,nn+n0):
+                    cell[subs[i]].symbol = elm0
+                nn = nn + n0
+        cell.write('system.cif')
+        symbols = cell2atomlist(cell)
+        #
+        unitcell = read(g.cifdir+'/ZincPhthalocyanine.cif')
+        #
+        volume = unitcell.get_volume()
+        masses = unitcell.get_masses()
+        tot_mass = sum(masses)
+        dens = tot_mass/volume
+        #
+        volume1 = cell.get_volume()
+        masses1 = cell.get_masses()
+        tot_mass1 = sum(masses1)
+        dens1 = tot_mass1/volume1
+        #
+        lat = (volume1/(dens/dens1))**(1/3)
+        #
+        mk_nvt_input_uff_rigid_scale(cell,0.0005,1000,1000,lat,20000,2000,T0,12345)
+        os.system('mpirun -np 1 lmp -in lammps.lmp 1> log_lammps 2> err_lammps')
+        Z_of_type={}
+        i = 0
+        for symbol in symbols:
+            Z_of_type[i+1] = atomic_numbers[symbol]
+            i=i+1
+        cell = read('result.data',format='lammps-data',sort_by_id=True,Z_of_type=Z_of_type)
+        #view(cell)
+        os.chdir('../')
+        #mk_gpaw_pw_input_optimize(cell,xc='PBE',ecut=400,kpts={'size':(1,1,1),'gamma':True},maxiter=2000,dftd3=True)
+        #mk_gpaw_pw_input_npt(cell,T0,0.0,2000,xc='PBE',ecut=400,kpts={'size':(1,1,1),'gamma':True},maxiter=2000,dt=0.5,dftd3=True,berendsen=True,berandsen_nstep=400,restart=True)
+        mk_gpaw_lcao_input_optimize(cell,xc='PBE',basis='dzp',kpts={'size':(1,1,1),'gamma':True},maxiter=2000,dftd3=True)
+        mk_gpaw_lcao_input_npt(cell,T0,0.0,500,xc='PBE',basis='dzp',kpts={'size':(1,1,1),'gamma':True},maxiter=2000,dt=0.5,dftd3=True,berendsen=True,berandsen_nstep=100,restart=True)
+        #sys.exit()
+        os.chdir('../')
+        os.chdir('../')
+
+# Zn-フタロシアニンの学習データ作成 GPAW
+
+
 
 """
 # DeepMD NPT
@@ -39,7 +263,7 @@ mk_npt_input_deepmd(cell,0.0005,2000,2000,2000000,300,0.0,12345,mol=True)
 # DeepMD NPT 終了
 """
 
-
+"""
 # ポテンシャル学習
 os.makedirs('./dp_raman_test',exist_ok=True)
 os.chdir('./dp_raman_test')
@@ -48,7 +272,7 @@ os.chdir('./train')
 dpdata=False
 if dpdata:
     path = os.getcwd()
-    datadir_ = '/home/A23321P/work/mySiesta/dipole_and_polarizability/Zn-Pc-allBr/datas/BLYP'
+    datadir_ = '/home/A23321P/work/mySiesta/dipole_and_polarizability/Zn-Pc-allBr/datas/PBE/xc_PBE/basis_DZP'
     os.chdir(datadir_)
     siesta2dp()
     os.system('cp -r '+str(datadir_)+'/deepmd '+str(path))
@@ -57,7 +281,7 @@ dpdir = './deepmd'
 dp_list=get_deepmd_list(dpdir)
 wt_deepmd_json(dpdir,dp_list,8.0,1000000,prec='high')
 # ポテンシャル学習 終了
-
+"""
 
 """
 # dipleおよびpolarizability解析
@@ -379,7 +603,7 @@ os.chdir('./Zn-Pc-allBr')
 os.makedirs('./siesta',exist_ok=True)
 os.chdir('./siesta')
 
-for xc in ['BLYP']:
+for xc in ['PBE']:
     os.makedirs('./xc_'+str(xc),exist_ok=True)
     os.chdir('./xc_'+str(xc))
     for basis in ['DZP']:
@@ -407,7 +631,7 @@ os.chdir('../')
 # Zn-フタロシアニンの学習データ作成(リスタート)
 
 T_list = [300,500,700,900,1100]
-nset = 1
+nset = [1]
 
 os.makedirs('./dp_raman_test',exist_ok=True)
 os.chdir('./dp_raman_test')
@@ -420,7 +644,7 @@ os.chdir('./Zn-Pc-allBr')
 os.makedirs('./siesta',exist_ok=True)
 os.chdir('./siesta')
 
-for xc in ['KBM']:
+for xc in ['BLYP']:
     os.makedirs('./xc_'+str(xc),exist_ok=True)
     os.chdir('./xc_'+str(xc))
     for basis in ['DZP']:
@@ -429,13 +653,15 @@ for xc in ['KBM']:
         for T0 in T_list:
             os.makedirs('./T_'+str(T0),exist_ok=True)
             os.chdir('./T_'+str(T0))
-            for n in range(nset):
+            for n in nset:
                 os.makedirs('set'+str(n),exist_ok=True)
                 os.chdir('set'+str(n))
-                cell = read('/home/A23321P/work/mySiesta/dipole_and_polarizability/Zn-Pc-allBr/datas/'+str(xc)+'/set3/siesta/xc_'+str(xc)+'/basis_'+str(basis)+'/T_'+str(T0)+'/set'+str(n)+'/siesta.STRUCT_OUT',format='struct_out')
+                cell = read('/home/A23321P/work/mySiesta/dipole_and_polarizability/Zn-Pc-allBr/datas/'+str(xc)+'/xc_'+str(xc)+'/basis_'+str(basis)+'/T_'+str(T0)+'/set0/siesta.STRUCT_OUT',format='struct_out')
+                cell = add_displacement(cell,0.05)
+                cell = deform_cell(cell,0.05,0.5)
                 #view(cell)
                 #sys.exit()
-                mk_siesta_input_npt(cell,xc,basis,100.0,None,T0,0.0,500,g.siesta_pot,SolutionMethod='diagon',MaxSCFIterations=2000,dt=0.5,spin='non-polarized')
+                mk_siesta_input_npt(cell,xc,basis,200.0,None,T0,0.0,500,g.siesta_pot,SolutionMethod='diagon',MaxSCFIterations=2000,dt=0.5,spin='non-polarized')
                 os.chdir('../')
             os.chdir('../')
         os.chdir('../')
@@ -526,7 +752,13 @@ shift = [5.0,5.0,5.0] - com
 h2o_mol.translate(shift)
 h2o_mol.set_cell([10.0,10.0,10.0])
 view(h2o_mol)
-#mk_siesta_input_optimize(h2o_mol,'VDW','SZ',50.0,[1,1,1],2000,g.siesta_pot,SolutionMethod='diagon',MaxSCFIterations=2000,spin='non-polarized')
+os.makedirs('opt',exist_ok=True)
+os.chdir('opt')
+mk_siesta_input_optimize(h2o_mol,'VDW','SZ',50.0,[1,1,1],2000,g.siesta_pot,SolutionMethod='diagon',MaxSCFIterations=2000,spin='non-polarized')
+os.chdir('../')
+os.makedirs('nvt',exist_ok=True)
+os.chdir('nvt')
 mk_siesta_input_nvt(h2o_mol,'VDW','SZ',50.0,[1,1,1],300.0,10,g.siesta_pot,SolutionMethod='diagon',MaxSCFIterations=2000,dt=0.5,spin='non-polarized')
+os.chdir('../')
 # H2O 単分子テスト終了
 """

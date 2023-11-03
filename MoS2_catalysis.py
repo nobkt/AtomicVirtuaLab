@@ -20,7 +20,7 @@ g.siesta_pot = '/home/A23321P/work/myPython/AtomicVirtuaLab/siesta_pseudo'
 g.cifdir='./cifs'
 
 
-
+"""
 # one Pd吸着後スラブ 吸着モデル ポテンシャル計算
 ecutwfc0=77.0
 ecutrho0=539.0
@@ -135,7 +135,7 @@ os.chdir('../')
 
 
 # bridge_1
-rlist = [2.6,2.7,2.8,2.9,3.1,3.2,3.3,3.4,3.5]
+rlist = [3.6,3.7,3.8,3.9,4.0,4.1,4.2,4.3,4.4,4.5]
 adtype = 'bridge_1'
 x0 = (3.154+1.480)/2.0
 y0 = (7.396+4.496)/2.0
@@ -352,7 +352,7 @@ os.chdir('../')
 
 
 # bridge_1
-rlist = [2.6,2.7,2.8,2.9,3.1,3.2,3.3,3.4,3.5]
+rlist = [3.6,3.7,3.8,3.9,4.0,4.1,4.2,4.3,4.4,4.5]
 adtype = 'bridge_1'
 x0 = (3.249+1.576)/2.0
 y0 = (7.334+4.436)/2.0
@@ -471,7 +471,7 @@ for r in rlist:
     os.chdir('../')
 os.chdir('../')
 # one Pd吸着後スラブ 吸着モデル ポテンシャル計算 終了
-
+"""
 
 """
 # one Pd吸着後スラブ 吸着モデル 構造最適化
@@ -486,7 +486,7 @@ k0 = kpoint
 
 rlist = [0.5,1.0,1.5,2.0,2.5,3.0,3.5,4.0]
 
-elm = 'H'
+elm = 'Pd'
 
 path = os.getcwd()
 os.chdir(path)
@@ -511,7 +511,7 @@ slab.set_constraint(c)
 #sys.exit()
 
 # Pd_ontop
-rlist = [1.6]
+rlist = [2.6]
 adtype = 'Pd_ontop'
 x0 = 3.154
 y0 = 5.463
@@ -532,7 +532,7 @@ for r in rlist:
 os.chdir('../')
 
 # S_ontop_1
-rlist = [1.6]
+rlist = [2.8]
 adtype = 'S_ontop_1'
 x0 = 4.828
 y0 = 4.496
@@ -553,7 +553,7 @@ for r in rlist:
 os.chdir('../')
 
 # S_ontop_2
-rlist = [1.4]
+rlist = [2.2]
 adtype = 'S_ontop_2'
 x0 = -0.006
 y0 = 7.287
@@ -574,7 +574,7 @@ for r in rlist:
 os.chdir('../')
 
 # S_ontop_3
-rlist = [1.4]
+rlist = [2.2]
 adtype = 'S_ontop_3'
 x0 = -0.012
 y0 = 1.808
@@ -596,7 +596,7 @@ os.chdir('../')
 
 
 # bridge_1
-rlist = [0.1]
+rlist = [3.8]
 adtype = 'bridge_1'
 x0 = (3.154+1.480)/2.0
 y0 = (7.396+4.496)/2.0
@@ -617,7 +617,7 @@ for r in rlist:
 os.chdir('../')
 
 # bridge_2
-rlist = [1.2]
+rlist = [1.8]
 adtype = 'bridge_2'
 x0 = (3.154-0.006)/2.0
 y0 = (7.396+7.287)/2.0
@@ -638,7 +638,7 @@ for r in rlist:
 os.chdir('../')
 
 # bridge_3
-rlist = [0.8]
+rlist = [1.7]
 adtype = 'bridge_3'
 x0 = (3.154+1.572)/2.0
 y0 = (7.396+10.031)/2.0
@@ -659,7 +659,7 @@ for r in rlist:
 os.chdir('../')
 
 # fcc_1
-rlist = [1.2]
+rlist = [1.5]
 adtype = 'fcc_1'
 x0 = (1.480-1.594-0.006)/3.0
 y0 = (4.496+4.548+7.287)/3.0
@@ -680,7 +680,7 @@ for r in rlist:
 os.chdir('../')
 
 # hcp_1
-rlist = [1.8]
+rlist = [3.1]
 adtype = 'hcp_1'
 x0 = (1.480+3.154-0.006)/3.0
 y0 = (4.496+7.396+7.287)/3.0
@@ -701,7 +701,7 @@ for r in rlist:
 os.chdir('../')
 
 # hcp_2
-rlist = [0.9]
+rlist = [1.6]
 adtype = 'hcp_2'
 x0 = (1.480-0.012-1.594)/3.0
 y0 = (4.496+1.808+4.568)/3.0
@@ -743,7 +743,7 @@ slab.set_constraint(c)
 #sys.exit()
 
 # Pd_ontop
-rlist = [1.6]
+rlist = [2.6]
 adtype = 'Pd_ontop'
 x0 = 1.576
 y0 = 6.386
@@ -764,7 +764,7 @@ for r in rlist:
 os.chdir('../')
 
 # S_ontop_1
-rlist = [1.6]
+rlist = [2.8]
 adtype = 'S_ontop_1'
 x0 = 3.249
 y0 = 7.334
@@ -785,7 +785,7 @@ for r in rlist:
 os.chdir('../')
 
 # S_ontop_2
-rlist = [1.4]
+rlist = [2.2]
 adtype = 'S_ontop_2'
 x0 = 4.733
 y0 = 4.545
@@ -806,7 +806,7 @@ for r in rlist:
 os.chdir('../')
 
 # S_ontop_3
-rlist = [1.4]
+rlist = [2.2]
 adtype = 'S_ontop_3'
 x0 = 3.157
 y0 = 1.804
@@ -828,7 +828,7 @@ os.chdir('../')
 
 
 # bridge_1
-rlist = [0.1]
+rlist = [3.8]
 adtype = 'bridge_1'
 x0 = (3.249+1.576)/2.0
 y0 = (7.334+4.436)/2.0
@@ -849,7 +849,7 @@ for r in rlist:
 os.chdir('../')
 
 # bridge_2
-rlist = [1.2]
+rlist = [1.8]
 adtype = 'bridge_2'
 x0 = (1.576+4.733)/2.0
 y0 = (4.436+4.545)/2.0
@@ -870,7 +870,7 @@ for r in rlist:
 os.chdir('../')
 
 # bridge_3
-rlist = [0.8]
+rlist = [1.7]
 adtype = 'bridge_3'
 x0 = (1.576+3.157)/2.0
 y0 = (4.436+1.804)/2.0
@@ -891,7 +891,7 @@ for r in rlist:
 os.chdir('../')
 
 # fcc_1
-rlist = [1.8]
+rlist = [3.1]
 adtype = 'fcc_1'
 x0 = (1.576+3.249+4.733)/3.0
 y0 = (4.436+7.334+4.545)/3.0
@@ -912,7 +912,7 @@ for r in rlist:
 os.chdir('../')
 
 # fcc_2
-rlist = [0.9]
+rlist = [1.6]
 adtype = 'fcc_2'
 x0 = (1.576-0.005+3.157)/3.0
 y0 = (4.436+1.804+1.084)/3.0
@@ -933,7 +933,7 @@ for r in rlist:
 os.chdir('../')
 
 # hcp_1
-rlist = [1.2]
+rlist = [1.5]
 adtype = 'hcp_1'
 x0 = (3.249+4.733+6.319)/3.0
 y0 = (7.334+4.545+7.281)/3.0
@@ -1236,6 +1236,9 @@ slab = read('/home/A23321P/work/myPython/AtomicVirtuaLab/pwos/MoS2_catalysis/sla
 os.makedirs('./MoS2_catalysis/adsorp/mp-'+str(mpid)+'/'+str(mill)+'/'+str(elm)+'_optimize',exist_ok=True)
 os.chdir('./MoS2_catalysis/adsorp/mp-'+str(mpid)+'/'+str(mill)+'/'+str(elm)+'_optimize')
 
+os.makedirs('./MoS2_catalysis/adsorp/mp-'+str(mpid)+'/'+str(mill)+'/'+str(elm)+'_optimize_plusU',exist_ok=True)
+os.chdir('./MoS2_catalysis/adsorp/mp-'+str(mpid)+'/'+str(mill)+'/'+str(elm)+'_optimize_plusU')
+
 #view(slab)
 lowpos = -3.0
 
@@ -1245,6 +1248,7 @@ slab.set_constraint(c)
 #view(slab)
 
 # ontop
+#rlist = [2.2]
 rlist = [1.3]
 adtype = 'ontop'
 x0 = 1.577
@@ -1261,6 +1265,7 @@ for r in rlist:
 os.chdir('../')
 
 # bridge
+#rlist = [1.7]
 rlist = [0.8]
 adtype = 'bridge'
 x0 = (1.577+4.731)/2.0
@@ -1277,6 +1282,7 @@ for r in rlist:
 os.chdir('../')
 
 # fcc
+#rlist = [1.5]
 rlist = [1.0]
 adtype = 'fcc'
 x0 = 3.154
@@ -1293,6 +1299,7 @@ for r in rlist:
 os.chdir('../')
 
 # hcp
+#rlist = [1.6]
 rlist = [0.9]
 adtype = 'hcp'
 x0 = 1.577
@@ -1315,8 +1322,8 @@ mill = '001'
 
 slab = read('/home/A23321P/work/myPython/AtomicVirtuaLab/pwos/MoS2_catalysis/slab/optimize/mp'+str(mpid)+'/001/qe_relax.pwo')
 
-os.makedirs('./MoS2_catalysis/adsorp/mp-'+str(mpid)+'/'+str(mill)+'/'+str(elm)+'_optimize',exist_ok=True)
-os.chdir('./MoS2_catalysis/adsorp/mp-'+str(mpid)+'/'+str(mill)+'/'+str(elm)+'_optimize')
+os.makedirs('./MoS2_catalysis/adsorp/mp-'+str(mpid)+'/'+str(mill)+'/'+str(elm)+'_optimize_plusU',exist_ok=True)
+os.chdir('./MoS2_catalysis/adsorp/mp-'+str(mpid)+'/'+str(mill)+'/'+str(elm)+'_optimize_plusU')
 
 #view(slab)
 lowpos = 0.0
@@ -1329,6 +1336,7 @@ slab.set_constraint(c)
 
 # ontop
 adtype = 'ontop'
+#rlist = [2.2]
 rlist = [1.4]
 x0 = 1.576
 y0 = 4.548
@@ -1345,6 +1353,7 @@ for r in rlist:
 os.chdir('../')
 
 # bridge
+#rlist = [1.7]
 rlist = [0.8]
 adtype = 'bridge'
 x0 = (1.576+4.727)/2.0
@@ -1363,6 +1372,7 @@ os.chdir('../')
 
 # fcc
 adtype = 'fcc'
+#rlist = [1.6]
 rlist = [0.9]
 x0 = (1.576+4.727+3.151)/3.0
 y0 = (4.548+4.548+7.278)/3.0
@@ -1379,6 +1389,7 @@ for r in rlist:
 os.chdir('../')
 
 # hcp
+#rlist = [1.5]
 rlist = [1.0]
 adtype = 'hcp'
 x0 = 1.576
