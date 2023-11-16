@@ -4,6 +4,7 @@ from AtomicVirtuaLab.espresso import mk_qe_input_npt
 from AtomicVirtuaLab.lammps import mk_nvt_input_uff
 from AtomicVirtuaLab.tools import add_displacement, deform_cell
 from AtomicVirtuaLab.io import rd_lammpsdata
+from AtomicVirtuaLab.gpaw import mk_gpaw_pw_input_npt
 from ase.io import read
 from ase.visualize import view
 from ase.build import make_supercell
@@ -18,8 +19,7 @@ os.chdir('interface_test')
 
 P=[0]
 T=[300,1000,2000,3000]
-ecutwfc0=49.0
-ecutrho0=306.0
+magElm="{'Fe':2.21}"
 
 mpid = 2815
 
@@ -70,7 +70,8 @@ for P0 in P:
         #
         os.makedirs('./solid_T'+str(T0)+'_P'+str(P0),exist_ok=True)
         os.chdir('./solid_T'+str(T0)+'_P'+str(P0))
-        mk_qe_input_npt(cell_solid,'pbe','paw',float(T0),100.0,float(P0),dt=4.0,level='high',ecutwfc=ecutwfc0,ecutrho=ecutrho0,estep=9999,nstep=500,ecut='manual',options={'vdw_corr':'dft-d3','dftd3_version':4},nspin=True,magElm=['Fe'])
+        mk_gpaw_pw_input_npt(cell_solid,T0,P0,500,xc='PBE',ecut=400,kpts={'size':(1,1,1),'gamma':True},maxiter=2000,dt=4.0,dftd3=True,berendsen=True,magElm=magElm)
+        #mk_qe_input_npt(cell_solid,'pbe','paw',float(T0),100.0,float(P0),dt=4.0,level='high',ecutwfc=ecutwfc0,ecutrho=ecutrho0,estep=9999,nstep=500,ecut='manual',options={'vdw_corr':'dft-d3','dftd3_version':4},nspin=True,magElm=['Fe'])
         os.chdir('../')
         #
         # liquid model
@@ -85,7 +86,8 @@ for P0 in P:
         view(cell_liquid)
         os.chdir('../')
         os.system('rm -rf tmp')
-        mk_qe_input_npt(cell_liquid,'pbe','paw',float(T0),100.0,float(P0),dt=4.0,level='high',ecutwfc=ecutwfc0,ecutrho=ecutrho0,estep=9999,nstep=500,ecut='manual',options={'vdw_corr':'dft-d3','dftd3_version':4},nspin=True,magElm=['Fe'])
+        mk_gpaw_pw_input_npt(cell_liquid,T0,P0,500,xc='PBE',ecut=400,kpts={'size':(1,1,1),'gamma':True},maxiter=2000,dt=4.0,dftd3=True,berendsen=True,magElm=magElm)
+        #mk_qe_input_npt(cell_liquid,'pbe','paw',float(T0),100.0,float(P0),dt=4.0,level='high',ecutwfc=ecutwfc0,ecutrho=ecutrho0,estep=9999,nstep=500,ecut='manual',options={'vdw_corr':'dft-d3','dftd3_version':4},nspin=True,magElm=['Fe'])
         os.chdir('../')
 
 os.chdir('../')

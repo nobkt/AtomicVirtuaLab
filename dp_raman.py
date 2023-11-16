@@ -25,6 +25,104 @@ g.cifdir = '/home/A23321P/work/myPython/AtomicVirtuaLab/cifs'
 g.forcedir = "/home/A23321P/work/myPython/AtomicVirtuaLab/lmp_potentials"
 
 
+# MD 
+subelm = 'Br'
+sublist = {'Cl':0,'H':0}
+nmols = 64
+
+os.makedirs('./dp_raman_test',exist_ok=True)
+os.chdir('./dp_raman_test')
+
+xyz = read(g.cifdir+'/Zn-Pc-allBr.xyz')
+xyz = sort(xyz)
+
+mollist={
+    'mols':nmols
+}
+
+x_box=100.0
+y_box=100.0
+z_box=100.0
+
+os.makedirs('./tmp',exist_ok=True)
+os.chdir('./tmp')
+xyz.write('mols.xyz')
+mk_packmol_random(mollist,x_box,y_box,z_box)
+os.system('packmol < packmol.inp 1> log_packmol 2> err_packmol')
+
+cell = read('./system.xyz')
+cell.set_cell([x_box,y_box,z_box])
+cell = sortmol(cell)
+symbols=[]
+for atom in cell:
+    symbols.append(atom.symbol)
+for imol in range(nmols):
+    ltmp=[]
+    aid=0
+    for symbol in symbols:
+        if cell.arrays['mol-id'][aid] == imol+1 and symbol == subelm:
+            ltmp.append(aid)
+        aid=aid+1
+    #print(ltmp)
+    nsub=0
+    subnum={}
+    for elm0 in sublist:
+        #n0 = random.randint(0, sublist[elm0])
+        n0 = sublist[elm0]
+        subnum[elm0] = n0
+        nsub = nsub + n0
+    subs = random.sample(ltmp, nsub)
+    nn = 0
+    for elm0 in subnum:
+        n0 = subnum[elm0]
+        for i in range(nn,nn+n0):
+            cell[subs[i]].symbol = elm0
+        nn = nn + n0
+#cell = sortmol(cell)
+cell.write('system.cif')
+symbols = cell2atomlist(cell)
+#
+unitcell = read(g.cifdir+'/ZincPhthalocyanine.cif')
+#
+volume = unitcell.get_volume()
+masses = unitcell.get_masses()
+tot_mass = sum(masses)
+dens = tot_mass/volume
+#
+volume1 = cell.get_volume()
+masses1 = cell.get_masses()
+tot_mass1 = sum(masses1)
+dens1 = tot_mass1/volume1
+#
+lat = (volume1/(dens/dens1))**(1/3)
+#
+mk_nvt_input_uff_rigid_scale(cell,0.0005,1000,1000,lat,20000,2000,300.0,12345)
+os.system('mpirun -np 4 lmp -in lammps.lmp 1> log_lammps 2> err_lammps')
+Z_of_type={}
+i = 0
+for symbol in symbols:
+    Z_of_type[i+1] = atomic_numbers[symbol]
+    i=i+1
+cell = read('result.data',format='lammps-data',sort_by_id=True,Z_of_type=Z_of_type)
+#view(cell)
+os.chdir('../')
+os.makedirs('npt',exist_ok=True)
+os.chdir('npt')
+mk_npt_input_deepmd(cell,0.0005,2000,2000,2000000,300,0.0,12345,mol=True)
+#os.chdir('opt')
+#mk_siesta_input_optimize(cell,'PBE','DZP',50.0,[1,1,1],50,g.siesta_pot,SolutionMethod='diagon',MaxSCFIterations=2000,options={},spin='non-polarized')
+##os.chdir('../')
+#os.makedirs('npt',exist_ok=True)
+#os.chdir('npt')
+#mk_siesta_input_npt(cell,'VDW','DZP',100,[1,1,1],T0,0.0,500,g.siesta_pot,SolutionMethod='diagon',MaxSCFIterations=2000,dt=0.5,spin='non-polarized')
+#os.chdir('../')
+#mk_gpaw_pw_input_optimize(cell,xc='PBE',ecut=400,kpts={'size':(1,1,1),'gamma':True},maxiter=2000,dftd3=True)
+#mk_gpaw_pw_input_npt(cell,T0,0.0,2000,xc='PBE',ecut=400,kpts={'size':(1,1,1),'gamma':True},maxiter=2000,dt=0.5,dftd3=True,berendsen=True,berandsen_nstep=400,restart=True)
+#mk_gpaw_lcao_input_optimize(cell,xc='PBE',basis='dzp',kpts={'size':(1,1,1),'gamma':True},maxiter=2000,dftd3=True)
+#sys.exit()
+os.chdir('../')
+
+
 """
 # Zn-フタロシアニンの学習データ作成 Siesta
 
@@ -138,7 +236,7 @@ for n in range(nset):
 """
 
 
-
+"""
 # Zn-フタロシアニンの学習データ作成 GPAW
 
 T_list = [300, 500, 700, 900, 1100]
@@ -240,7 +338,7 @@ for n in range(nset):
         os.chdir('../')
 
 # Zn-フタロシアニンの学習データ作成 GPAW
-
+"""
 
 
 """
@@ -272,14 +370,14 @@ os.chdir('./train')
 dpdata=False
 if dpdata:
     path = os.getcwd()
-    datadir_ = '/home/A23321P/work/mySiesta/dipole_and_polarizability/Zn-Pc-allBr/datas/PBE/xc_PBE/basis_DZP'
+    datadir_ = '/home/A23321P/work/mySiesta/dipole_and_polarizability/Zn-Pc_train_tmp'
     os.chdir(datadir_)
     siesta2dp()
     os.system('cp -r '+str(datadir_)+'/deepmd '+str(path))
     sys.exit()
 dpdir = './deepmd'
 dp_list=get_deepmd_list(dpdir)
-wt_deepmd_json(dpdir,dp_list,8.0,1000000,prec='high')
+wt_deepmd_json(dpdir,dp_list,10.0,1000000,prec='high')
 # ポテンシャル学習 終了
 """
 

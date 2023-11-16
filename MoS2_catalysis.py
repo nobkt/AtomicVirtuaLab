@@ -9,6 +9,9 @@ from ase.build import make_supercell, add_adsorbate
 from ase.visualize import view
 from ase import Atom
 from ase.constraints import FixAtoms
+from ase.optimize import BFGS
+from ocpmodels.common.relaxation.ase_utils import OCPCalculator
+import numpy as np
 import os
 import sys
 
@@ -16,8 +19,54 @@ os.system('export DISPLAY=localhost:11.0')
 
 g.qepot = '/home/A23321P/work/myPython/AtomicVirtuaLab/qe_pseudo'
 g.siesta_pot = '/home/A23321P/work/myPython/AtomicVirtuaLab/siesta_pseudo'
-
 g.cifdir='./cifs'
+
+
+
+gnn='schnet'
+def setocp():
+    if gnn == 'dimnetpp':
+        config_yml_file = "/home/modules/applications/common/ocp/configs/s2ef/all/*"
+        checkpoint_file = "/home/modules/applications/common/ocp/content/ocp/dimenetpp_all.pt"
+        config_yml_path = "configs/s2ef/all/dimenet_plus_plus/dpp.yml"
+        checkpoint_path = "content/ocp/dimenetpp_all.pt"
+    elif gnn == 'gemnet-dT':
+        config_yml_file = "/home/modules/applications/common/ocp/configs/s2ef/all/*"
+        checkpoint_file = "/home/modules/applications/common/ocp/content/ocp/gemnet_t_direct_h512_all.pt"
+        config_yml_path = "configs/s2ef/all/gemnet/gemnet-dT.yml"
+        checkpoint_path = "content/ocp/gemnet_t_direct_h512_all.pt"
+    elif gnn == 'painn':
+        config_yml_file = "/home/modules/applications/common/ocp/configs/s2ef/all/*"
+        checkpoint_file = "/home/modules/applications/common/ocp/content/ocp/painn_h512_s2ef_all.pt"
+        config_yml_path = "configs/s2ef/all/painn/painn_h512.yml"
+        checkpoint_path = "content/ocp/painn_h512_s2ef_all.pt"
+    elif gnn == 'cgcnn':
+        config_yml_file = "/home/modules/applications/common/ocp/configs/s2ef/all/*"
+        checkpoint_file = "/home/modules/applications/common/ocp/content/ocp/cgcnn_all.pt"
+        config_yml_path = "configs/s2ef/all/cgcnn/cgcnn.yml"
+        checkpoint_path = "content/ocp/cgcnn_all.pt"
+    elif gnn == 'spinconv':
+        config_yml_file = "/home/modules/applications/common/ocp/configs/s2ef/all/*"
+        checkpoint_file = "/home/modules/applications/common/ocp/content/ocp/spinconv_force_centric_all.pt"
+        config_yml_path = "configs/s2ef/all/spinconv/spinconv_force.yml"
+        checkpoint_path = "content/ocp/spinconv_force_centric_all.pt"
+    elif gnn == 'schnet':
+        config_yml_file = "/home/modules/applications/common/ocp/configs/s2ef/all/*"
+        checkpoint_file = "/home/modules/applications/common/ocp/content/ocp/schnet_all_large.pt"
+        config_yml_path = "configs/s2ef/all/schnet/schnet.yml"
+        checkpoint_path = "content/ocp/schnet_all_large.pt"
+    elif gnn == 'gemnet_oc':
+        config_yml_file = "/home/modules/applications/common/ocp/configs/s2ef/all/*"
+        checkpoint_file = "/home/modules/applications/common/ocp/content/ocp/gemnet_oc_large_s2ef_all_md.pt"
+        config_yml_path = "configs/s2ef/all/gemnet/gemnet-oc-large.yml"
+        checkpoint_path = "content/ocp/gemnet_oc_large_s2ef_all_md.pt"
+    os.makedirs('./configs/s2ef/all',exist_ok=True)
+    os.makedirs('./content/ocp',exist_ok=True)
+    os.system('cp -r '+config_yml_file+' ./configs/s2ef/all')
+    os.system('cp -r '+checkpoint_file+' ./content/ocp')
+    ocpcalc = OCPCalculator(config_yml=config_yml_path, checkpoint_path=checkpoint_path)
+    #atoms.calc=ocpcalc
+    return ocpcalc
 
 
 """
@@ -954,6 +1003,280 @@ for r in rlist:
 os.chdir('../')
 # one Pd吸着後スラブ 吸着モデル 構造最適化 終了
 """
+
+###
+# two Pd吸着後スラブ 吸着モデル 構造最適化
+ecutwfc0=77.0
+ecutrho0=539.0
+kpoint=2
+scale=1.0
+
+ecutwfc=77.0*scale
+ecutrho=539.0*scale
+k0 = kpoint
+
+rlist = [0.5,1.0,1.5,2.0,2.5,3.0,3.5,4.0]
+
+elm = 'Pd'
+
+path = os.getcwd()
+os.chdir(path)
+
+# mp-1434
+mpid = 1434
+mill = '001'
+Pd_site = 'fcc'
+
+slab = read('/home/A23321P/work/myPython/AtomicVirtuaLab/pwos/MoS2_catalysis/absorp/optimize/mp-1434/001/on_fcc_Pd/Pd_optimize/fcc_1/qe_relax.pwo')
+
+os.makedirs('./MoS2_catalysis/adsorp/mp-'+str(mpid)+'/'+str(mill)+'/on_'+str(Pd_site)+'_Pd2/'+str(elm)+'_optimize',exist_ok=True)
+os.chdir('./MoS2_catalysis/adsorp/mp-'+str(mpid)+'/'+str(mill)+'/on_'+str(Pd_site)+'_Pd2/'+str(elm)+'_optimize')
+
+#view(slab)
+lowpos = -3.0
+
+c = FixAtoms(indices=[atom.index for atom in slab if atom.position[2] < lowpos])
+slab.set_constraint(c)
+
+#view(slab)
+#sys.exit()
+
+# fcc_1
+rlist = [1.5]
+adtype = 'fcc_1'
+x0 = 6.316
+y0 = 5.462
+z0 = (7.648+7.708+7.652)/3.0
+os.makedirs('./'+str(adtype),exist_ok=True)
+os.chdir('./'+str(adtype))
+for r in rlist:
+    #os.makedirs('./r'+str(r),exist_ok=True)
+    #os.chdir('./r'+str(r))
+    atm = Atom(elm,(x0,y0,z0+float(r)))
+    adsorp = slab+atm
+    #view(adsorp)
+    #sys.exit()
+    mk_qe_input_relax(adsorp,'pbe','paw',level='high',estep=1000,nstep=1000,nosym=True,ecutwfc=ecutwfc,ecutrho=ecutrho,mixing_beta=0.2,kpts=(k0,k0,1),ecut='manual',tstress=False,options={'vdw_corr':'dft-d3','dftd3_version':4,'assume_isolated':'esm','esm_bc':'bc1'},nspin=False)
+    #mk_qe_input_scf(adsorp,'pbe','paw',level='high',ecutwfc=ecutwfc,ecutrho=ecutrho,mixing_beta=0.2,kpts=(k0,k0,1),ecut='manual',nosym=True,tstress=False,options={'vdw_corr':'dft-d3','dftd3_version':4,'assume_isolated':'esm','esm_bc':'bc1'},nspin=False)
+    #mk_qe_input_dos(adsorp,'pbe','paw',level='high',ecutwfc=ecutwfc,ecutrho=ecutrho,mixing_beta=0.2,kpts=(k0,k0,1),ecut='manual',options={'vdw_corr':'dft-d3','dftd3_version':4,'assume_isolated':'esm','esm_bc':'bc1'},nspin=False)
+    #os.chdir('../')
+os.chdir('../')
+
+# fcc_2
+rlist = [1.5]
+adtype = 'fcc_2'
+x0 = 4.735
+y0 = 2.722
+z0 = (7.640+7.708+7.644)/3.0
+os.makedirs('./'+str(adtype),exist_ok=True)
+os.chdir('./'+str(adtype))
+for r in rlist:
+    #os.makedirs('./r'+str(r),exist_ok=True)
+    #os.chdir('./r'+str(r))
+    atm = Atom(elm,(x0,y0,z0+float(r)))
+    adsorp = slab+atm
+    #view(adsorp)
+    #sys.exit()
+    mk_qe_input_relax(adsorp,'pbe','paw',level='high',estep=1000,nstep=1000,nosym=True,ecutwfc=ecutwfc,ecutrho=ecutrho,mixing_beta=0.2,kpts=(k0,k0,1),ecut='manual',tstress=False,options={'vdw_corr':'dft-d3','dftd3_version':4,'assume_isolated':'esm','esm_bc':'bc1'},nspin=False)
+    #mk_qe_input_scf(adsorp,'pbe','paw',level='high',ecutwfc=ecutwfc,ecutrho=ecutrho,mixing_beta=0.2,kpts=(k0,k0,1),ecut='manual',nosym=True,tstress=False,options={'vdw_corr':'dft-d3','dftd3_version':4,'assume_isolated':'esm','esm_bc':'bc1'},nspin=False)
+    #mk_qe_input_dos(adsorp,'pbe','paw',level='high',ecutwfc=ecutwfc,ecutrho=ecutrho,mixing_beta=0.2,kpts=(k0,k0,1),ecut='manual',options={'vdw_corr':'dft-d3','dftd3_version':4,'assume_isolated':'esm','esm_bc':'bc1'},nspin=False)
+    #os.chdir('../')
+os.chdir('../')
+
+# fcc_3
+rlist = [1.5]
+adtype = 'fcc_3'
+x0 = 4.739
+y0 = 8.205
+z0 = (7.695+7.648+7.641)/3.0
+os.makedirs('./'+str(adtype),exist_ok=True)
+os.chdir('./'+str(adtype))
+for r in rlist:
+    #os.makedirs('./r'+str(r),exist_ok=True)
+    #os.chdir('./r'+str(r))
+    atm = Atom(elm,(x0,y0,z0+float(r)))
+    adsorp = slab+atm
+    #view(adsorp)
+    #sys.exit()
+    mk_qe_input_relax(adsorp,'pbe','paw',level='high',estep=1000,nstep=1000,nosym=True,ecutwfc=ecutwfc,ecutrho=ecutrho,mixing_beta=0.2,kpts=(k0,k0,1),ecut='manual',tstress=False,options={'vdw_corr':'dft-d3','dftd3_version':4,'assume_isolated':'esm','esm_bc':'bc1'},nspin=False)
+    #mk_qe_input_scf(adsorp,'pbe','paw',level='high',ecutwfc=ecutwfc,ecutrho=ecutrho,mixing_beta=0.2,kpts=(k0,k0,1),ecut='manual',nosym=True,tstress=False,options={'vdw_corr':'dft-d3','dftd3_version':4,'assume_isolated':'esm','esm_bc':'bc1'},nspin=False)
+    #mk_qe_input_dos(adsorp,'pbe','paw',level='high',ecutwfc=ecutwfc,ecutrho=ecutrho,mixing_beta=0.2,kpts=(k0,k0,1),ecut='manual',options={'vdw_corr':'dft-d3','dftd3_version':4,'assume_isolated':'esm','esm_bc':'bc1'},nspin=False)
+    #os.chdir('../')
+os.chdir('../')
+
+# fcc_4
+rlist = [1.5]
+adtype = 'fcc_4'
+x0 = 1.575
+y0 = 2.689
+z0 = (7.698+7.638+7.640)/3.0
+os.makedirs('./'+str(adtype),exist_ok=True)
+os.chdir('./'+str(adtype))
+for r in rlist:
+    #os.makedirs('./r'+str(r),exist_ok=True)
+    #os.chdir('./r'+str(r))
+    atm = Atom(elm,(x0,y0,z0+float(r)))
+    adsorp = slab+atm
+    #view(adsorp)
+    #sys.exit()
+    mk_qe_input_relax(adsorp,'pbe','paw',level='high',estep=1000,nstep=1000,nosym=True,ecutwfc=ecutwfc,ecutrho=ecutrho,mixing_beta=0.2,kpts=(k0,k0,1),ecut='manual',tstress=False,options={'vdw_corr':'dft-d3','dftd3_version':4,'assume_isolated':'esm','esm_bc':'bc1'},nspin=False)
+    #mk_qe_input_scf(adsorp,'pbe','paw',level='high',ecutwfc=ecutwfc,ecutrho=ecutrho,mixing_beta=0.2,kpts=(k0,k0,1),ecut='manual',nosym=True,tstress=False,options={'vdw_corr':'dft-d3','dftd3_version':4,'assume_isolated':'esm','esm_bc':'bc1'},nspin=False)
+    #mk_qe_input_dos(adsorp,'pbe','paw',level='high',ecutwfc=ecutwfc,ecutrho=ecutrho,mixing_beta=0.2,kpts=(k0,k0,1),ecut='manual',options={'vdw_corr':'dft-d3','dftd3_version':4,'assume_isolated':'esm','esm_bc':'bc1'},nspin=False)
+    #os.chdir('../')
+os.chdir('../')
+
+# fcc_5
+rlist = [1.5]
+adtype = 'fcc_5'
+x0 = 1.576
+y0 = 8.219
+z0 = (7.694+7.695+7.645)/3.0
+os.makedirs('./'+str(adtype),exist_ok=True)
+os.chdir('./'+str(adtype))
+for r in rlist:
+    #os.makedirs('./r'+str(r),exist_ok=True)
+    #os.chdir('./r'+str(r))
+    atm = Atom(elm,(x0,y0,z0+float(r)))
+    adsorp = slab+atm
+    #view(adsorp)
+    #sys.exit()
+    mk_qe_input_relax(adsorp,'pbe','paw',level='high',estep=1000,nstep=1000,nosym=True,ecutwfc=ecutwfc,ecutrho=ecutrho,mixing_beta=0.2,kpts=(k0,k0,1),ecut='manual',tstress=False,options={'vdw_corr':'dft-d3','dftd3_version':4,'assume_isolated':'esm','esm_bc':'bc1'},nspin=False)
+    #mk_qe_input_scf(adsorp,'pbe','paw',level='high',ecutwfc=ecutwfc,ecutrho=ecutrho,mixing_beta=0.2,kpts=(k0,k0,1),ecut='manual',nosym=True,tstress=False,options={'vdw_corr':'dft-d3','dftd3_version':4,'assume_isolated':'esm','esm_bc':'bc1'},nspin=False)
+    #mk_qe_input_dos(adsorp,'pbe','paw',level='high',ecutwfc=ecutwfc,ecutrho=ecutrho,mixing_beta=0.2,kpts=(k0,k0,1),ecut='manual',options={'vdw_corr':'dft-d3','dftd3_version':4,'assume_isolated':'esm','esm_bc':'bc1'},nspin=False)
+    #os.chdir('../')
+os.chdir('../')
+
+os.chdir(path)
+
+# mp-2815
+mpid = 2815
+mill = '001'
+Pd_site = 'hcp'
+
+slab = read('/home/A23321P/work/myPython/AtomicVirtuaLab/pwos/MoS2_catalysis/absorp/optimize/mp-2815/001/on_hcp_Pd/Pd_optimize/bridge_2/qe_relax.pwo')
+
+os.makedirs('./MoS2_catalysis/adsorp/mp-'+str(mpid)+'/'+str(mill)+'/on_'+str(Pd_site)+'_Pd2/'+str(elm)+'_optimize',exist_ok=True)
+os.chdir('./MoS2_catalysis/adsorp/mp-'+str(mpid)+'/'+str(mill)+'/on_'+str(Pd_site)+'_Pd2/'+str(elm)+'_optimize')
+
+#view(slab)
+lowpos = 0.0
+
+c = FixAtoms(indices=[atom.index for atom in slab if atom.position[2] < lowpos])
+slab.set_constraint(c)
+
+#view(slab)
+#sys.exit()
+
+# hcp_1
+rlist = [1.5]
+adtype = 'hcp_1'
+x0 = -0.006
+y0 = 9.120
+z0 = (10.801+10.744+10.737)/3.0
+os.makedirs('./'+str(adtype),exist_ok=True)
+os.chdir('./'+str(adtype))
+for r in rlist:
+    #os.makedirs('./r'+str(r),exist_ok=True)
+    #os.chdir('./r'+str(r))
+    atm = Atom(elm,(x0,y0,z0+float(r)))
+    adsorp = slab+atm
+    #view(adsorp)
+    #sys.exit()
+    mk_qe_input_relax(adsorp,'pbe','paw',level='high',estep=1000,nstep=1000,nosym=True,ecutwfc=ecutwfc,ecutrho=ecutrho,mixing_beta=0.2,kpts=(k0,k0,1),ecut='manual',tstress=False,options={'vdw_corr':'dft-d3','dftd3_version':4,'assume_isolated':'esm','esm_bc':'bc1'},nspin=False)
+    #mk_qe_input_scf(adsorp,'pbe','paw',level='high',ecutwfc=ecutwfc,ecutrho=ecutrho,mixing_beta=0.2,kpts=(k0,k0,1),ecut='manual',nosym=True,tstress=False,options={'vdw_corr':'dft-d3','dftd3_version':4,'assume_isolated':'esm','esm_bc':'bc1'},nspin=False)
+    #mk_qe_input_dos(adsorp,'pbe','paw',level='high',ecutwfc=ecutwfc,ecutrho=ecutrho,mixing_beta=0.2,kpts=(k0,k0,1),ecut='manual',options={'vdw_corr':'dft-d3','dftd3_version':4,'assume_isolated':'esm','esm_bc':'bc1'},nspin=False)
+    #os.chdir('../')
+os.chdir('../')
+
+# hcp_2
+rlist = [1.5]
+adtype = 'hcp_2'
+x0 = -1.586
+y0 = 6.384
+z0 = (10.801+10.734+10.733)/3.0
+os.makedirs('./'+str(adtype),exist_ok=True)
+os.chdir('./'+str(adtype))
+for r in rlist:
+    #os.makedirs('./r'+str(r),exist_ok=True)
+    #os.chdir('./r'+str(r))
+    atm = Atom(elm,(x0,y0,z0+float(r)))
+    adsorp = slab+atm
+    #view(adsorp)
+    #sys.exit()
+    mk_qe_input_relax(adsorp,'pbe','paw',level='high',estep=1000,nstep=1000,nosym=True,ecutwfc=ecutwfc,ecutrho=ecutrho,mixing_beta=0.2,kpts=(k0,k0,1),ecut='manual',tstress=False,options={'vdw_corr':'dft-d3','dftd3_version':4,'assume_isolated':'esm','esm_bc':'bc1'},nspin=False)
+    #mk_qe_input_scf(adsorp,'pbe','paw',level='high',ecutwfc=ecutwfc,ecutrho=ecutrho,mixing_beta=0.2,kpts=(k0,k0,1),ecut='manual',nosym=True,tstress=False,options={'vdw_corr':'dft-d3','dftd3_version':4,'assume_isolated':'esm','esm_bc':'bc1'},nspin=False)
+    #mk_qe_input_dos(adsorp,'pbe','paw',level='high',ecutwfc=ecutwfc,ecutrho=ecutrho,mixing_beta=0.2,kpts=(k0,k0,1),ecut='manual',options={'vdw_corr':'dft-d3','dftd3_version':4,'assume_isolated':'esm','esm_bc':'bc1'},nspin=False)
+    #os.chdir('../')
+os.chdir('../')
+
+# hcp_3
+rlist = [1.5]
+adtype = 'hcp_3'
+x0 = 3.157
+y0 = 9.126
+z0 = (10.787+10.737+10.732)/3.0
+os.makedirs('./'+str(adtype),exist_ok=True)
+os.chdir('./'+str(adtype))
+for r in rlist:
+    #os.makedirs('./r'+str(r),exist_ok=True)
+    #os.chdir('./r'+str(r))
+    atm = Atom(elm,(x0,y0,z0+float(r)))
+    adsorp = slab+atm
+    #view(adsorp)
+    #sys.exit()
+    mk_qe_input_relax(adsorp,'pbe','paw',level='high',estep=1000,nstep=1000,nosym=True,ecutwfc=ecutwfc,ecutrho=ecutrho,mixing_beta=0.2,kpts=(k0,k0,1),ecut='manual',tstress=False,options={'vdw_corr':'dft-d3','dftd3_version':4,'assume_isolated':'esm','esm_bc':'bc1'},nspin=False)
+    #mk_qe_input_scf(adsorp,'pbe','paw',level='high',ecutwfc=ecutwfc,ecutrho=ecutrho,mixing_beta=0.2,kpts=(k0,k0,1),ecut='manual',nosym=True,tstress=False,options={'vdw_corr':'dft-d3','dftd3_version':4,'assume_isolated':'esm','esm_bc':'bc1'},nspin=False)
+    #mk_qe_input_dos(adsorp,'pbe','paw',level='high',ecutwfc=ecutwfc,ecutrho=ecutrho,mixing_beta=0.2,kpts=(k0,k0,1),ecut='manual',options={'vdw_corr':'dft-d3','dftd3_version':4,'assume_isolated':'esm','esm_bc':'bc1'},nspin=False)
+    #os.chdir('../')
+os.chdir('../')
+
+# hcp_4
+rlist = [1.5]
+adtype = 'hcp_4'
+x0 = -0.037
+y0 = 3.634
+z0 = (10.788+10.733+10.733)/3.0
+os.makedirs('./'+str(adtype),exist_ok=True)
+os.chdir('./'+str(adtype))
+for r in rlist:
+    #os.makedirs('./r'+str(r),exist_ok=True)
+    #os.chdir('./r'+str(r))
+    atm = Atom(elm,(x0,y0,z0+float(r)))
+    adsorp = slab+atm
+    #view(adsorp)
+    #sys.exit()
+    mk_qe_input_relax(adsorp,'pbe','paw',level='high',estep=1000,nstep=1000,nosym=True,ecutwfc=ecutwfc,ecutrho=ecutrho,mixing_beta=0.2,kpts=(k0,k0,1),ecut='manual',tstress=False,options={'vdw_corr':'dft-d3','dftd3_version':4,'assume_isolated':'esm','esm_bc':'bc1'},nspin=False)
+    #mk_qe_input_scf(adsorp,'pbe','paw',level='high',ecutwfc=ecutwfc,ecutrho=ecutrho,mixing_beta=0.2,kpts=(k0,k0,1),ecut='manual',nosym=True,tstress=False,options={'vdw_corr':'dft-d3','dftd3_version':4,'assume_isolated':'esm','esm_bc':'bc1'},nspin=False)
+    #mk_qe_input_dos(adsorp,'pbe','paw',level='high',ecutwfc=ecutwfc,ecutrho=ecutrho,mixing_beta=0.2,kpts=(k0,k0,1),ecut='manual',options={'vdw_corr':'dft-d3','dftd3_version':4,'assume_isolated':'esm','esm_bc':'bc1'},nspin=False)
+    #os.chdir('../')
+os.chdir('../')
+
+# hcp_5
+rlist = [1.5]
+adtype = 'hcp_5'
+x0 = 4.751
+y0 = 6.397
+z0 = (10.783+10.783+10.734)/3.0
+os.makedirs('./'+str(adtype),exist_ok=True)
+os.chdir('./'+str(adtype))
+for r in rlist:
+    #os.makedirs('./r'+str(r),exist_ok=True)
+    #os.chdir('./r'+str(r))
+    atm = Atom(elm,(x0,y0,z0+float(r)))
+    adsorp = slab+atm
+    #view(adsorp)
+    #sys.exit()
+    mk_qe_input_relax(adsorp,'pbe','paw',level='high',estep=1000,nstep=1000,nosym=True,ecutwfc=ecutwfc,ecutrho=ecutrho,mixing_beta=0.2,kpts=(k0,k0,1),ecut='manual',tstress=False,options={'vdw_corr':'dft-d3','dftd3_version':4,'assume_isolated':'esm','esm_bc':'bc1'},nspin=False)
+    #mk_qe_input_scf(adsorp,'pbe','paw',level='high',ecutwfc=ecutwfc,ecutrho=ecutrho,mixing_beta=0.2,kpts=(k0,k0,1),ecut='manual',nosym=True,tstress=False,options={'vdw_corr':'dft-d3','dftd3_version':4,'assume_isolated':'esm','esm_bc':'bc1'},nspin=False)
+    #mk_qe_input_dos(adsorp,'pbe','paw',level='high',ecutwfc=ecutwfc,ecutrho=ecutrho,mixing_beta=0.2,kpts=(k0,k0,1),ecut='manual',options={'vdw_corr':'dft-d3','dftd3_version':4,'assume_isolated':'esm','esm_bc':'bc1'},nspin=False)
+    #os.chdir('../')
+os.chdir('../')
+
+
+# two Pd吸着後スラブ 吸着モデル 構造最適化 終了
+###
+
+
 
 """
 # スラブモデルDOS
@@ -2009,3 +2332,348 @@ view(cell)
 #mk_siesta_input_npt(cell,'VDW','DZP',100.0,[1,1,1],343.0,0.0,200000,pseudo_path=g.siesta_pot,SolutionMethod='diagon',MaxSCFIterations=2000,dt=0.5,spin='non-polarized')
 mk_siesta_input_scf_withEfield(cell,'VDW','DZP',100.0,[1,1,1],pseudo_path=g.siesta_pot,ex=0.0,ey=0.0,ez=0.0,SolutionMethod='diagon',MaxSCFIterations=2000,spin='non-polarized')
 """
+
+
+# 吸着ポテンシャル OCP
+ecutwfc0=77.0
+ecutrho0=539.0
+kpoint=2
+scale=1.0
+
+ecutwfc=77.0*scale
+ecutrho=539.0*scale
+k0 = kpoint
+
+potmin=[]
+rlist=[]
+for i in range(60):
+    r = 0.5+float(i)*0.1
+    if r <= 6.0:
+        rlist.append(r)
+#rlist = [0.5,1.0,1.5,2.0,2.5,3.0,3.5,4.0,4.5,5.0,5.5,6.0]
+elm = 'Au'
+
+path = os.getcwd()
+os.chdir(path)
+
+# mp-1434
+mpid = 1434
+mill = '001'
+
+slab = read('/home/A23321P/work/myPython/AtomicVirtuaLab/pwos/MoS2_catalysis/slab/optimize/mp'+str(mpid)+'/001/qe_relax.pwo')
+
+os.makedirs('./MoS2_catalysis_ocp/adsorp/mp-'+str(mpid)+'/'+str(mill)+'/'+str(elm)+'_potential',exist_ok=True)
+os.chdir('./MoS2_catalysis_ocp/adsorp/mp-'+str(mpid)+'/'+str(mill)+'/'+str(elm)+'_potential')
+
+#view(slab)
+lowpos = -3.0
+
+c = FixAtoms(indices=[atom.index for atom in slab if atom.position[2] < lowpos])
+slab.set_constraint(c)
+
+#view(slab)
+
+# ontop
+#rlist = [1.1,1.2,1.3,1.4]
+adtype = 'ontop'
+x0 = 1.577
+y0 = 4.552
+z0 = 7.654
+os.makedirs('./'+str(adtype),exist_ok=True)
+os.chdir('./'+str(adtype))
+ocpcalc = setocp()
+pelist=[]
+for r in rlist:
+    #os.makedirs('./r'+str(r),exist_ok=True)
+    #os.chdir('./r'+str(r))
+    atm = Atom(elm,(x0,y0,z0+float(r)))
+    adsorp = slab+atm
+    adsorp.calc = ocpcalc
+    pe = adsorp.get_potential_energy()
+    f = open(gnn+'_potential.txt','a')
+    f.write(str(r)+' '+str(pe)+'\n')
+    f.close()
+    pelist.append([r,pe])
+    #view(adsorp)
+    #mk_qe_input_scf(adsorp,'pbe','paw',level='high',ecutwfc=ecutwfc,ecutrho=ecutrho,mixing_beta=0.2,kpts=(k0,k0,1),ecut='manual',tstress=False,options={'vdw_corr':'dft-d3','dftd3_version':4,'assume_isolated':'esm','esm_bc':'bc1'},nspin=False)
+    #mk_qe_input_dos(adsorp,'pbe','paw',level='high',ecutwfc=ecutwfc,ecutrho=ecutrho,mixing_beta=0.2,kpts=(k0,k0,1),ecut='manual',options={'vdw_corr':'dft-d3','dftd3_version':4,'assume_isolated':'esm','esm_bc':'bc1'},nspin=False)
+    #os.chdir('../')
+os.system('rm -rf ./configs')
+os.system('rm -rf ./content')
+pelist.sort(reverse=False, key=lambda x:x[1])
+potmin.append(['mp'+str(mpid),adtype,pelist[0][0],pelist[0][1]])
+atm = Atom(elm,(x0,y0,z0+float(pelist[0][0])))
+adsorp = slab+atm
+mk_qe_input_relax(adsorp,'pbe','paw',level='high',estep=1000,nstep=1000,nosym=True,ecutwfc=ecutwfc,ecutrho=ecutrho,mixing_beta=0.2,kpts=(k0,k0,1),ecut='manual',tstress=False,options={'vdw_corr':'dft-d3','dftd3_version':4,'assume_isolated':'esm','esm_bc':'bc1'},nspin=False)
+os.chdir('../')
+
+
+# bridge
+#rlist = [0.6,0.7,0.8,0.9]
+adtype = 'bridge'
+x0 = (1.577+4.731)/2.0
+y0 = 4.552
+z0 = 7.654
+os.makedirs('./'+str(adtype),exist_ok=True)
+os.chdir('./'+str(adtype))
+ocpcalc = setocp()
+pelist=[]
+for r in rlist:
+    #os.makedirs('./r'+str(r),exist_ok=True)
+    #os.chdir('./r'+str(r))
+    atm = Atom(elm,(x0,y0,z0+float(r)))
+    adsorp = slab+atm
+    adsorp.calc = ocpcalc
+    pe = adsorp.get_potential_energy()
+    f = open(gnn+'_potential.txt','a')
+    f.write(str(r)+' '+str(pe)+'\n')
+    f.close()
+    pelist.append([r,pe])
+    #view(adsorp)
+    #mk_qe_input_scf(adsorp,'pbe','paw',level='high',ecutwfc=ecutwfc,ecutrho=ecutrho,mixing_beta=0.2,kpts=(k0,k0,1),ecut='manual',tstress=False,options={'vdw_corr':'dft-d3','dftd3_version':4,'assume_isolated':'esm','esm_bc':'bc1'},nspin=False)
+    #mk_qe_input_dos(adsorp,'pbe','paw',level='high',ecutwfc=ecutwfc,ecutrho=ecutrho,mixing_beta=0.2,kpts=(k0,k0,1),ecut='manual',options={'vdw_corr':'dft-d3','dftd3_version':4,'assume_isolated':'esm','esm_bc':'bc1'},nspin=False)
+    #os.chdir('../')
+os.system('rm -rf ./configs')
+os.system('rm -rf ./content')
+pelist.sort(reverse=False, key=lambda x:x[1])
+potmin.append(['mp'+str(mpid),adtype,pelist[0][0],pelist[0][1]])
+atm = Atom(elm,(x0,y0,z0+float(pelist[0][0])))
+adsorp = slab+atm
+mk_qe_input_relax(adsorp,'pbe','paw',level='high',estep=1000,nstep=1000,nosym=True,ecutwfc=ecutwfc,ecutrho=ecutrho,mixing_beta=0.2,kpts=(k0,k0,1),ecut='manual',tstress=False,options={'vdw_corr':'dft-d3','dftd3_version':4,'assume_isolated':'esm','esm_bc':'bc1'},nspin=False)
+os.chdir('../')
+
+# fcc
+#rlist = [0.6,0.7,0.8,0.9,1.1,1.2,1.3,1.4]
+adtype = 'fcc'
+x0 = 3.154
+y0 = 5.463
+z0 = 7.654
+os.makedirs('./'+str(adtype),exist_ok=True)
+os.chdir('./'+str(adtype))
+ocpcalc = setocp()
+pelist=[]
+for r in rlist:
+    #os.makedirs('./r'+str(r),exist_ok=True)
+    #os.chdir('./r'+str(r))
+    atm = Atom(elm,(x0,y0,z0+float(r)))
+    adsorp = slab+atm
+    adsorp.calc = ocpcalc
+    pe = adsorp.get_potential_energy()
+    f = open(gnn+'_potential.txt','a')
+    f.write(str(r)+' '+str(pe)+'\n')
+    f.close()
+    pelist.append([r,pe])
+    #view(adsorp)
+    #mk_qe_input_scf(adsorp,'pbe','paw',level='high',ecutwfc=ecutwfc,ecutrho=ecutrho,mixing_beta=0.2,kpts=(k0,k0,1),ecut='manual',tstress=False,options={'vdw_corr':'dft-d3','dftd3_version':4,'assume_isolated':'esm','esm_bc':'bc1'},nspin=False)
+    #mk_qe_input_dos(adsorp,'pbe','paw',level='high',ecutwfc=ecutwfc,ecutrho=ecutrho,mixing_beta=0.2,kpts=(k0,k0,1),ecut='manual',options={'vdw_corr':'dft-d3','dftd3_version':4,'assume_isolated':'esm','esm_bc':'bc1'},nspin=False)
+    #os.chdir('../')
+os.system('rm -rf ./configs')
+os.system('rm -rf ./content')
+pelist.sort(reverse=False, key=lambda x:x[1])
+potmin.append(['mp'+str(mpid),adtype,pelist[0][0],pelist[0][1]])
+atm = Atom(elm,(x0,y0,z0+float(pelist[0][0])))
+adsorp = slab+atm
+mk_qe_input_relax(adsorp,'pbe','paw',level='high',estep=1000,nstep=1000,nosym=True,ecutwfc=ecutwfc,ecutrho=ecutrho,mixing_beta=0.2,kpts=(k0,k0,1),ecut='manual',tstress=False,options={'vdw_corr':'dft-d3','dftd3_version':4,'assume_isolated':'esm','esm_bc':'bc1'},nspin=False)
+os.chdir('../')
+
+# hcp
+#rlist = [0.6,0.7,0.8,0.9,1.1,1.2,1.3,1.4]
+adtype = 'hcp'
+x0 = 1.577
+y0 = 6.373
+z0 = 7.654
+os.makedirs('./'+str(adtype),exist_ok=True)
+os.chdir('./'+str(adtype))
+ocpcalc = setocp()
+pelist=[]
+for r in rlist:
+    #os.makedirs('./r'+str(r),exist_ok=True)
+    #os.chdir('./r'+str(r))
+    atm = Atom(elm,(x0,y0,z0+float(r)))
+    adsorp = slab+atm
+    adsorp.calc = ocpcalc
+    pe = adsorp.get_potential_energy()
+    f = open(gnn+'_potential.txt','a')
+    f.write(str(r)+' '+str(pe)+'\n')
+    f.close()
+    pelist.append([r,pe])
+    #view(adsorp)
+    #mk_qe_input_scf(adsorp,'pbe','paw',level='high',ecutwfc=ecutwfc,ecutrho=ecutrho,mixing_beta=0.2,kpts=(k0,k0,1),ecut='manual',tstress=False,options={'vdw_corr':'dft-d3','dftd3_version':4,'assume_isolated':'esm','esm_bc':'bc1'},nspin=False)
+    #mk_qe_input_dos(adsorp,'pbe','paw',level='high',ecutwfc=ecutwfc,ecutrho=ecutrho,mixing_beta=0.2,kpts=(k0,k0,1),ecut='manual',options={'vdw_corr':'dft-d3','dftd3_version':4,'assume_isolated':'esm','esm_bc':'bc1'},nspin=False)
+    #os.chdir('../')
+os.system('rm -rf ./configs')
+os.system('rm -rf ./content')
+pelist.sort(reverse=False, key=lambda x:x[1])
+potmin.append(['mp'+str(mpid),adtype,pelist[0][0],pelist[0][1]])
+atm = Atom(elm,(x0,y0,z0+float(pelist[0][0])))
+adsorp = slab+atm
+mk_qe_input_relax(adsorp,'pbe','paw',level='high',estep=1000,nstep=1000,nosym=True,ecutwfc=ecutwfc,ecutrho=ecutrho,mixing_beta=0.2,kpts=(k0,k0,1),ecut='manual',tstress=False,options={'vdw_corr':'dft-d3','dftd3_version':4,'assume_isolated':'esm','esm_bc':'bc1'},nspin=False)
+os.chdir('../')
+
+os.chdir(path)
+# mp-2815
+mpid = 2815
+mill = '001'
+
+slab = read('/home/A23321P/work/myPython/AtomicVirtuaLab/pwos/MoS2_catalysis/slab/optimize/mp'+str(mpid)+'/001/qe_relax.pwo')
+
+os.makedirs('./MoS2_catalysis_ocp/adsorp/mp-'+str(mpid)+'/'+str(mill)+'/'+str(elm)+'_potential',exist_ok=True)
+os.chdir('./MoS2_catalysis_ocp/adsorp/mp-'+str(mpid)+'/'+str(mill)+'/'+str(elm)+'_potential')
+
+#view(slab)
+lowpos = 0.0
+
+c = FixAtoms(indices=[atom.index for atom in slab if atom.position[2] < lowpos])
+slab.set_constraint(c)
+
+#view(slab)
+#sys.exit()
+
+# ontop
+#rlist = [0.6,0.7,0.8,0.9,1.1,1.2,1.3,1.4]
+adtype = 'ontop'
+x0 = 1.576
+y0 = 4.548
+z0 = 10.736
+os.makedirs('./'+str(adtype),exist_ok=True)
+os.chdir('./'+str(adtype))
+ocpcalc = setocp()
+pelist=[]
+for r in rlist:
+    #os.makedirs('./r'+str(r),exist_ok=True)
+    #os.chdir('./r'+str(r))
+    atm = Atom(elm,(x0,y0,z0+float(r)))
+    adsorp = slab+atm
+    adsorp.calc = ocpcalc
+    pe = adsorp.get_potential_energy()
+    f = open(gnn+'_potential.txt','a')
+    f.write(str(r)+' '+str(pe)+'\n')
+    f.close()
+    pelist.append([r,pe])
+    #view(adsorp)
+    #sys.exit()
+    #mk_qe_input_scf(adsorp,'pbe','paw',level='high',ecutwfc=ecutwfc,ecutrho=ecutrho,mixing_beta=0.2,kpts=(k0,k0,1),ecut='manual',tstress=False,options={'vdw_corr':'dft-d3','dftd3_version':4,'assume_isolated':'esm','esm_bc':'bc1'},nspin=False)
+    #mk_qe_input_dos(adsorp,'pbe','paw',level='high',ecutwfc=ecutwfc,ecutrho=ecutrho,mixing_beta=0.2,kpts=(k0,k0,1),ecut='manual',options={'vdw_corr':'dft-d3','dftd3_version':4,'assume_isolated':'esm','esm_bc':'bc1'},nspin=False)
+    #os.chdir('../')
+os.system('rm -rf ./configs')
+os.system('rm -rf ./content')
+pelist.sort(reverse=False, key=lambda x:x[1])
+potmin.append(['mp'+str(mpid),adtype,pelist[0][0],pelist[0][1]])
+atm = Atom(elm,(x0,y0,z0+float(pelist[0][0])))
+adsorp = slab+atm
+mk_qe_input_relax(adsorp,'pbe','paw',level='high',estep=1000,nstep=1000,nosym=True,ecutwfc=ecutwfc,ecutrho=ecutrho,mixing_beta=0.2,kpts=(k0,k0,1),ecut='manual',tstress=False,options={'vdw_corr':'dft-d3','dftd3_version':4,'assume_isolated':'esm','esm_bc':'bc1'},nspin=False)
+os.chdir('../')
+
+# bridge
+#rlist = [0.6,0.7,0.8,0.9,1.1,1.2,1.3,1.4]
+adtype = 'bridge'
+x0 = (1.576+4.727)/2.0
+y0 = 4.548
+z0 = 10.736
+os.makedirs('./'+str(adtype),exist_ok=True)
+os.chdir('./'+str(adtype))
+ocpcalc = setocp()
+pelist=[]
+for r in rlist:
+    #os.makedirs('./r'+str(r),exist_ok=True)
+    #os.chdir('./r'+str(r))
+    atm = Atom(elm,(x0,y0,z0+float(r)))
+    adsorp = slab+atm
+    adsorp.calc = ocpcalc
+    pe = adsorp.get_potential_energy()
+    f = open(gnn+'_potential.txt','a')
+    f.write(str(r)+' '+str(pe)+'\n')
+    f.close()
+    pelist.append([r,pe])
+    #view(adsorp)
+    #sys.exit()
+    #mk_qe_input_scf(adsorp,'pbe','paw',level='high',ecutwfc=ecutwfc,ecutrho=ecutrho,mixing_beta=0.2,kpts=(k0,k0,1),ecut='manual',tstress=False,options={'vdw_corr':'dft-d3','dftd3_version':4,'assume_isolated':'esm','esm_bc':'bc1'},nspin=False)
+    #mk_qe_input_dos(adsorp,'pbe','paw',level='high',ecutwfc=ecutwfc,ecutrho=ecutrho,mixing_beta=0.2,kpts=(k0,k0,1),ecut='manual',options={'vdw_corr':'dft-d3','dftd3_version':4,'assume_isolated':'esm','esm_bc':'bc1'},nspin=False)
+    #os.chdir('../')
+os.system('rm -rf ./configs')
+os.system('rm -rf ./content')
+pelist.sort(reverse=False, key=lambda x:x[1])
+potmin.append(['mp'+str(mpid),adtype,pelist[0][0],pelist[0][1]])
+atm = Atom(elm,(x0,y0,z0+float(pelist[0][0])))
+adsorp = slab+atm
+mk_qe_input_relax(adsorp,'pbe','paw',level='high',estep=1000,nstep=1000,nosym=True,ecutwfc=ecutwfc,ecutrho=ecutrho,mixing_beta=0.2,kpts=(k0,k0,1),ecut='manual',tstress=False,options={'vdw_corr':'dft-d3','dftd3_version':4,'assume_isolated':'esm','esm_bc':'bc1'},nspin=False)
+os.chdir('../')
+
+# fcc
+#rlist = [1.0]
+adtype = 'fcc'
+x0 = (1.576+4.727+3.151)/3.0
+y0 = (4.548+4.548+7.278)/3.0
+z0 = 10.736
+os.makedirs('./'+str(adtype),exist_ok=True)
+os.chdir('./'+str(adtype))
+ocpcalc = setocp()
+pelist=[]
+for r in rlist:
+    #os.makedirs('./r'+str(r),exist_ok=True)
+    #os.chdir('./r'+str(r))
+    atm = Atom(elm,(x0,y0,z0+float(r)))
+    adsorp = slab+atm
+    adsorp.calc = ocpcalc
+    pe = adsorp.get_potential_energy()
+    f = open(gnn+'_potential.txt','a')
+    f.write(str(r)+' '+str(pe)+'\n')
+    f.close()
+    pelist.append([r,pe])
+    #view(adsorp)
+    #sys.exit()
+    #mk_qe_input_scf(adsorp,'pbe','paw',level='high',ecutwfc=ecutwfc,ecutrho=ecutrho,mixing_beta=0.2,kpts=(k0,k0,1),ecut='manual',tstress=False,options={'vdw_corr':'dft-d3','dftd3_version':4,'assume_isolated':'esm','esm_bc':'bc1'},nspin=False)
+    #mk_qe_input_dos(adsorp,'pbe','paw',level='high',ecutwfc=ecutwfc,ecutrho=ecutrho,mixing_beta=0.2,kpts=(k0,k0,1),ecut='manual',options={'vdw_corr':'dft-d3','dftd3_version':4,'assume_isolated':'esm','esm_bc':'bc1'},nspin=False)
+    #os.chdir('../')
+os.system('rm -rf ./configs')
+os.system('rm -rf ./content')
+pelist.sort(reverse=False, key=lambda x:x[1])
+potmin.append(['mp'+str(mpid),adtype,pelist[0][0],pelist[0][1]])
+atm = Atom(elm,(x0,y0,z0+float(pelist[0][0])))
+adsorp = slab+atm
+mk_qe_input_relax(adsorp,'pbe','paw',level='high',estep=1000,nstep=1000,nosym=True,ecutwfc=ecutwfc,ecutrho=ecutrho,mixing_beta=0.2,kpts=(k0,k0,1),ecut='manual',tstress=False,options={'vdw_corr':'dft-d3','dftd3_version':4,'assume_isolated':'esm','esm_bc':'bc1'},nspin=False)
+os.chdir('../')
+
+# hcp
+#rlist = [1.0]
+adtype = 'hcp'
+x0 = 1.576
+y0 = 6.368
+z0 = 10.736
+os.makedirs('./'+str(adtype),exist_ok=True)
+os.chdir('./'+str(adtype))
+ocpcalc = setocp()
+pelist=[]
+for r in rlist:
+    #os.makedirs('./r'+str(r),exist_ok=True)
+    #os.chdir('./r'+str(r))
+    atm = Atom(elm,(x0,y0,z0+float(r)))
+    adsorp = slab+atm
+    adsorp.calc = ocpcalc
+    pe = adsorp.get_potential_energy()
+    f = open(gnn+'_potential.txt','a')
+    f.write(str(r)+' '+str(pe)+'\n')
+    f.close()
+    pelist.append([r,pe])
+    #view(adsorp)
+    #sys.exit()
+    #mk_qe_input_scf(adsorp,'pbe','paw',level='high',ecutwfc=ecutwfc,ecutrho=ecutrho,mixing_beta=0.2,kpts=(k0,k0,1),ecut='manual',tstress=False,options={'vdw_corr':'dft-d3','dftd3_version':4,'assume_isolated':'esm','esm_bc':'bc1'},nspin=False)
+    #mk_qe_input_dos(adsorp,'pbe','paw',level='high',ecutwfc=ecutwfc,ecutrho=ecutrho,mixing_beta=0.2,kpts=(k0,k0,1),ecut='manual',options={'vdw_corr':'dft-d3','dftd3_version':4,'assume_isolated':'esm','esm_bc':'bc1'},nspin=False)
+    #os.chdir('../')
+os.system('rm -rf ./configs')
+os.system('rm -rf ./content')
+pelist.sort(reverse=False, key=lambda x:x[1])
+potmin.append(['mp'+str(mpid),adtype,pelist[0][0],pelist[0][1]])
+atm = Atom(elm,(x0,y0,z0+float(pelist[0][0])))
+adsorp = slab+atm
+mk_qe_input_relax(adsorp,'pbe','paw',level='high',estep=1000,nstep=1000,nosym=True,ecutwfc=ecutwfc,ecutrho=ecutrho,mixing_beta=0.2,kpts=(k0,k0,1),ecut='manual',tstress=False,options={'vdw_corr':'dft-d3','dftd3_version':4,'assume_isolated':'esm','esm_bc':'bc1'},nspin=False)
+os.chdir('../')
+
+os.chdir('../../..')
+f = open(gnn+'_potmin.txt','a')
+for d in potmin:
+    f.write(d[0]+' '+d[1]+' '+str(d[2])+' '+str(d[3])+'\n')
+f.close()
+
+
+# 吸着ポテンシャル OCP 終了

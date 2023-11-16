@@ -1,4 +1,4 @@
-def mk_gpaw_pw_input_npt(cell0,temp,press,nstep,xc='PBE',ecut=400,kpts={'size':(1,1,1),'gamma':True},maxiter=2000,dt=0.5,dftd3=False,berendsen=False,berandsen_nstep=100,restart=False):
+def mk_gpaw_pw_input_npt(cell0,temp,press,nstep,xc='PBE',ecut=400,kpts={'size':(1,1,1),'gamma':True},maxiter=2000,dt=0.5,dftd3=False,berendsen=False,berandsen_nstep=100,restart=False,magElm=None):
     f = open('gpw_npt.py','w')
     f.write('from ase.io import read'+'\n')
     f.write('from gpaw import GPAW, PW, Mixer, FermiDirac'+'\n')
@@ -17,6 +17,14 @@ def mk_gpaw_pw_input_npt(cell0,temp,press,nstep,xc='PBE',ecut=400,kpts={'size':(
         cell0.write('cell.cif')
     if not restart:
         f.write('cell = read("cell.cif")'+'\n')
+    if magElm is not None:
+        f.write('magmom=[0.0]*int(len(cell))'+'\n')
+        f.write('magElm = '+str(magElm)+'\n')
+        f.write('for elm in magElm:'+'\n')
+        f.write('    for atom in cell:'+'\n')
+        f.write('        if atom.symbol == elm:'+'\n')
+        f.write('            magmom.append(float(magElm[elm]))'+'\n')
+        f.write('cell.set_initial_magnetic_moments(magmom)'+'\n')
     f.write("dft = GPAW(mode=PW("+str(ecut)+"),xc='"+str(xc)+"',kpts="+str(kpts)+",maxiter="+str(maxiter)+",occupations=FermiDirac(width=0.05),mixer=Mixer(beta=0.05, nmaxold=5, weight=50.0),txt='npt_gs.txt')"+'\n')
     if dftd3:
         f.write("d3 = DFTD3(method='"+str(xc)+"',damping='d3bj')"+'\n')
