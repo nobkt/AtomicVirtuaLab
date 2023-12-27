@@ -145,10 +145,13 @@ def main():
     parser = argparse.ArgumentParser(formatter_class=argparse.ArgumentDefaultsHelpFormatter)
     parser.add_argument("-s", "--smi",
                         help="Smiles string of the molecule to be atom-typed",
-                        required=True)
+                        required=False)
     parser.add_argument("-p", "--random",
                         help="Smiles string of the molecule to be atom-typed",
                         default=False)
+    parser.add_argument("-m", "--molfile",
+                        help="Smiles string of the molecule to be atom-typed",
+                        default=None)
     parser.add_argument("-n", "--name",
                         help="Name of the molecule to be typed",
                         default="LIG")
@@ -173,7 +176,10 @@ def main():
     args = parser.parse_args()
 
     #Build rdkit molecule from smiles and generate a conformer
-    m = AllChem.AddHs(Chem.MolFromSmiles(args.smi))
+    if args.molfile is not None:
+        m = Chem.MolFromMolFile(args.molfile,removeHs=False)
+    else:
+        m = AllChem.AddHs(Chem.MolFromSmiles(args.smi))
     if args.random:
         AllChem.EmbedMolecule(m,useRandomCoords=True, randomSeed = 12345)
         AllChem.MMFFOptimizeMolecule(m)

@@ -26,14 +26,17 @@ g.forcedir = "/home/A23321P/work/myPython/AtomicVirtuaLab/lmp_potentials"
 
 
 # MD 
-subelm = 'Br'
-sublist = {'Cl':0,'H':0}
+subelm = 'Cl'
+sublist = {'Br':0,'H':0}
 nmols = 64
 
 os.makedirs('./dp_raman_test',exist_ok=True)
 os.chdir('./dp_raman_test')
 
-xyz = read(g.cifdir+'/Zn-Pc-allBr.xyz')
+os.makedirs('Cl16',exist_ok=True)
+os.chdir('./Cl16')
+
+xyz = read(g.cifdir+'/Zn-Pc-allCl.xyz')
 xyz = sort(xyz)
 
 mollist={
@@ -97,7 +100,7 @@ dens1 = tot_mass1/volume1
 lat = (volume1/(dens/dens1))**(1/3)
 #
 mk_nvt_input_uff_rigid_scale(cell,0.0005,1000,1000,lat,20000,2000,300.0,12345)
-os.system('mpirun -np 4 lmp -in lammps.lmp 1> log_lammps 2> err_lammps')
+os.system('mpirun -np 16 lmp -in lammps.lmp 1> log_lammps 2> err_lammps')
 Z_of_type={}
 i = 0
 for symbol in symbols:
@@ -130,8 +133,9 @@ T_list = [300, 500, 700, 900, 1100]
 #T_list = [1100]
 nset = 10
 nmols = 6
-subelm = 'Br'
-sublist = {'Cl':4,'H':4}
+subelm = 'X'
+#sublist = {'Cl':4,'H':4}
+sublist = {}
 
 os.makedirs('./dp_raman_test',exist_ok=True)
 os.chdir('./dp_raman_test')
@@ -139,7 +143,7 @@ os.chdir('./dp_raman_test')
 os.makedirs('./Zn-Pc_train',exist_ok=True)
 os.chdir('./Zn-Pc_train')
 
-xyz = read(g.cifdir+'/Zn-Pc-allBr.xyz')
+xyz = read(g.cifdir+'/Zn-Pc-allCl.xyz')
 xyz = sort(xyz)
 
 mollist={
@@ -208,7 +212,7 @@ for n in range(nset):
         lat = (volume1/(dens/dens1))**(1/3)
         #
         mk_nvt_input_uff_rigid_scale(cell,0.0005,1000,1000,lat,20000,2000,T0,12345)
-        os.system('mpirun -np 4 lmp -in lammps.lmp 1> log_lammps 2> err_lammps')
+        os.system('mpirun -np 2 lmp -in lammps.lmp 1> log_lammps 2> err_lammps')
         Z_of_type={}
         i = 0
         for symbol in symbols:
@@ -370,14 +374,14 @@ os.chdir('./train')
 dpdata=False
 if dpdata:
     path = os.getcwd()
-    datadir_ = '/home/A23321P/work/mySiesta/dipole_and_polarizability/Zn-Pc_train_tmp'
+    datadir_ = '/home/A23321P/work/mySiesta/dipole_and_polarizability/Zn-Pc_tmp'
     os.chdir(datadir_)
     siesta2dp()
     os.system('cp -r '+str(datadir_)+'/deepmd '+str(path))
     sys.exit()
 dpdir = './deepmd'
 dp_list=get_deepmd_list(dpdir)
-wt_deepmd_json(dpdir,dp_list,10.0,1000000,prec='high')
+wt_deepmd_json(dpdir,dp_list,8.0,1000000,prec='high')
 # ポテンシャル学習 終了
 """
 

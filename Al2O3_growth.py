@@ -1,7 +1,7 @@
 from AtomicVirtuaLab.espresso import mk_qe_input_npt
 from AtomicVirtuaLab.io import rd_cif, rd_lammpsdata
 from AtomicVirtuaLab.deepmd import qe2dp, get_deepmd_list, wt_deepmd_json
-from AtomicVirtuaLab.lammps import mk_npt_melt_input_deepmd, mk_nvt_input_uff
+from AtomicVirtuaLab.lammps import mk_npt_melt_input_deepmd, mk_nvt_input_uff,mk_npt_input_deepmd
 from ase.build import make_supercell
 from ase.visualize import view
 from ase.units import mol
@@ -16,6 +16,7 @@ g.cifs = '/home/A23321P/work/myPython/AtomicVirtuaLab/cifs'
 g.forcedir = "/home/A23321P/work/myPython/AtomicVirtuaLab/lmp_potentials"
 
 
+"""
 # 学習データ作成 GPAW
 os.makedirs('./Al2O3_growth',exist_ok=True)
 os.chdir('./Al2O3_growth')
@@ -84,6 +85,7 @@ for P0 in P:
         #mk_qe_input_npt(cell_liquid,'pbe','paw',float(T0),100.0,float(P0),dt=4.0,level='high',estep=9999,nstep=2000,ecut='auto',options={'vdw_corr':'dft-d3','dftd3_version':4})
         os.chdir('../')
 # 学習データ作成 GPAW 終了
+"""
 
 """
 # 学習データ作成
@@ -199,3 +201,17 @@ for T0 in [2310,2320,2330,2340,2350,2360,2370,2380,2390]:
     os.chdir('../')
 # 融点計算終了
 """
+
+# 速度検証
+os.makedirs('./Al2O3_growth',exist_ok=True)
+os.chdir('./Al2O3_growth')
+os.makedirs('./benchmark',exist_ok=True)
+os.chdir('./benchmark')
+cell = rd_cif(g.cifs+'/'+'Al2O3.cif')
+cell = make_supercell(cell,([8,0,0],[0,8,0],[0,0,4]),wrap=True)
+print(len(cell))
+view(cell)
+shutil.copy(g.forcedir+'/Al2O3_graph.pb','./graph.pb')
+mk_npt_input_deepmd(cell,0.0005,1,1,10,300,1.0,12345,mol=False)
+#mk_npt_melt_input_deepmd(cell,0.0005,10000,10000,200000,200000,10000000,1000,5000,T0,0.0,z0,12345)
+# 速度検証終了

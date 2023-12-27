@@ -25,7 +25,10 @@ os.makedirs('./uv_risin_md',exist_ok=True)
 os.chdir('./uv_risin_md')
 
 #mols = Chem.SDMolSupplier(g.cifs+'/uv_risin_molecules.sdf')
-mols = Chem.SDMolSupplier(g.cifs+'/uv_risin_molecules2.sdf')
+#mols = Chem.SDMolSupplier(g.cifs+'/uv_risin_molecules2.sdf')
+#mols = Chem.SDMolSupplier(g.cifs+'/uv_risin_new20231124.sdf')
+mols = Chem.SDMolSupplier(g.cifs+'/uv_risin_new20231124_2.sdf')
+
 i = 1
 for mol in mols:
     if i==7:

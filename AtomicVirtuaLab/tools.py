@@ -40,3 +40,4 @@ def deform_cell(cell,da,dtheta):
     cell0 = cell.copy()
     cell0.set_cell([a,b,c,alpha,beta,gamma],scale_atoms=True)
     return cell0
+

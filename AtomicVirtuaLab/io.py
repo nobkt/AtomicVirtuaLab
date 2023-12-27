@@ -24,7 +24,7 @@ def smiles2xyz(smiles,molname,addH,smarts=False,userandom=False):
     xyz = Chem.MolToXYZBlock(m)
     print(xyz, file=codecs.open(molname+'.xyz', 'w', 'utf-8'))
 
-def smiles2molandxyz(smiles,molname,addH,smarts=False):
+def smiles2molandxyz(smiles,molname,addH,smarts=False,userandom=False):
     from rdkit import Chem
     from rdkit.Chem import AllChem, rdDistGeom
     from ase.io import read, write
@@ -38,8 +38,12 @@ def smiles2molandxyz(smiles,molname,addH,smarts=False):
     if addH:
         m = Chem.AddHs(m)
     # 構造最適化
-    AllChem.EmbedMolecule(m)
-    AllChem.MMFFOptimizeMolecule(m)
+    if userandom:
+        AllChem.EmbedMolecule(m,useRandomCoords=True,randomSeed = 12345)
+        AllChem.MMFFOptimizeMolecule(m)
+    else:
+        AllChem.EmbedMolecule(m)
+        AllChem.MMFFOptimizeMolecule(m)
     # molファイルとして出力
     Chem.MolToMolFile(m,molname+'.mol')
     # xyzファイルとして出力
