@@ -25,8 +25,14 @@ def mklt_fr_mol(molfile,molname,random=False):
     else:
         os.system("python3 rdlt.py --molfile "+str(molfile)+" -n '+str(molname)+' -l > '+str(molname)+'.lt")
 
-def mk_system_lt(mollist,x_box,y_box,z_box):
+def mk_system_lt(d_mols,d_bonds,x_box,y_box,z_box):
     f = open('system.lt','w')
+    mollist=[]
+    for imol in d_mols:
+        if d_mols[imol] in mollist:
+            continue
+        else:
+            mollist.append(d_mols[imol])
     for mol in mollist:
         f.write('import "'+mol+'.lt"'+'\n')
     f.write('\n')
@@ -38,9 +44,14 @@ def mk_system_lt(mollist,x_box,y_box,z_box):
     f.write('\n')
     #for mol in mollist:
     #    f.write(mol+' = new '+mol+' ['+str(mollist[mol])+']'+'\n')
-    for mol in mollist:
-        for imol in range(mollist[mol]):
-            f.write('mol'+str(imol+1)+' = new '+mol+' ['+str(1)+']'+'\n')
+    for imol in d_mols:
+        f.write('mol'+str(imol)+' = new '+d_mols[imol]+' ['+str(1)+']'+'\n')
+    f.write('\n')
+    if len(d_bonds) != 0:
+        f.write("write('Data Bond List') {"+'\n')
+        for nbond in d_bonds:
+            f.write('  $bond:b'+str(nbond)+' '+d_bonds[nbond][0]+' '+d_bonds[nbond][1]+'\n')
+        f.write('  }'+'\n')
     f.close()
 
 def get_chemical_symbols(lmpdata):
@@ -83,7 +94,7 @@ def rd_lt(path,molname):
     for line in lines:
         if 'Data Atoms' in line and flg_atoms == False:
             flg_atoms = True
-        if 'Data Bond List' in line and flg_bonds == False:
+        elif 'Data Bond List' in line and flg_bonds == False:
             flg_bonds = True
         elif flg_atoms == True and '}' in line:
             flg_atoms = False
@@ -97,27 +108,38 @@ def rd_lt(path,molname):
             bondlist[molname].append([line[0],line[1],line[2]])
     return mollist, bondlist
 
-def ex_lt(mollist,molname,reaction):
-    rid = 1
-    if 'r'+str(rid)+'_' in molname:
-        rid = rid + 1
-    mol_new = 'r'+str(rid)+'_'+molname
-    mollist[mol_new] = mollist[molname].copy()
-    for l_reac in reaction:
-        id=0
-        for mols in mollist[mol_new]:
-            if mols[0] == l_reac[0]:
-                mollist[mol_new][id][1] = l_reac[1]
-            id = id + 1
-    return mollist
-                
-        
+def ex_lt(path,molname,mollist):
+    f = open(path+'/'+molname+'.lt','r')
+    lines = f.readlines()
+    f.close()
+    flg_atoms = False
+    ii = 0
+    for line in lines:
+        if 'Data Atoms' in line and flg_atoms == False:
+            flg_atoms = True
+        elif 'inherits' in line:
+            line0 = line.split()
+            if line0[0] == molname:
+                for newmol in mollist:
+                    lines[ii] = lines[ii].replace(line0[0],newmol)
+        elif flg_atoms == True and '}' in line:
+            flg_atoms = False
+        elif flg_atoms == True:
+            line0 = line.split()
+            for newmol in mollist:
+                for atype in mollist[newmol]:
+                    if atype[0] == line0[0]:
+                        lines[ii] = lines[ii].replace(line0[2],atype[1])
+        ii = ii + 1
+    for newmol in mollist:
+        f = open(path+'/'+newmol+'.lt','w')
+        for line in lines:
+            f.write(line)
+    f.close()
 
-            
-            
-    
-    
-    
+  
+
+
             
             
             

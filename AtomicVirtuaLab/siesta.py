@@ -266,6 +266,9 @@ def mk_siesta_input_scf_withEfield_wannier(cell,xc,basis_set,mesh_cutoff,kpts,ps
     for atom in cell:
         tot_nelc = tot_nelc + dnelc[atom.symbol]
     #print(tot_nelc)
+    f = open('./siesta.fdf','r')
+    lines = f.readlines()
+    f.close()
     f = open('siesta.win','w')
     f.write('num_wann            = '+str(int(tot_nelc/2))+'\n')
     f.write('num_bands           = '+str(int(tot_nelc/2+bandscale))+'\n')
@@ -292,10 +295,18 @@ def mk_siesta_input_scf_withEfield_wannier(cell,xc,basis_set,mesh_cutoff,kpts,ps
     f.write('end projections'+'\n')
     f.write('begin unit_cell_cart'+'\n')
     f.write('Ang'+'\n')
-    lat = cell.get_cell()
-    f.write('  '+str(lat[0][0])+'     '+str(lat[1][0])+'     '+str(lat[2][0])+'\n')
-    f.write('  '+str(lat[0][1])+'     '+str(lat[1][1])+'     '+str(lat[2][1])+'\n')
-    f.write('  '+str(lat[0][2])+'     '+str(lat[1][2])+'     '+str(lat[2][2])+'\n')
+    wflg = 0
+    for line in lines:
+        if wflg == 0 and "block LatticeVectors" in line:
+            wflg = 1
+        elif wflg == 1 and "endblock LatticeVectors" in line:
+            wflg = 0
+        elif wflg == 1:
+            f.write(line)
+    #lat = cell.get_cell()
+    #f.write('  '+str(lat[0][0])+'     '+str(lat[1][0])+'     '+str(lat[2][0])+'\n')
+    #f.write('  '+str(lat[0][1])+'     '+str(lat[1][1])+'     '+str(lat[2][1])+'\n')
+    #f.write('  '+str(lat[0][2])+'     '+str(lat[1][2])+'     '+str(lat[2][2])+'\n')
     f.write('end_unit_cell_cart'+'\n')
     f.close()
     

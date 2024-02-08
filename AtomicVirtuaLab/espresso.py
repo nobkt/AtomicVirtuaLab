@@ -62,6 +62,139 @@ def mk_qe_input_scf(cell,xc,pot,level='low',estep=1000,ecutwfc=25,ecutrho=225,mi
         print('valence/2 = ', nbnd)
     cell.write('qe_scf.pwi',input_data=input_data,pseudopotentials=pseudo,kpts=kpts,crystal_coordinates=False)
 
+def mk_qe2yambo_input_scf(cell,xc,pot,level='low',estep=1000,ecutwfc=25,ecutrho=225,mixing_beta=0.2,kpts=None,ecut='manual',tstress=True,nosym=False,options={},nspin=False):
+    from ase.io import write
+    import AtomicVirtuaLab.globalv as g
+    import shutil
+    import os
+    level0 = level
+    pseudo = set_qepot(cell,xc,pot,level0)
+    if ecut == 'manual':
+        ecutwfc_ = ecutwfc
+        ecutrho_ = ecutrho
+    elif ecut == 'auto':
+        ecutwfc_ = 0.0
+        ecutrho_ = 0.0
+        for symbol in pseudo:
+            fpot = g.qepot+'/'+str(level)+'/'+str(pseudo[symbol])
+            f = open(fpot,'r')
+            lines = f.readlines()
+            f.close()
+            for line in lines:
+                if 'Suggested minimum cutoff for wavefunctions:' in line:
+                    line = line.split()
+                    if ecutwfc_ <= float(line[5]):
+                        ecutwfc_ = float(line[5])
+                if 'Suggested minimum cutoff for charge density:' in line:
+                    line = line.split()
+                    if ecutrho_ <= float(line[6]):
+                        ecutrho_ = float(line[6])
+    os.makedirs('./pseudo',exist_ok=True)
+    for symbol in pseudo:
+        shutil.copy(g.qepot+'/'+str(level)+'/'+str(pseudo[symbol]),'./pseudo')
+    input_data={\
+        'calculation'      : 'scf',\
+        'restart_mode'     : 'from_scratch',\
+        'verbosity'        : 'high',\
+        'wf_collect'       : True,\
+        'pseudo_dir'       : './pseudo',\
+        'tstress'          : tstress,\
+        'tprnfor'          : True,\
+        'outdir'           : './outdir',\
+        'nosym'            : nosym,\
+        'force_symmorphic' : True,\
+        'occupations'      : 'smearing',\
+        'smearing'         : 'gaussian',\
+        'degauss'          : 0.01,\
+        'conv_thr'         : 1.0e-6,\
+        'diagonalization'  : 'david',\
+        'mixing_beta'      : mixing_beta,\
+        'electron_maxstep' : estep,\
+        'ecutwfc'          : ecutwfc_,\
+        'ecutrho'          : ecutrho_\
+    }
+    if len(options) != 0:
+        for option in options:
+            input_data[option] = options[option]
+    if nspin == True:
+        input_data['nspin'] = 2
+        valence, magmom = get_valence(cell,pseudo,level)
+        cell.set_initial_magnetic_moments(magmom)
+        nbnd = int(valence/2.0*2.0)
+        input_data['nbnd'] = nbnd
+    else:
+        valence, magmom = get_valence(cell,pseudo,level)
+        nbnd = int(valence/2.0)
+        print('valence/2 = ', nbnd)
+    cell.write('qe_scf.pwi',input_data=input_data,pseudopotentials=pseudo,kpts=kpts,crystal_coordinates=False)
+
+def mk_qe2yambo_input_nscf(cell,xc,pot,level='low',estep=1000,ecutwfc=25,ecutrho=225,mixing_beta=0.2,kpts=None,ecut='manual',tstress=True,nosym=False,options={},nspin=False):
+    from ase.io import write
+    import AtomicVirtuaLab.globalv as g
+    import shutil
+    import os
+    level0 = level
+    pseudo = set_qepot(cell,xc,pot,level0)
+    if ecut == 'manual':
+        ecutwfc_ = ecutwfc
+        ecutrho_ = ecutrho
+    elif ecut == 'auto':
+        ecutwfc_ = 0.0
+        ecutrho_ = 0.0
+        for symbol in pseudo:
+            fpot = g.qepot+'/'+str(level)+'/'+str(pseudo[symbol])
+            f = open(fpot,'r')
+            lines = f.readlines()
+            f.close()
+            for line in lines:
+                if 'Suggested minimum cutoff for wavefunctions:' in line:
+                    line = line.split()
+                    if ecutwfc_ <= float(line[5]):
+                        ecutwfc_ = float(line[5])
+                if 'Suggested minimum cutoff for charge density:' in line:
+                    line = line.split()
+                    if ecutrho_ <= float(line[6]):
+                        ecutrho_ = float(line[6])
+    os.makedirs('./pseudo',exist_ok=True)
+    for symbol in pseudo:
+        shutil.copy(g.qepot+'/'+str(level)+'/'+str(pseudo[symbol]),'./pseudo')
+    input_data={\
+        'calculation'      : 'nscf',\
+        'restart_mode'     : 'from_scratch',\
+        'verbosity'        : 'high',\
+        'wf_collect'       : True,\
+        'pseudo_dir'       : './pseudo',\
+        'tstress'          : tstress,\
+        'tprnfor'          : True,\
+        'outdir'           : './outdir',\
+        'nosym'            : nosym,\
+        'force_symmorphic' : True,\
+        'occupations'      : 'smearing',\
+        'smearing'         : 'gaussian',\
+        'degauss'          : 0.01,\
+        'conv_thr'         : 1.0e-6,\
+        'diagonalization'  : 'david',\
+        'mixing_beta'      : mixing_beta,\
+        'electron_maxstep' : estep,\
+        'ecutwfc'          : ecutwfc_,\
+        'ecutrho'          : ecutrho_\
+    }
+    if len(options) != 0:
+        for option in options:
+            input_data[option] = options[option]
+    if nspin == True:
+        input_data['nspin'] = 2
+        valence, magmom = get_valence(cell,pseudo,level)
+        cell.set_initial_magnetic_moments(magmom)
+        nbnd = int(valence/2.0*2.0)
+        input_data['nbnd'] = nbnd
+    else:
+        valence, magmom = get_valence(cell,pseudo,level)
+        nbnd = int(valence/2.0)
+        print('valence/2 = ', nbnd)
+    cell.write('qe_nscf.pwi',input_data=input_data,pseudopotentials=pseudo,kpts=kpts,crystal_coordinates=False)
+
+
 def mk_qe_input_dos(cell,xc,pot,level='low',estep=1000,ecutwfc=25,ecutrho=225,mixing_beta=0.2,kpts=None,ecut='manual',options={},nspin=False):
     from ase.io import write
     import AtomicVirtuaLab.globalv as g

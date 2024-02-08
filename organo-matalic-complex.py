@@ -2,7 +2,7 @@ from AtomicVirtuaLab.io import smiles2xyz
 from AtomicVirtuaLab.siesta import mk_siesta_input_optimize
 import AtomicVirtuaLab.globalv as g
 from AtomicVirtuaLab.build import sortmol, slabgen
-from AtomicVirtuaLab.lammps import mk_mimize_input_uff_adsorp
+from AtomicVirtuaLab.lammps import mk_mimize_input_uff_adsorp,mk_opt_input_deepmd
 from ase.io import read, write
 from ase.visualize import view
 from ase import Atom, Atoms
@@ -11,13 +11,96 @@ import math
 import sys
 import random
 import pandas as pd
+import shutil
 
 g.siesta_pot = '/home/A23321P/work/myPython/AtomicVirtuaLab/siesta_pseudo'
 g.cifdir = '/home/A23321P/work/myPython/AtomicVirtuaLab/cifs'
+g.forcedir = "/home/A23321P/work/myPython/AtomicVirtuaLab/lmp_potentials"
 
 
 os.makedirs('organo-metalic-complex',exist_ok=True)
 os.chdir('organo-metalic-complex')
+
+"""
+# 分散剤の構造最適化
+
+lat = [50.0,50.0,50.0]
+
+os.makedirs('mols',exist_ok=True)
+os.chdir('mols')
+os.makedirs('dispersant',exist_ok=True)
+os.chdir('dispersant')
+
+os.makedirs('AD3284M',exist_ok=True)
+os.chdir('AD3284M')
+
+smiles = 'CC(COCCO)OCN(COC(C)COCCO)COC(C)COCCO'
+
+smiles2xyz(smiles,'mol_AD3284M',True,smarts=False,userandom=True)
+
+mol_AD3284M = read('./mol_AD3284M.xyz')
+mol_AD3284M.set_cell(lat)
+com = mol_AD3284M.get_center_of_mass()
+shift = [lat[0]/2.0-com[0],lat[1]/2.0-com[1],lat[2]/2.0-com[2]]
+mol_AD3284M.translate(shift)
+mk_siesta_input_optimize(mol_AD3284M,'BLYP','DZP',200.0,[1,1,1],2000,g.siesta_pot,SolutionMethod='diagon',MaxSCFIterations=2000,spin='non-polarized')
+view(mol_AD3284M)
+
+os.chdir('../')
+
+os.makedirs('BYK191',exist_ok=True)
+os.chdir('BYK191')
+
+smiles = '[H]CC(CC(CC(CC(C(\C=C/CCCCCC)C(CCCCCCC(O)=O)C(CCCCCCCCC)C([H])CCCCCCC(O)=O)C(=O)OCCCC)C(=O)OCCN(C)C)C(O)=O)C(=O)OCCOCCOC'
+
+smiles2xyz(smiles,'mol_BYK191',True,smarts=False,userandom=True)
+
+mol_BYK191 = read('./mol_BYK191.xyz')
+mol_BYK191.set_cell(lat)
+com = mol_BYK191.get_center_of_mass()
+shift = [lat[0]/2.0-com[0],lat[1]/2.0-com[1],lat[2]/2.0-com[2]]
+mol_BYK191.translate(shift)
+mk_siesta_input_optimize(mol_BYK191,'BLYP','DZP',200.0,[1,1,1],2000,g.siesta_pot,SolutionMethod='diagon',MaxSCFIterations=2000,spin='non-polarized')
+view(mol_BYK191)
+
+os.chdir('../')
+
+os.makedirs('S71000',exist_ok=True)
+os.chdir('S71000')
+
+smiles = 'COCCOC(C)COC(=O)CCC(=O)NCCNCCN(CCNCCNC(=O)CCC(=O)OCC(C)OCCOC)C(=O)CCC(=O)OCC(C)OCCOC'
+
+smiles2xyz(smiles,'mol_S71000',True,smarts=False,userandom=True)
+
+mol_S71000 = read('./mol_S71000.xyz')
+mol_S71000.set_cell(lat)
+com = mol_S71000.get_center_of_mass()
+shift = [lat[0]/2.0-com[0],lat[1]/2.0-com[1],lat[2]/2.0-com[2]]
+mol_S71000.translate(shift)
+mk_siesta_input_optimize(mol_S71000,'BLYP','DZP',200.0,[1,1,1],2000,g.siesta_pot,SolutionMethod='diagon',MaxSCFIterations=2000,spin='non-polarized')
+view(mol_S71000)
+
+os.chdir('../')
+
+os.makedirs('S75000',exist_ok=True)
+os.chdir('S75000')
+
+smiles = 'CCCCCCCCCCC(=O)OCCCCCCC(=O)NCCNCCN(CCNCCNC(=O)CCCCCCOC(=O)CCCCCCCCCC)C(=O)CCCCCCOC(=O)CCCCCCCCCC'
+
+smiles2xyz(smiles,'mol_S75000',True,smarts=False,userandom=True)
+
+mol_S75000 = read('./mol_S75000.xyz')
+mol_S75000.set_cell(lat)
+com = mol_S75000.get_center_of_mass()
+shift = [lat[0]/2.0-com[0],lat[1]/2.0-com[1],lat[2]/2.0-com[2]]
+mol_S75000.translate(shift)
+mk_siesta_input_optimize(mol_S75000,'BLYP','DZP',200.0,[1,1,1],2000,g.siesta_pot,SolutionMethod='diagon',MaxSCFIterations=2000,spin='non-polarized')
+view(mol_S75000)
+
+os.chdir('../')
+
+# 分散剤の構造最適化 終了
+"""
 
 """
 # optimize molA-Mg
@@ -431,8 +514,11 @@ os.chdir('./adsorp1')
 
 #slab1_ = read('/home/A23321P/work/mySiesta/organo-metalic-complex/BOC-Mg/SiO2_slab/BLYP_Hopt/siesta.STRUCT_OUT',format='struct_out')
 
-complex_list = ['A','B','C']
-slab_list = [3,2,1]
+#complex_list = ['A','B','C']
+#slab_list = [3,2,1]
+
+complex_list = ['AD3284M','BYK191','S71000','S75000']
+slab_list = [3]
 
 datas={}
 ncoord = 100
@@ -441,7 +527,8 @@ for nslab in slab_list:
         os.makedirs('slab_'+str(nslab)+'-mol'+ncomplex,exist_ok=True)
         os.chdir('slab_'+str(nslab)+'-mol'+ncomplex)
         slab = read('/home/A23321P/work/mySiesta/organo-metalic-complex/SiO2_slab/BLYP/slab'+str(nslab)+'_opt/siesta.STRUCT_OUT',format='struct_out')
-        mol = read('/home/A23321P/work/mySiesta/organo-metalic-complex/mols/mol'+ncomplex+'/BLYP/mol'+ncomplex+'_opt/siesta.xyz',format='xyz')
+        #mol = read('/home/A23321P/work/mySiesta/organo-metalic-complex/mols/mol'+ncomplex+'/BLYP/mol'+ncomplex+'_opt/siesta.xyz',format='xyz')
+        mol = read('/home/A23321P/work/mySiesta/organo-metalic-complex/mols/dispersant/'+ncomplex+'/siesta.xyz',format='xyz')
         lat = slab.get_cell()
         zslab=[]
         for atom in slab:
@@ -470,7 +557,7 @@ for nslab in slab_list:
             adsorp = slab+mol0
             adsorp = sortmol(adsorp,sort_atom=False)
             mk_mimize_input_uff_adsorp(adsorp,200000,100000,100000)
-            os.system('mpirun -np 8 lmp -in lammps.lmp 1> log_lammps 2> err_lammps')
+            os.system('mpirun -np 20 lmp -in lammps.lmp 1> log_lammps 2> err_lammps')
             f = open('log_lammps','r')
             lines = f.readlines()
             f.close()
@@ -478,7 +565,7 @@ for nslab in slab_list:
                 if 'Potential Energy' in line:
                     line = line.split()
                     print(line[2])
-                    datas[('slab'+str(nslab),'mol'+ncomplex,'nset'+str(n+1),xtheta,ytheta,ztheta)] = float(line[2])
+                    datas[('slab'+str(nslab),'mol_'+ncomplex,'nset'+str(n+1),xtheta,ytheta,ztheta)] = float(line[2])
                     break
             #view(slab+mol0)
             #sys.exit()
@@ -491,7 +578,7 @@ df.to_csv('potential_datas.csv')
 # ランダム吸着モデル作成 終了        
 """
 
-        
+"""        
 # ランダム吸着モデル構造最適化
 os.makedirs('./adsorp1',exist_ok=True)
 os.chdir('./adsorp1')
@@ -571,5 +658,90 @@ for nslab in slab_list:
                 #sys.exit()
                 os.chdir('../')
                 os.chdir('../')
+
+# ランダム吸着モデル構造最適化 終了
+"""
+
+"""
+# OC20 ランダム吸着モデル構造最適化
+os.makedirs('./adsorp1',exist_ok=True)
+os.chdir('./adsorp1')
+
+os.makedirs('./oc_opt',exist_ok=True)
+os.chdir('./oc_opt')
+
+complex_list = ['AD3284M','BYK191','S71000','S75000']
+slab_list = [3]    
+ncoord = 100
+
+Z_of_type={1:6,2:1,3:7,4:8,5:14}
+
+for nslab in slab_list:
+    for ncomp in complex_list:
+        for n in range(ncoord):
+            os.makedirs('slab_'+str(nslab)+'-'+ncomp,exist_ok=True)
+            os.chdir('slab_'+str(nslab)+'-'+ncomp)
+            os.makedirs('nset'+str(n+1),exist_ok=True)
+            os.chdir('nset'+str(n+1))
+            dir_ = '/home/A23321P/work/myPython/AtomicVirtuaLab/organo-metalic-complex/adsorp1/slab_'+str(nslab)+'-mol'+ncomp+'/nset'+str(n+1)
+            shutil.copy(g.forcedir+'/OC_10M.pb','./graph.pb')
+            adsorp = read(dir_+'/result.data',format='lammps-data',Z_of_type=Z_of_type)
+            #view(adsorp)
+            mk_opt_input_deepmd(adsorp,1,1,mol=True,fixlay=5.3)
+            adsorp.write('test.cif')                
+            #sys.exit()
+            os.chdir('../')
+            os.chdir('../')
+
+# OC20 ランダム吸着モデル構造最適化 終了
+"""
+
+# ランダム吸着モデル構造最適化
+os.makedirs('./adsorp1',exist_ok=True)
+os.chdir('./adsorp1')
+
+os.makedirs('./siesta_opt',exist_ok=True)
+os.chdir('./siesta_opt')
+
+complex_list = ['AD3284M','BYK191','S71000','S75000']
+slab_list = [3]    
+ncoord = 100
+
+Z_of_type={1:6,2:1,3:7,4:8,5:14}
+
+opt_list={}
+opt_list['AD3284M'] = [98,25,87,64,40,100,9,10,74,66,57,70,58,11,21,36,61,69,38,59,52,76,55,26,99,92,29,60,16,4,19,77,72,75,44,1]
+opt_list['BYK191'] = [35,22,87,58,96,34,23,9,15,2,49,25,92,50,74,7,16,90]
+opt_list['S71000'] = [7,52,98,43,10,68,53,48,87,13,76,9,63,95,21,88,83,97,62,29,64,46,33]
+opt_list['S75000'] = [50,72,81,46,88,99,30,98,1,7,92,64,48,31,71,28,83,59,78,32,20,60,75,52,42,87,66]
+
+for nslab in slab_list:
+    for ncomp in complex_list:
+        for n in range(ncoord):
+            if n+1 not in opt_list[ncomp]:
+                continue
+            os.makedirs('slab_'+str(nslab)+'-'+ncomp,exist_ok=True)
+            os.chdir('slab_'+str(nslab)+'-'+ncomp)
+            os.makedirs('nset'+str(n+1),exist_ok=True)
+            os.chdir('nset'+str(n+1))
+            dir_ = '/home/A23321P/work/myDeepMD/organo-metalic-complex/adsorp1/oc_opt/slab_'+str(nslab)+'-'+ncomp+'/nset'+str(n+1)
+            adsorp = read(dir_+'/result.data',format='lammps-data',Z_of_type=Z_of_type)
+            #view(adsorp)
+            sio2 = adsorp.copy()
+            del sio2[[atom.index for atom in sio2 if sio2.arrays["mol-id"][atom.index] != 1]]
+            com = sio2.get_center_of_mass()
+            constraint=[]
+            for atom in adsorp:
+                if atom.position[2] < 5.3:
+                    constraint.append(('atom',atom.index+1))
+            options={}
+            options['Slab.DipoleCorrection'] = True
+            options['Slab.DipoleCorrection.Origin'] = [' '+str(com[0])+' '+str(com[1])+' '+str(com[2])+' Ang']
+            options['Geometry.Constraints'] = constraint
+            mk_siesta_input_optimize(adsorp,'BLYP','DZP',200.0,[1,1,1],2000,g.siesta_pot,SolutionMethod='diagon',MaxSCFIterations=2000,options=options,spin='non-polarized')
+            adsorp.write('test.cif')             
+            #sys.exit()
+            os.chdir('../')
+            os.chdir('../')
 
 # ランダム吸着モデル構造最適化 終了

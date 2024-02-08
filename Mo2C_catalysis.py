@@ -2,15 +2,61 @@ import AtomicVirtuaLab.globalv as g
 from AtomicVirtuaLab.io import rd_cif
 from AtomicVirtuaLab.build import slabgen
 from AtomicVirtuaLab.espresso import mk_qe_input_vcrelax, mk_qe_input_relax
+from AtomicVirtuaLab.lammps import mk_npt_input_deepmd
 from ase.io import read
 from ase.visualize import view
 from ase.constraints import FixAtoms
+from ase.build import make_supercell
+from ase.cluster.cubic import FaceCenteredCubic
 import os
 import sys
 
 g.qepot = '/home/A23321P/work/myPython/AtomicVirtuaLab/qe_pseudo'
 g.cifdir='./cifs'
 
+
+# OC20テスト
+os.makedirs('./Mo2C_catalysis',exist_ok=True)
+os.chdir('./Mo2C_catalysis')
+os.makedirs('OC20test',exist_ok=True)
+os.chdir('./')
+
+slab = read('/home/A23321P/work/myPython/AtomicVirtuaLab/pwos/Mo2C_catalysis/slab/002/qe_relax.pwo')
+slab = make_supercell(slab,([4,0,0],[0,3,0],[0,0,1]),wrap=False)
+lat = slab.get_cell()
+lat[2][2] = 50.0
+slab.set_cell(lat)
+z=[]
+for atom in slab:
+    z.append(atom.position[2])
+zmax = max(z)
+com1 = slab.get_center_of_mass()
+view(slab)
+
+surfaces = [(1, 0, 0), (1, 1, 1), (1, -1, 1)]
+layers = [6, 5, -1]
+trunc = FaceCenteredCubic('Pt', surfaces, layers)
+trunc.rotate(45, 'x', rotate_cell=True)
+trunc.rotate(54.736, 'z', rotate_cell=True)
+trunc.rotate(90, 'y', rotate_cell=True)
+z=[]
+for atom in trunc:
+    z.append(atom.position[2])
+zmin = min(z)
+com2 = trunc.get_center_of_mass()
+view(trunc)
+
+shift=[com1[0]-com2[0],com1[1]-com2[1],zmax+2.5-zmin]
+trunc.translate(shift)
+
+adsorp = slab+trunc
+view(adsorp)
+
+mk_npt_input_deepmd(adsorp,0.0005,10,10,200000,300,0.0,12345,mol=False)
+
+# OC20テスト 終了
+
+"""
 # スラブの構造最適化
 
 #mpid = 1221498
@@ -107,7 +153,7 @@ view(slab_Mo)
 os.chdir('../')
 
 # スラブの構造最適化 終了
-
+"""
 
 
 """

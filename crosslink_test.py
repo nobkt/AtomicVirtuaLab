@@ -2,7 +2,8 @@ from AtomicVirtuaLab.io import smiles2xyz
 from AtomicVirtuaLab.moltemplate import cp_rdlt,mklt,mk_system_lt,get_chemical_symbols,mklt_fr_mol,rd_lt,ex_lt
 from AtomicVirtuaLab.packmol import mk_packmol_random
 from AtomicVirtuaLab.lammps import mk_npt_compress_input_fr_moltemplate
-from AtomicVirtuaLab.reaction import set_reac_type, molinit, distance_list
+from AtomicVirtuaLab.reaction import set_reac_type, molinit, distance_list, set_reac_atom, reac_test
+import AtomicVirtuaLab.globalv as g
 from rdkit import Chem
 from ase.io import read
 from ase.visualize import view
@@ -19,6 +20,7 @@ xbox=100.0
 ybox=100.0
 zbox=100.0
 
+sigma = 13.55
 # モノマーの名前と計算セル中のモノマー分子の数
 mols={
     'mol1':16
@@ -26,20 +28,23 @@ mols={
 
 d_mols = molinit(mols)
 
+ibonds = 1
+d_bonds = {}
+
 # モノマーの名前とSMILES式のリスト
 smiles={
     'mol1':"OC(COC(=O)C=C)COC(=O)C=C"
     }
 
 reactions={
-    'reac1':[
+    'r1':[
         ['$atom:C6','@atom:82'],
         ['$atom:C7','@atom:81L'],
         ['$atom:H18','@atom:85'],
         ['$atom:H19','@atom:85LCH2'],
         ['$atom:H20','@atom:85LCH2']
     ],
-    'reac2':[
+    'r2':[
         ['$atom:C12','@atom:82'],
         ['$atom:C13','@atom:81L'],
         ['$atom:H23','@atom:85'],
@@ -50,19 +55,19 @@ reactions={
 
 reactionids = {
     'mol1':[
-        [7,'reac1'],
-        [8,'reac1'],
-        [13,'reac2'],
-        [14,'reac2']
+        [7,'r1','C6'],
+        [8,'r1','C7'],
+        [13,'r2','C12'],
+        [14,'r2','C13']
     ]
 }
 
 # モノマー分子のsmiles式
 os.makedirs('rdltfiles',exist_ok=True)
 os.chdir('rdltfiles')
-rdltpath = os.getcwd()
-mollist={}
-bondlist={}
+g.rdltpath = os.getcwd()
+#mollist={}
+#bondlist={}
 for mol in smiles:
     smi = smiles[mol]
     molname = mol
@@ -72,11 +77,11 @@ for mol in smiles:
     view(monomer)
     cp_rdlt()
     mklt(smi,molname,random=False)
-    mollist0,bondlist0 = rd_lt(rdltpath,molname)
-    for mol0 in mollist0:
-        mollist[mol0] = mollist0[mol0].copy()
-    for mol0 in bondlist0:
-        bondlist[mol0] = bondlist0[mol0].copy()
+    #mollist0,bondlist0 = rd_lt(rdltpath,molname)
+    #for mol0 in mollist0:
+    #    mollist[mol0] = mollist0[mol0].copy()
+    #for mol0 in bondlist0:
+    #    bondlist[mol0] = bondlist0[mol0].copy()
 os.chdir('../')
 
 
@@ -99,7 +104,7 @@ os.chdir('../')
 # packmolで分子を充填
 os.makedirs('packmolfiles',exist_ok=True)
 os.chdir('packmolfiles')
-packmolpath = os.getcwd()
+g.packmolpath = os.getcwd()
 for mol in smiles:
     molname = mol
     smi = smiles[mol]
@@ -111,30 +116,60 @@ os.chdir('..')
 # moltemplateの実行(LAMMPS力場ファイル作成)
 os.makedirs('moltemplate',exist_ok=True)
 os.chdir('moltemplate')
-moltemplatepath = os.getcwd()
-shutil.copy(packmolpath+'/system.xyz','./')
+g.moltemplatepath = os.getcwd()
+shutil.copy(g.packmolpath+'/system.xyz','./')
 for mol in smiles:
     molname=mol
-    shutil.copy(rdltpath+'/'+str(molname)+'.lt','./')
-mk_system_lt(mols,xbox,ybox,zbox)
-#os.system('moltemplate.sh -xyz system.xyz -nocheck system.lt')
-#os.system('cleanup_moltemplate.sh')
+    shutil.copy(g.rdltpath+'/'+str(molname)+'.lt','./')
+mk_system_lt(d_mols,d_bonds,xbox,ybox,zbox)
+os.system('moltemplate.sh -xyz system.xyz -nocheck system.lt')
+os.system('cleanup_moltemplate.sh')
 symbols = get_chemical_symbols('system.data')
-d_reaction = set_reac_type('./system.data',symbols,reactionids,d_mols)
+d_reacatoms = set_reac_atom('./system.data',symbols,reactionids,d_mols)
 os.chdir('../')
 
-sigma = 3.55
-dis_list = distance_list(moltemplatepath+'/system.data',symbols,7,'mol1',7,'mol1',d_reaction,sigma)
+dis_list = distance_list(g.moltemplatepath+'/system.data',symbols,d_reacatoms,sigma)
+
+a = 59
+b = 293
+
+d_mols_tmp = d_mols.copy()
+d_mols_tmp = reac_test(a,d_reacatoms,d_mols_tmp,reactions)
+d_mols_tmp = reac_test(b,d_reacatoms,d_mols_tmp,reactions)
+
+d_bonds_tmp = d_bonds.copy()
+#print(d_reacatoms[a])
+#print(d_mols_tmp[d_reacatoms[a]['mol-id']])
+#print('$atom:mol'+str(d_reacatoms[a]['mol-id'])+'/'+d_reacatoms[a]['reacatom'])
+ibonds_tmp = ibonds
+d_bonds_tmp[ibonds_tmp] = [
+    '$atom:mol'+str(d_reacatoms[a]['mol-id'])+'[0]/'+d_reacatoms[a]['reacatom'],
+    '$atom:mol'+str(d_reacatoms[b]['mol-id'])+'[0]/'+d_reacatoms[b]['reacatom']
+]
+
+os.makedirs('tmp',exist_ok=True)
+os.chdir('tmp')
+shutil.copy(g.packmolpath+'/system.xyz','./')
+for imol in d_mols_tmp:
+    molname=d_mols_tmp[imol]
+    shutil.copy(g.rdltpath+'/'+str(molname)+'.lt','./')
+mk_system_lt(d_mols_tmp,d_bonds_tmp,xbox,ybox,zbox)
+os.system('moltemplate.sh -xyz system.xyz -nocheck system.lt')
+os.system('cleanup_moltemplate.sh')
+symbols = get_chemical_symbols('system.data')
+mk_npt_compress_input_fr_moltemplate(symbols,True,0.5,2000,2000,10,10000,400,100,10000,400,200000,300,1.0,'iso',12345,False,qeq=True)
+#os.system('mpirun -np 4 lmp -in input_npt.lmp 1> log_lmp 2> err_lmp')
+os.chdir('../')
 
 
 """
 # NPTで圧縮
 os.makedirs('npt_compress',exist_ok=True)
 os.chdir('npt_compress')
-shutil.copy(moltemplatepath+'/system.data','./')
-shutil.copy(moltemplatepath+'/system.in.charges','./')
-shutil.copy(moltemplatepath+'/system.in.init','./')
-shutil.copy(moltemplatepath+'/system.in.settings','./')
+shutil.copy(g.moltemplatepath+'/system.data','./')
+shutil.copy(g.moltemplatepath+'/system.in.charges','./')
+shutil.copy(g.moltemplatepath+'/system.in.init','./')
+shutil.copy(g.moltemplatepath+'/system.in.settings','./')
 #### TO DO：NPTの圧縮条件を初期条件へ ####
 mk_npt_compress_input_fr_moltemplate(symbols,True,0.5,2000,2000,10,10000,400,100,10000,400,200000,300,1.0,'iso',12345,False,qeq=True)
 os.system('mpirun -np 4 lmp -in input_npt.lmp 1> log_lmp 2> err_lmp')

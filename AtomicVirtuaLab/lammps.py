@@ -859,6 +859,61 @@ def mk_npt_input_deepmd(cell,dt,dmp_step,thermo_step,eq_step,Teq,P,seed,mol=Fals
     f.write('write_data result.data'+'\n')
     f.close()
 
+def mk_opt_input_deepmd(cell,dmp_step,thermo_step,mol=False,fixlay=None):
+    from AtomicVirtuaLab.io import cell2atomlist, mk_lammpsdata
+    from ase import Atom
+    mk_lammpsdata(cell,False,force_skew=True,mol=mol)
+    symbols = cell2atomlist(cell)
+    f = open('lammps.lmp','w')
+    f.write('units metal'+'\n')
+    if fixlay == None:
+        f.write('boundary p p p'+'\n')
+    else:
+        f.write('boundary p p f'+'\n')
+    if mol:
+        f.write('atom_style full'+'\n')
+    else:
+        f.write('atom_style atomic'+'\n')
+    f.write('read_data lammps.data'+'\n')
+    i = 1
+    for symbol in symbols:
+        a = Atom(symbol)
+        f.write('mass '+str(i)+' '+str(a.mass)+'\n')
+        i = i + 1
+    if fixlay != None:
+        f.write('region lower block INF INF INF INF INF '+str(fixlay)+'\n')
+        f.write('group lower region lower'+'\n')
+        f.write('fix freeze lower setforce 0.0 0.0 0.0'+'\n')
+    f.write('pair_style deepmd graph.pb'+'\n')
+    f.write('pair_coeff * * ')
+    for symbol in symbols:
+        f.write(' '+str(symbol))
+    f.write('\n')
+    f.write('variable mytemp equal temp'+'\n')
+    f.write('variable myenthalpy equal enthalpy'+'\n')
+    f.write('variable mydensity equal density'+'\n')
+    f.write('variable myvol equal vol'+'\n')
+    f.write('variable mycella equal cella'+'\n')
+    f.write('variable mycellb equal cellb'+'\n')
+    f.write('variable mycellc equal cellc'+'\n')
+    f.write('variable mycellalpha equal cellalpha'+'\n')
+    f.write('variable mycellbeta equal cellbeta'+'\n')
+    f.write('variable mycellgamma equal cellgamma'+'\n')
+    f.write('dump dmp all custom '+str(dmp_step)+' traj_min.lammpstrj id type element x y z ix iy iz'+'\n')
+    f.write('dump_modify dmp element')
+    for symbol in symbols:
+        f.write(' '+str(symbol))
+    f.write('\n')
+    f.write('thermo_style custom step etotal enthalpy pe ke temp press vol density cella cellb cellc cellalpha cellbeta cellgamma'+'\n')
+    f.write('thermo '+str(thermo_step)+'\n')
+    f.write('\n')
+    f.write('minimize 0.0 1.0e-12 10000 100000'+'\n')
+    f.write('write_data result.data'+'\n')
+    f.write('variable mype equal pe'+'\n')
+    f.write('run 0'+'\n')
+    f.write('print "Potential Energy: ${mype}"'+'\n')
+    f.close()
+
 def mk_qeqfile(symbols,unit='metal'):
     from pymatgen.core.periodic_table import Element
     f = open('my_qeq','w')
