@@ -7,8 +7,8 @@ import os
 os.makedirs('xyzfiles',exist_ok=True)
 os.chdir('xyzfiles')
 
-molname='HSO4-'
-smiles = 'OS([O-])(=O)=O'
+molname='isoprene-30'
+smiles = 'C\C=C(/C)CC\C=C(/C)CC\C=C(/C)CC\C=C(/C)CC\C=C(/C)CC\C=C(/C)CC\C=C(/C)CC\C=C(/C)CC\C=C(/C)CC\C=C(/C)CC\C=C(/C)CC\C=C(/C)CC\C=C(/C)CC\C=C(/C)CC\C=C(/C)CC\C=C(/C)CC\C=C(/C)CC\C=C(/C)CC\C=C(/C)CC\C=C(/C)CC\C=C(/C)CC\C=C(/C)CC\C=C(/C)CC\C=C(/C)CCC=C(C)C'
 smiles2xyz(smiles,molname,True)
 mol = read(molname+'.xyz')
 view(mol)

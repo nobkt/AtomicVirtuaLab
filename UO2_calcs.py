@@ -100,6 +100,7 @@ for encut in lencut:
 os.chdir('../')
 """
 
+"""
 # UO2 elastic constant
 os.makedirs('UO2',exist_ok=True)
 os.chdir('UO2')
@@ -184,6 +185,75 @@ for encut in lencut:
             os.chdir('../')
             os.chdir('../')
             os.chdir('..')
+"""
+
+# PuO2 scan cellopt
+os.makedirs('PuO2',exist_ok=True)
+os.chdir('PuO2')
+cell = read(g.cifs+'/PuO2.cif')
+
+lencut = [500]
+lkpts = [4]
+lplusU = [1.0,2.0,3.0,4.0,5.0,6.0,7.0,8.0,9.0,10.0,0.0]
+
+os.makedirs('optcell',exist_ok=True)
+os.chdir('optcell')
+
+for encut in lencut:
+    os.makedirs('encut_'+str(encut),exist_ok=True)
+    os.chdir('encut_'+str(encut))
+    for kk in lkpts:
+        os.makedirs('kpt_'+str(kk),exist_ok=True)
+        os.chdir('kpt_'+str(kk))
+        for plusU in lplusU:
+            os.makedirs('plusU_'+str(plusU),exist_ok=True)
+            os.chdir('plusU_'+str(plusU))
+            ldau_luj={'Pu': {'L': 3, 'U': plusU, 'J': 0}}
+            kpts=[kk,kk,kk]
+            if plusU != 0.0:
+                Vasp(xc='scan',
+                     ismear=0,
+                     ncore=4,
+                     lreal='Auto',
+                     algo='Normal',
+                     prec='Accurate',
+                     lasph=True,
+                     isym=0,
+                     ibrion=2,
+                     isif=3,
+                     nsw=10000,
+                     nelm=10000,
+                     amix=0.1,
+                     encut=encut,
+                     ldau_luj=ldau_luj,
+                     lmaxmix=6,
+                     ldauprint=0,
+                     ldautype=1,
+                     kpts=kpts,
+                     nbands=136,
+                     gamma=True).write_input(cell)
+            else:
+                Vasp(xc='scan',
+                     ismear=0,
+                     ncore=4,
+                     lreal='Auto',
+                     algo='Normal',
+                     prec='Accurate',
+                     lasph=True,
+                     isym=0,
+                     ibrion=2,
+                     isif=3,
+                     nsw=10000,
+                     nelm=10000,
+                     amix=0.1,
+                     encut=encut,
+                     kpts=kpts,
+                     nbands=136,
+                     gamma=True).write_input(cell)
+            os.chdir('../')
+        os.chdir('../')
+    os.chdir('..')
+os.chdir('../')
 
 
 
