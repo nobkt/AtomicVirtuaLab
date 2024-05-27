@@ -1,0 +1,52 @@
+&CONTROL
+   calculation      = 'vc-relax'
+   restart_mode     = 'from_scratch'
+   wf_collect       = .true.
+   nstep            = 1000
+   tstress          = .true.
+   tprnfor          = .true.
+   outdir           = './outdir'
+   pseudo_dir       = './pseudo'
+/
+&SYSTEM
+   ecutwfc          = 77.0
+   ecutrho          = 539.0
+   nosym            = .true.
+   occupations      = 'smearing'
+   degauss          = 0.01
+   smearing         = 'gaussian'
+   vdw_corr         = 'dft-d3'
+   dftd3_version    = 4
+   ntyp             = 2
+   nat              = 3
+   ibrav            = 0
+/
+&ELECTRONS
+   electron_maxstep = 1000
+   conv_thr         = 1e-06
+   mixing_beta      = 0.2
+   diagonalization  = 'david'
+/
+&IONS
+/
+&CELL
+   cell_dofree      = 'all'
+/
+
+ATOMIC_SPECIES
+Mo 95.95 Mo.pbe-spn-kjpaw_psl.1.0.0.UPF
+C 12.011 C.pbe-n-kjpaw_psl.1.0.0.UPF
+
+K_POINTS automatic
+4 4 4  0 0 0
+
+CELL_PARAMETERS angstrom
+3.05604970000000 0.00000000000000 0.00000000000000
+-1.52802485000000 2.64661667542781 0.00000000000000
+0.00000000000000 0.00000000000000 4.63895685000000
+
+ATOMIC_POSITIONS angstrom
+Mo -0.0000000153 1.7644111258 1.1586649693 
+Mo 1.5280248653 0.8822055497 3.4802918807 
+C 0.0000000000 0.0000000000 2.3194784250 
+

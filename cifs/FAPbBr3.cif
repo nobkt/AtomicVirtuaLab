@@ -1,0 +1,54 @@
+
+#======================================================================
+# CRYSTAL DATA
+#----------------------------------------------------------------------
+data_VESTA_phase_1
+
+_chemical_name_common                  '12_(PbCBr3N2H5)2  (Pmn2_1) ~ 3287 mini'
+_cell_length_a                         7.806395
+_cell_length_b                         6.017265
+_cell_length_c                         9.137405
+_cell_angle_alpha                      90.000000
+_cell_angle_beta                       90.000000
+_cell_angle_gamma                      90.000000
+_cell_volume                           429.212656
+_space_group_name_H-M_alt              'P 1'
+_space_group_IT_number                 1
+
+loop_
+_space_group_symop_operation_xyz
+   'x, y, z'
+
+loop_
+   _atom_site_label
+   _atom_site_occupancy
+   _atom_site_fract_x
+   _atom_site_fract_y
+   _atom_site_fract_z
+   _atom_site_adp_type
+   _atom_site_U_iso_or_equiv
+   _atom_site_type_symbol
+   Pb1        1.0     0.000000     0.991025     0.002122    Uiso  ? Pb
+   Pb2        1.0     0.500000     0.008975     0.502122    Uiso  ? Pb
+   Br1        1.0     0.749190     0.003294     0.251256    Uiso  ? Br
+   Br2        1.0     0.750810     0.996706     0.751256    Uiso  ? Br
+   Br3        1.0     0.250810     0.003294     0.251256    Uiso  ? Br
+   Br4        1.0     0.249190     0.996706     0.751256    Uiso  ? Br
+   Br5        1.0     0.000000     0.485069     0.002229    Uiso  ? Br
+   Br6        1.0     0.500000     0.514931     0.502229    Uiso  ? Br
+   C1         1.0     0.000000     0.425786     0.499663    Uiso  ? C
+   C2         1.0     0.500000     0.574214     0.999663    Uiso  ? C
+   N1         1.0     0.000000     0.533979     0.375064    Uiso  ? N
+   N2         1.0     0.500000     0.466021     0.875064    Uiso  ? N
+   N3         1.0     0.000000     0.520428     0.628985    Uiso  ? N
+   N4         1.0     0.500000     0.479572     0.128985    Uiso  ? N
+   H1         1.0     0.000000     0.244125     0.495336    Uiso  ? H
+   H2         1.0     0.500000     0.755875     0.995336    Uiso  ? H
+   H3         1.0     0.000000     0.451167     0.277208    Uiso  ? H
+   H4         1.0     0.500000     0.548833     0.777208    Uiso  ? H
+   H5         1.0     0.000000     0.703812     0.369044    Uiso  ? H
+   H6         1.0     0.500000     0.296188     0.869044    Uiso  ? H
+   H7         1.0     0.000000     0.427163     0.722456    Uiso  ? H
+   H8         1.0     0.500000     0.572837     0.222456    Uiso  ? H
+   H9         1.0     0.000000     0.689188     0.642754    Uiso  ? H
+   H10        1.0     0.500000     0.310812     0.142754    Uiso  ? H

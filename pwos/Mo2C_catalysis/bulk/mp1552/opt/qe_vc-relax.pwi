@@ -1,0 +1,61 @@
+&CONTROL
+   calculation      = 'vc-relax'
+   restart_mode     = 'from_scratch'
+   wf_collect       = .true.
+   nstep            = 1000
+   tstress          = .true.
+   tprnfor          = .true.
+   outdir           = './outdir'
+   pseudo_dir       = './pseudo'
+/
+&SYSTEM
+   ecutwfc          = 77.0
+   ecutrho          = 539.0
+   nosym            = .true.
+   occupations      = 'smearing'
+   degauss          = 0.01
+   smearing         = 'gaussian'
+   vdw_corr         = 'dft-d3'
+   dftd3_version    = 4
+   ntyp             = 2
+   nat              = 12
+   ibrav            = 0
+/
+&ELECTRONS
+   electron_maxstep = 1000
+   conv_thr         = 1e-06
+   mixing_beta      = 0.2
+   diagonalization  = 'david'
+/
+&IONS
+/
+&CELL
+   cell_dofree      = 'all'
+/
+
+ATOMIC_SPECIES
+Mo 95.95 Mo.pbe-spn-kjpaw_psl.1.0.0.UPF
+C 12.011 C.pbe-n-kjpaw_psl.1.0.0.UPF
+
+K_POINTS automatic
+4 4 4  0 0 0
+
+CELL_PARAMETERS angstrom
+4.72854310000000 0.00000000000000 0.00000000000000
+0.00000000000000 6.05260249000000 0.00000000000000
+0.00000000000000 0.00000000000000 5.20975702000000
+
+ATOMIC_POSITIONS angstrom
+Mo 1.1610866181 0.7385605873 0.4142218936 
+Mo 3.5674564819 5.3140419027 4.7955351264 
+Mo 1.2031849319 2.2877406577 3.0191004036 
+Mo 3.5253581681 3.7648618323 2.1906566164 
+Mo 3.5253581681 2.2877406577 4.7955351264 
+Mo 1.2031849319 3.7648618323 0.4142218936 
+Mo 3.5674564819 0.7385605873 2.1906566164 
+Mo 1.1610866181 5.3140419027 3.0191004036 
+C 0.0000000000 2.2847406247 1.3024392550 
+C 0.0000000000 3.7678618653 3.9073177650 
+C 2.3642715500 0.7415606203 3.9073177650 
+C 2.3642715500 5.3110418697 1.3024392550 
+

@@ -1,0 +1,186 @@
+forrtl: error (78): process killed (SIGTERM)
+Image              PC                Routine            Line        Source             
+pw.x               00000000010225FA  Unknown               Unknown  Unknown
+libpthread-2.17.s  00002B0722BC15E0  Unknown               Unknown  Unknown
+libmkl_avx512.so   00002B073CE1739B  mkl_blas_avx512_z     Unknown  Unknown
+forrtl: error (78): process killed (SIGTERM)
+Image              PC                Routine            Line        Source             
+pw.x               00000000010225FA  Unknown               Unknown  Unknown
+libpthread-2.17.s  00002AFA8FA1B5E0  Unknown               Unknown  Unknown
+libmkl_avx512.so   00002AFAA9C70B7A  mkl_blas_avx512_z     Unknown  Unknown
+forrtl: error (78): process killed (SIGTERM)
+Image              PC                Routine            Line        Source             
+pw.x               00000000010225FA  Unknown               Unknown  Unknown
+libpthread-2.17.s  00002AC20B8F95E0  Unknown               Unknown  Unknown
+libmkl_avx512.so   00002AC225B4EAC2  mkl_blas_avx512_z     Unknown  Unknown
+forrtl: error (78): process killed (SIGTERM)
+Image              PC                Routine            Line        Source             
+pw.x               00000000010225FA  Unknown               Unknown  Unknown
+libpthread-2.17.s  00002ADB2736C5E0  Unknown               Unknown  Unknown
+libmkl_avx512.so   00002ADB415C1A76  mkl_blas_avx512_z     Unknown  Unknown
+forrtl: error (78): process killed (SIGTERM)
+Image              PC                Routine            Line        Source             
+pw.x               00000000010225FA  Unknown               Unknown  Unknown
+libpthread-2.17.s  00002AACE1F5E5E0  Unknown               Unknown  Unknown
+libmkl_avx512.so   00002AACFC1B39D8  mkl_blas_avx512_z     Unknown  Unknown
+forrtl: error (78): process killed (SIGTERM)
+Image              PC                Routine            Line        Source             
+pw.x               00000000010225FA  Unknown               Unknown  Unknown
+libpthread-2.17.s  00002B1801F345E0  Unknown               Unknown  Unknown
+libmkl_avx512.so   00002B181C18A1D9  mkl_blas_avx512_z     Unknown  Unknown
+forrtl: error (78): process killed (SIGTERM)
+Image              PC                Routine            Line        Source             
+pw.x               00000000010225FA  Unknown               Unknown  Unknown
+libpthread-2.17.s  00002B9527A585E0  Unknown               Unknown  Unknown
+libmkl_avx512.so   00002B9541CAD980  mkl_blas_avx512_z     Unknown  Unknown
+forrtl: error (78): process killed (SIGTERM)
+Image              PC                Routine            Line        Source             
+pw.x               00000000010225FA  Unknown               Unknown  Unknown
+libpthread-2.17.s  00002AE84F67A5E0  Unknown               Unknown  Unknown
+libmkl_avx512.so   00002AE8698D01DF  mkl_blas_avx512_z     Unknown  Unknown
+forrtl: error (78): process killed (SIGTERM)
+Image              PC                Routine            Line        Source             
+pw.x               00000000010225FA  Unknown               Unknown  Unknown
+libpthread-2.17.s  00002B0528F505E0  Unknown               Unknown  Unknown
+libmkl_avx512.so   00002B05431A5AE1  mkl_blas_avx512_z     Unknown  Unknown
+forrtl: error (78): process killed (SIGTERM)
+Image              PC                Routine            Line        Source             
+pw.x               00000000010225FA  Unknown               Unknown  Unknown
+libpthread-2.17.s  00002B2BDCF0F5E0  Unknown               Unknown  Unknown
+libmkl_avx512.so   00002B2BF7164AAF  mkl_blas_avx512_z     Unknown  Unknown
+forrtl: error (78): process killed (SIGTERM)
+Image              PC                Routine            Line        Source             
+pw.x               00000000010225FA  Unknown               Unknown  Unknown
+libpthread-2.17.s  00002B450629B5E0  Unknown               Unknown  Unknown
+libmkl_avx512.so   00002B45204F0A8A  mkl_blas_avx512_z     Unknown  Unknown
+forrtl: error (78): process killed (SIGTERM)
+Image              PC                Routine            Line        Source             
+pw.x               00000000010225FA  Unknown               Unknown  Unknown
+libpthread-2.17.s  00002B93E246B5E0  Unknown               Unknown  Unknown
+libmkl_avx512.so   00002B93FC6C1253  mkl_blas_avx512_z     Unknown  Unknown
+forrtl: error (78): process killed (SIGTERM)
+Image              PC                Routine            Line        Source             
+pw.x               00000000010225FA  Unknown               Unknown  Unknown
+libpthread-2.17.s  00002B704E23E5E0  Unknown               Unknown  Unknown
+libmkl_avx512.so   00002B7068493A29  mkl_blas_avx512_z     Unknown  Unknown
+forrtl: error (78): process killed (SIGTERM)
+Image              PC                Routine            Line        Source             
+pw.x               00000000010225FA  Unknown               Unknown  Unknown
+libpthread-2.17.s  00002B94C63F75E0  Unknown               Unknown  Unknown
+libmkl_avx512.so   00002B94E064D41C  mkl_blas_avx512_z     Unknown  Unknown
+forrtl: error (78): process killed (SIGTERM)
+Image              PC                Routine            Line        Source             
+pw.x               00000000010225FA  Unknown               Unknown  Unknown
+libpthread-2.17.s  00002B7491F235E0  Unknown               Unknown  Unknown
+libmkl_avx512.so   00002B74AC178BB9  mkl_blas_avx512_z     Unknown  Unknown
+forrtl: error (78): process killed (SIGTERM)
+Image              PC                Routine            Line        Source             
+pw.x               00000000010225FA  Unknown               Unknown  Unknown
+libpthread-2.17.s  00002B07E377A5E0  Unknown               Unknown  Unknown
+libmkl_avx512.so   00002B07FD9CFCCD  mkl_blas_avx512_z     Unknown  Unknown
+forrtl: error (78): process killed (SIGTERM)
+Image              PC                Routine            Line        Source             
+pw.x               00000000010225FA  Unknown               Unknown  Unknown
+libpthread-2.17.s  00002BA915DAC5E0  Unknown               Unknown  Unknown
+libmkl_avx512.so   00002BA930001B48  mkl_blas_avx512_z     Unknown  Unknown
+forrtl: error (78): process killed (SIGTERM)
+Image              PC                Routine            Line        Source             
+pw.x               00000000010225FA  Unknown               Unknown  Unknown
+libpthread-2.17.s  00002B96967525E0  Unknown               Unknown  Unknown
+libmkl_avx512.so   00002B96B09A8272  mkl_blas_avx512_z     Unknown  Unknown
+forrtl: error (78): process killed (SIGTERM)
+Image              PC                Routine            Line        Source             
+pw.x               00000000010225FA  Unknown               Unknown  Unknown
+libpthread-2.17.s  00002B2FB8C525E0  Unknown               Unknown  Unknown
+libmkl_avx512.so   00002B2FD2EA7B7A  mkl_blas_avx512_z     Unknown  Unknown
+forrtl: error (78): process killed (SIGTERM)
+Image              PC                Routine            Line        Source             
+pw.x               00000000010225FA  Unknown               Unknown  Unknown
+libpthread-2.17.s  00002B149201A5E0  Unknown               Unknown  Unknown
+libmkl_avx512.so   00002B14AC2701BA  mkl_blas_avx512_z     Unknown  Unknown
+forrtl: error (78): process killed (SIGTERM)
+Image              PC                Routine            Line        Source             
+pw.x               00000000010225FA  Unknown               Unknown  Unknown
+libpthread-2.17.s  00002B71EBFB55E0  Unknown               Unknown  Unknown
+libmkl_avx512.so   00002B720620AA76  mkl_blas_avx512_z     Unknown  Unknown
+forrtl: error (78): process killed (SIGTERM)
+Image              PC                Routine            Line        Source             
+pw.x               00000000010225FA  Unknown               Unknown  Unknown
+libpthread-2.17.s  00002B1620BB95E0  Unknown               Unknown  Unknown
+libmkl_avx512.so   00002B163AE0EB48  mkl_blas_avx512_z     Unknown  Unknown
+forrtl: error (78): process killed (SIGTERM)
+Image              PC                Routine            Line        Source             
+pw.x               00000000010225FA  Unknown               Unknown  Unknown
+libpthread-2.17.s  00002AAAFB8535E0  Unknown               Unknown  Unknown
+libmkl_avx512.so   00002AAB15AA8C7E  mkl_blas_avx512_z     Unknown  Unknown
+forrtl: error (78): process killed (SIGTERM)
+Image              PC                Routine            Line        Source             
+pw.x               00000000010225FA  Unknown               Unknown  Unknown
+libpthread-2.17.s  00002B8E1FAF35E0  Unknown               Unknown  Unknown
+libmkl_avx512.so   00002B8E39D48B07  mkl_blas_avx512_z     Unknown  Unknown
+forrtl: error (78): process killed (SIGTERM)
+Image              PC                Routine            Line        Source             
+pw.x               00000000010225FA  Unknown               Unknown  Unknown
+libpthread-2.17.s  00002B6EF1FB05E0  Unknown               Unknown  Unknown
+libmkl_avx512.so   00002B6F0C205D28  mkl_blas_avx512_z     Unknown  Unknown
+forrtl: error (78): process killed (SIGTERM)
+Image              PC                Routine            Line        Source             
+pw.x               00000000010225FA  Unknown               Unknown  Unknown
+libpthread-2.17.s  00002AE14FEBE5E0  Unknown               Unknown  Unknown
+libmkl_avx512.so   00002AE16A113BCC  mkl_blas_avx512_z     Unknown  Unknown
+forrtl: error (78): process killed (SIGTERM)
+Image              PC                Routine            Line        Source             
+pw.x               00000000010225FA  Unknown               Unknown  Unknown
+libpthread-2.17.s  00002AF95399D5E0  Unknown               Unknown  Unknown
+libmkl_avx512.so   00002AF96DBF2CC7  mkl_blas_avx512_z     Unknown  Unknown
+forrtl: error (78): process killed (SIGTERM)
+Image              PC                Routine            Line        Source             
+pw.x               00000000010225FA  Unknown               Unknown  Unknown
+libpthread-2.17.s  00002B0A7F7DE5E0  Unknown               Unknown  Unknown
+libmkl_avx512.so   00002B0A99A33B87  mkl_blas_avx512_z     Unknown  Unknown
+forrtl: error (78): process killed (SIGTERM)
+Image              PC                Routine            Line        Source             
+pw.x               00000000010225FA  Unknown               Unknown  Unknown
+libpthread-2.17.s  00002B19A1F8F5E0  Unknown               Unknown  Unknown
+libmkl_avx512.so   00002B19BC1E4CC7  mkl_blas_avx512_z     Unknown  Unknown
+forrtl: error (78): process killed (SIGTERM)
+Image              PC                Routine            Line        Source             
+pw.x               00000000010225FA  Unknown               Unknown  Unknown
+libpthread-2.17.s  00002B7DC0AEE5E0  Unknown               Unknown  Unknown
+libmkl_avx512.so   00002B7DDAD439CB  mkl_blas_avx512_z     Unknown  Unknown
+forrtl: error (78): process killed (SIGTERM)
+Image              PC                Routine            Line        Source             
+pw.x               00000000010225FA  Unknown               Unknown  Unknown
+libpthread-2.17.s  00002BA3F1B735E0  Unknown               Unknown  Unknown
+libmkl_avx512.so   00002BA40BDC8BD2  mkl_blas_avx512_z     Unknown  Unknown
+forrtl: error (78): process killed (SIGTERM)
+Image              PC                Routine            Line        Source             
+pw.x               00000000010225FA  Unknown               Unknown  Unknown
+libpthread-2.17.s  00002B871A63E5E0  Unknown               Unknown  Unknown
+libmkl_avx512.so   00002B87348944A3  mkl_blas_avx512_z     Unknown  Unknown
+forrtl: error (78): process killed (SIGTERM)
+Image              PC                Routine            Line        Source             
+pw.x               00000000010225FA  Unknown               Unknown  Unknown
+libpthread-2.17.s  00002B13A468E5E0  Unknown               Unknown  Unknown
+libmkl_avx512.so   00002B13BE8E42EA  mkl_blas_avx512_z     Unknown  Unknown
+forrtl: error (78): process killed (SIGTERM)
+Image              PC                Routine            Line        Source             
+pw.x               00000000010225FA  Unknown               Unknown  Unknown
+libpthread-2.17.s  00002ADE0BC475E0  Unknown               Unknown  Unknown
+pw.x               0000000001022490  Unknown               Unknown  Unknown
+libpthread-2.17.s  00002ADE0BC475E0  Unknown               Unknown  Unknown
+libmkl_avx512.so   00002ADE25E9CC97  mkl_blas_avx512_z     Unknown  Unknown
+forrtl: error (78): process killed (SIGTERM)
+Image              PC                Routine            Line        Source             
+pw.x               00000000010225FA  Unknown               Unknown  Unknown
+libpthread-2.17.s  00002AC42CDAA5E0  Unknown               Unknown  Unknown
+pw.x               0000000001022490  Unknown               Unknown  Unknown
+libpthread-2.17.s  00002AC42CDAA5E0  Unknown               Unknown  Unknown
+libmkl_avx512.so   00002AC446FFFC25  mkl_blas_avx512_z     Unknown  Unknown
+forrtl: error (78): process killed (SIGTERM)
+Image              PC                Routine            Line        Source             
+pw.x               00000000010225FA  Unknown               Unknown  Unknown
+libpthread-2.17.s  00002B6222E935E0  Unknown               Unknown  Unknown
+pw.x               0000000001022490  Unknown               Unknown  Unknown
+libpthread-2.17.s  00002B6222E935E0  Unknown               Unknown  Unknown
+libmkl_avx512.so   00002B623D0E93D5  mkl_blas_avx512_z     Unknown  Unknown

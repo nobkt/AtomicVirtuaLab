@@ -1,0 +1,342 @@
+forrtl: error (78): process killed (SIGTERM)
+Image              PC                Routine            Line        Source             
+pw.x               00000000010225FA  Unknown               Unknown  Unknown
+libpthread-2.17.s  00002B47151F25E0  Unknown               Unknown  Unknown
+libmkl_avx512.so   00002B472F447BA0  mkl_blas_avx512_z     Unknown  Unknown
+forrtl: error (78): process killed (SIGTERM)
+Image              PC                Routine            Line        Source             
+pw.x               00000000010225FA  Unknown               Unknown  Unknown
+libpthread-2.17.s  00002AB3D075C5E0  Unknown               Unknown  Unknown
+libmkl_avx512.so   00002AB3EA9B215C  mkl_blas_avx512_z     Unknown  Unknown
+forrtl: error (78): process killed (SIGTERM)
+Image              PC                Routine            Line        Source             
+pw.x               00000000010225FA  Unknown               Unknown  Unknown
+libpthread-2.17.s  00002ACFFCE895E0  Unknown               Unknown  Unknown
+libmkl_avx512.so   00002AD0170DF343  mkl_blas_avx512_z     Unknown  Unknown
+forrtl: error (78): process killed (SIGTERM)
+Image              PC                Routine            Line        Source             
+pw.x               00000000010225FA  Unknown               Unknown  Unknown
+libpthread-2.17.s  00002AC443F8A5E0  Unknown               Unknown  Unknown
+libmkl_avx512.so   00002AC45E1DF923  mkl_blas_avx512_z     Unknown  Unknown
+forrtl: error (78): process killed (SIGTERM)
+Image              PC                Routine            Line        Source             
+pw.x               00000000010225FA  Unknown               Unknown  Unknown
+libpthread-2.17.s  00002B82B6FE55E0  Unknown               Unknown  Unknown
+libmkl_avx512.so   00002B82D123ABDE  mkl_blas_avx512_z     Unknown  Unknown
+forrtl: error (78): process killed (SIGTERM)
+Image              PC                Routine            Line        Source             
+pw.x               00000000010225FA  Unknown               Unknown  Unknown
+libpthread-2.17.s  00002B52207E65E0  Unknown               Unknown  Unknown
+libmkl_avx512.so   00002B523AA3BCC7  mkl_blas_avx512_z     Unknown  Unknown
+forrtl: error (78): process killed (SIGTERM)
+Image              PC                Routine            Line        Source             
+pw.x               00000000010225FA  Unknown               Unknown  Unknown
+libpthread-2.17.s  00002AE037AEC5E0  Unknown               Unknown  Unknown
+libmkl_avx512.so   00002AE051D419CB  mkl_blas_avx512_z     Unknown  Unknown
+forrtl: error (78): process killed (SIGTERM)
+Image              PC                Routine            Line        Source             
+pw.x               00000000010225FA  Unknown               Unknown  Unknown
+libpthread-2.17.s  00002B459A5E35E0  Unknown               Unknown  Unknown
+libmkl_avx512.so   00002B45B4838F2D  mkl_blas_avx512_z     Unknown  Unknown
+forrtl: error (78): process killed (SIGTERM)
+Image              PC                Routine            Line        Source             
+pw.x               00000000010225FA  Unknown               Unknown  Unknown
+libpthread-2.17.s  00002BA19AC4B5E0  Unknown               Unknown  Unknown
+libmkl_avx512.so   00002BA1B4EA0B93  mkl_blas_avx512_z     Unknown  Unknown
+forrtl: error (78): process killed (SIGTERM)
+Image              PC                Routine            Line        Source             
+pw.x               00000000010225FA  Unknown               Unknown  Unknown
+libpthread-2.17.s  00002AB5296385E0  Unknown               Unknown  Unknown
+libmkl_avx512.so   00002AB54388DBEB  mkl_blas_avx512_z     Unknown  Unknown
+forrtl: error (78): process killed (SIGTERM)
+Image              PC                Routine            Line        Source             
+pw.x               00000000010225FA  Unknown               Unknown  Unknown
+libpthread-2.17.s  00002B4393A2E5E0  Unknown               Unknown  Unknown
+libmkl_avx512.so   00002B43ADC83BAC  mkl_blas_avx512_z     Unknown  Unknown
+forrtl: error (78): process killed (SIGTERM)
+Image              PC                Routine            Line        Source             
+pw.x               00000000010225FA  Unknown               Unknown  Unknown
+libpthread-2.17.s  00002B9FEAF0B5E0  Unknown               Unknown  Unknown
+libmkl_avx512.so   00002BA005160EE6  mkl_blas_avx512_z     Unknown  Unknown
+forrtl: error (78): process killed (SIGTERM)
+Image              PC                Routine            Line        Source             
+pw.x               00000000010225FA  Unknown               Unknown  Unknown
+libpthread-2.17.s  00002AB3BB59B5E0  Unknown               Unknown  Unknown
+libmkl_avx512.so   00002AB3D57F0AEE  mkl_blas_avx512_z     Unknown  Unknown
+forrtl: error (78): process killed (SIGTERM)
+Image              PC                Routine            Line        Source             
+pw.x               00000000010225FA  Unknown               Unknown  Unknown
+libpthread-2.17.s  00002ACDF34105E0  Unknown               Unknown  Unknown
+libmkl_avx512.so   00002ACE0D674F8B  mkl_blas_avx512_z     Unknown  Unknown
+forrtl: error (78): process killed (SIGTERM)
+Image              PC                Routine            Line        Source             
+pw.x               00000000010225FA  Unknown               Unknown  Unknown
+libpthread-2.17.s  00002AE42B2B75E0  Unknown               Unknown  Unknown
+libmkl_avx512.so   00002AE44551FA83  mkl_blas_avx512_z     Unknown  Unknown
+forrtl: error (78): process killed (SIGTERM)
+Image              PC                Routine            Line        Source             
+pw.x               00000000010225FA  Unknown               Unknown  Unknown
+libpthread-2.17.s  00002AAABBD1B5E0  Unknown               Unknown  Unknown
+libmkl_avx512.so   00002AAAD5F714BD  mkl_blas_avx512_z     Unknown  Unknown
+forrtl: error (78): process killed (SIGTERM)
+Image              PC                Routine            Line        Source             
+pw.x               00000000010225FA  Unknown               Unknown  Unknown
+libpthread-2.17.s  00002AB7F5EC85E0  Unknown               Unknown  Unknown
+libmkl_avx512.so   00002AB81011E1AD  mkl_blas_avx512_z     Unknown  Unknown
+forrtl: error (78): process killed (SIGTERM)
+Image              PC                Routine            Line        Source             
+pw.x               00000000010225FA  Unknown               Unknown  Unknown
+libpthread-2.17.s  00002BA4DA9465E0  Unknown               Unknown  Unknown
+libmkl_avx512.so   00002BA4F4B9C719  mkl_blas_avx512_z     Unknown  Unknown
+forrtl: error (78): process killed (SIGTERM)
+Image              PC                Routine            Line        Source             
+pw.x               00000000010225FA  Unknown               Unknown  Unknown
+libpthread-2.17.s  00002B8CC05B75E0  Unknown               Unknown  Unknown
+libmkl_avx512.so   00002B8CDA80CCE6  mkl_blas_avx512_z     Unknown  Unknown
+forrtl: error (78): process killed (SIGTERM)
+Image              PC                Routine            Line        Source             
+pw.x               00000000010225FA  Unknown               Unknown  Unknown
+libpthread-2.17.s  00002B26C739E5E0  Unknown               Unknown  Unknown
+libmkl_avx512.so   00002B26E15F3C97  mkl_blas_avx512_z     Unknown  Unknown
+forrtl: error (78): process killed (SIGTERM)
+Image              PC                Routine            Line        Source             
+pw.x               00000000010225FA  Unknown               Unknown  Unknown
+libpthread-2.17.s  00002AFC7411A5E0  Unknown               Unknown  Unknown
+libmkl_avx512.so   00002AFC8E37043B  mkl_blas_avx512_z     Unknown  Unknown
+forrtl: error (78): process killed (SIGTERM)
+Image              PC                Routine            Line        Source             
+pw.x               00000000010225FA  Unknown               Unknown  Unknown
+libpthread-2.17.s  00002B28DFEA65E0  Unknown               Unknown  Unknown
+libmkl_avx512.so   00002B28FA0FD60B  mkl_blas_avx512_z     Unknown  Unknown
+forrtl: error (78): process killed (SIGTERM)
+Image              PC                Routine            Line        Source             
+pw.x               00000000010225FA  Unknown               Unknown  Unknown
+libpthread-2.17.s  00002B4B0DA985E0  Unknown               Unknown  Unknown
+libmkl_avx512.so   00002B4B27CEE719  mkl_blas_avx512_z     Unknown  Unknown
+forrtl: error (78): process killed (SIGTERM)
+Image              PC                Routine            Line        Source             
+pw.x               00000000010225FA  Unknown               Unknown  Unknown
+libpthread-2.17.s  00002B723F1FD5E0  Unknown               Unknown  Unknown
+libmkl_avx512.so   00002B7259453285  mkl_blas_avx512_z     Unknown  Unknown
+forrtl: error (78): process killed (SIGTERM)
+Image              PC                Routine            Line        Source             
+pw.x               00000000010225FA  Unknown               Unknown  Unknown
+libpthread-2.17.s  00002B137D58D5E0  Unknown               Unknown  Unknown
+libmkl_avx512.so   00002B13977E3447  mkl_blas_avx512_z     Unknown  Unknown
+forrtl: error (78): process killed (SIGTERM)
+Image              PC                Routine            Line        Source             
+pw.x               00000000010225FA  Unknown               Unknown  Unknown
+libpthread-2.17.s  00002B13C5AC35E0  Unknown               Unknown  Unknown
+libmkl_avx512.so   00002B13DFD1947D  mkl_blas_avx512_z     Unknown  Unknown
+forrtl: error (78): process killed (SIGTERM)
+Image              PC                Routine            Line        Source             
+pw.x               00000000010225FA  Unknown               Unknown  Unknown
+libpthread-2.17.s  00002BA31D5AA5E0  Unknown               Unknown  Unknown
+libmkl_avx512.so   00002BA3377FFCFF  mkl_blas_avx512_z     Unknown  Unknown
+forrtl: error (78): process killed (SIGTERM)
+Image              PC                Routine            Line        Source             
+pw.x               00000000010225FA  Unknown               Unknown  Unknown
+libpthread-2.17.s  00002B380C2735E0  Unknown               Unknown  Unknown
+pw.x               0000000001022490  Unknown               Unknown  Unknown
+libpthread-2.17.s  00002B380C2735E0  Unknown               Unknown  Unknown
+libmkl_avx512.so   00002B38264C8BA6  mkl_blas_avx512_z     Unknown  Unknown
+forrtl: error (78): process killed (SIGTERM)
+Image              PC                Routine            Line        Source             
+pw.x               00000000010225FA  Unknown               Unknown  Unknown
+libpthread-2.17.s  00002B1491D585E0  Unknown               Unknown  Unknown
+libmpi.so.12.0     00002B1490D2A3AA  Unknown               Unknown  Unknown
+libmpi.so.12.0     00002B1490D2B0C5  Unknown               Unknown  Unknown
+libmpi.so.12       00002B1490D2EC2D  MPI_Barrier           Unknown  Unknown
+libmpifort.so.12.  00002B14908C472C  pmpi_barrier          Unknown  Unknown
+pw.x               0000000000F5A759  reduce_base_real_          60  mp_base.f90
+pw.x               0000000000F46152  mp_mp_mp_sum_cm_         1758  mp.f90
+pw.x               00000000009E7755  becmod_mp_calbec_        1133  becmod.f90
+pw.x               00000000009E91F1  becmod_mp_calbec_         398  becmod.f90
+pw.x               00000000007ACD7F  h_psi__                   233  h_psi.f90
+pw.x               00000000007ABD66  h_psi_                     71  h_psi.f90
+pw.x               000000000086DDE3  pcegterg_                1021  cegterg.f90
+pw.x               0000000000687E53  diag_bands_IP_dia        1028  c_bands.f90
+pw.x               000000000068663C  diag_bands_               322  c_bands.f90
+pw.x               0000000000685075  c_bands_                  132  c_bands.f90
+pw.x               000000000040DEAE  electrons_scf_            689  electrons.f90
+pw.x               000000000040B14D  electrons_                192  electrons.f90
+pw.x               00000000005888D2  run_pwscf_                189  run_pwscf.f90
+pw.x               00000000004084B4  MAIN__                     85  pwscf.f90
+pw.x               000000000040831E  Unknown               Unknown  Unknown
+libc-2.17.so       00002B149262CC05  __libc_start_main     Unknown  Unknown
+pw.x               0000000000408229  Unknown               Unknown  Unknown
+forrtl: error (78): process killed (SIGTERM)
+Image              PC                Routine            Line        Source             
+pw.x               00000000010225FA  Unknown               Unknown  Unknown
+libpthread-2.17.s  00002B6CE80165E0  Unknown               Unknown  Unknown
+libmpi.so.12.0     00002B6CE6FE83AA  Unknown               Unknown  Unknown
+libmpi.so.12.0     00002B6CE6FE90C5  Unknown               Unknown  Unknown
+libmpi.so.12       00002B6CE6FECC2D  MPI_Barrier           Unknown  Unknown
+libmpifort.so.12.  00002B6CE6B8272C  pmpi_barrier          Unknown  Unknown
+pw.x               0000000000F5A759  reduce_base_real_          60  mp_base.f90
+pw.x               0000000000F46152  mp_mp_mp_sum_cm_         1758  mp.f90
+pw.x               00000000009E7755  becmod_mp_calbec_        1133  becmod.f90
+pw.x               00000000009E91F1  becmod_mp_calbec_         398  becmod.f90
+pw.x               00000000007ACD7F  h_psi__                   233  h_psi.f90
+pw.x               00000000007ABD66  h_psi_                     71  h_psi.f90
+pw.x               000000000086DDE3  pcegterg_                1021  cegterg.f90
+pw.x               0000000000687E53  diag_bands_IP_dia        1028  c_bands.f90
+pw.x               000000000068663C  diag_bands_               322  c_bands.f90
+pw.x               0000000000685075  c_bands_                  132  c_bands.f90
+pw.x               000000000040DEAE  electrons_scf_            689  electrons.f90
+pw.x               000000000040B14D  electrons_                192  electrons.f90
+pw.x               00000000005888D2  run_pwscf_                189  run_pwscf.f90
+pw.x               00000000004084B4  MAIN__                     85  pwscf.f90
+pw.x               000000000040831E  Unknown               Unknown  Unknown
+libc-2.17.so       00002B6CE88EAC05  __libc_start_main     Unknown  Unknown
+pw.x               0000000000408229  Unknown               Unknown  Unknown
+forrtl: error (78): process killed (SIGTERM)
+Image              PC                Routine            Line        Source             
+pw.x               00000000010225FA  Unknown               Unknown  Unknown
+libpthread-2.17.s  00002AB53A06B5E0  Unknown               Unknown  Unknown
+libmpi.so.12.0     00002AB53903D3AA  Unknown               Unknown  Unknown
+libmpi.so.12.0     00002AB53903E0C5  Unknown               Unknown  Unknown
+libmpi.so.12       00002AB539041C2D  MPI_Barrier           Unknown  Unknown
+libmpifort.so.12.  00002AB538BD772C  pmpi_barrier          Unknown  Unknown
+pw.x               0000000000F5A759  reduce_base_real_          60  mp_base.f90
+pw.x               0000000000F46152  mp_mp_mp_sum_cm_         1758  mp.f90
+pw.x               00000000009E7755  becmod_mp_calbec_        1133  becmod.f90
+pw.x               00000000009E91F1  becmod_mp_calbec_         398  becmod.f90
+pw.x               00000000007ACD7F  h_psi__                   233  h_psi.f90
+pw.x               00000000007ABD66  h_psi_                     71  h_psi.f90
+pw.x               000000000086DDE3  pcegterg_                1021  cegterg.f90
+pw.x               0000000000687E53  diag_bands_IP_dia        1028  c_bands.f90
+pw.x               000000000068663C  diag_bands_               322  c_bands.f90
+pw.x               0000000000685075  c_bands_                  132  c_bands.f90
+pw.x               000000000040DEAE  electrons_scf_            689  electrons.f90
+pw.x               000000000040B14D  electrons_                192  electrons.f90
+pw.x               00000000005888D2  run_pwscf_                189  run_pwscf.f90
+pw.x               00000000004084B4  MAIN__                     85  pwscf.f90
+pw.x               000000000040831E  Unknown               Unknown  Unknown
+libc-2.17.so       00002AB53A93FC05  __libc_start_main     Unknown  Unknown
+pw.x               0000000000408229  Unknown               Unknown  Unknown
+forrtl: error (78): process killed (SIGTERM)
+Image              PC                Routine            Line        Source             
+pw.x               00000000010225FA  Unknown               Unknown  Unknown
+libpthread-2.17.s  00002B323388B5E0  Unknown               Unknown  Unknown
+libmpi.so.12.0     00002B323285D3AA  Unknown               Unknown  Unknown
+libmpi.so.12.0     00002B323285E0C5  Unknown               Unknown  Unknown
+libmpi.so.12       00002B3232861C2D  MPI_Barrier           Unknown  Unknown
+libmpifort.so.12.  00002B32323F772C  pmpi_barrier          Unknown  Unknown
+pw.x               0000000000F5A759  reduce_base_real_          60  mp_base.f90
+pw.x               0000000000F46152  mp_mp_mp_sum_cm_         1758  mp.f90
+pw.x               00000000009E7755  becmod_mp_calbec_        1133  becmod.f90
+pw.x               00000000009E91F1  becmod_mp_calbec_         398  becmod.f90
+pw.x               00000000007ACD7F  h_psi__                   233  h_psi.f90
+pw.x               00000000007ABD66  h_psi_                     71  h_psi.f90
+pw.x               000000000086DDE3  pcegterg_                1021  cegterg.f90
+pw.x               0000000000687E53  diag_bands_IP_dia        1028  c_bands.f90
+pw.x               000000000068663C  diag_bands_               322  c_bands.f90
+pw.x               0000000000685075  c_bands_                  132  c_bands.f90
+pw.x               000000000040DEAE  electrons_scf_            689  electrons.f90
+pw.x               000000000040B14D  electrons_                192  electrons.f90
+pw.x               00000000005888D2  run_pwscf_                189  run_pwscf.f90
+pw.x               00000000004084B4  MAIN__                     85  pwscf.f90
+pw.x               000000000040831E  Unknown               Unknown  Unknown
+libc-2.17.so       00002B323415FC05  __libc_start_main     Unknown  Unknown
+pw.x               0000000000408229  Unknown               Unknown  Unknown
+forrtl: error (78): process killed (SIGTERM)
+Image              PC                Routine            Line        Source             
+pw.x               00000000010225FA  Unknown               Unknown  Unknown
+libpthread-2.17.s  00002AC935D865E0  Unknown               Unknown  Unknown
+libmpi.so.12.0     00002AC934D583AA  Unknown               Unknown  Unknown
+libmpi.so.12.0     00002AC934D590C5  Unknown               Unknown  Unknown
+libmpi.so.12       00002AC934D5CC2D  MPI_Barrier           Unknown  Unknown
+libmpifort.so.12.  00002AC9348F272C  pmpi_barrier          Unknown  Unknown
+pw.x               0000000000F5A759  reduce_base_real_          60  mp_base.f90
+pw.x               0000000000F46152  mp_mp_mp_sum_cm_         1758  mp.f90
+pw.x               00000000009E7755  becmod_mp_calbec_        1133  becmod.f90
+pw.x               00000000009E91F1  becmod_mp_calbec_         398  becmod.f90
+pw.x               00000000007ACD7F  h_psi__                   233  h_psi.f90
+pw.x               00000000007ABD66  h_psi_                     71  h_psi.f90
+pw.x               000000000086DDE3  pcegterg_                1021  cegterg.f90
+pw.x               0000000000687E53  diag_bands_IP_dia        1028  c_bands.f90
+pw.x               000000000068663C  diag_bands_               322  c_bands.f90
+pw.x               0000000000685075  c_bands_                  132  c_bands.f90
+pw.x               000000000040DEAE  electrons_scf_            689  electrons.f90
+pw.x               000000000040B14D  electrons_                192  electrons.f90
+pw.x               00000000005888D2  run_pwscf_                189  run_pwscf.f90
+pw.x               00000000004084B4  MAIN__                     85  pwscf.f90
+pw.x               000000000040831E  Unknown               Unknown  Unknown
+libc-2.17.so       00002AC93665AC05  __libc_start_main     Unknown  Unknown
+pw.x               0000000000408229  Unknown               Unknown  Unknown
+forrtl: error (78): process killed (SIGTERM)
+Image              PC                Routine            Line        Source             
+pw.x               00000000010225FA  Unknown               Unknown  Unknown
+libpthread-2.17.s  00002B20D40485E0  Unknown               Unknown  Unknown
+libmpi.so.12.0     00002B20D301A3AA  Unknown               Unknown  Unknown
+libmpi.so.12.0     00002B20D301B0C5  Unknown               Unknown  Unknown
+libmpi.so.12       00002B20D301EC2D  MPI_Barrier           Unknown  Unknown
+libmpifort.so.12.  00002B20D2BB472C  pmpi_barrier          Unknown  Unknown
+pw.x               0000000000F5A759  reduce_base_real_          60  mp_base.f90
+pw.x               0000000000F46152  mp_mp_mp_sum_cm_         1758  mp.f90
+pw.x               00000000009E7755  becmod_mp_calbec_        1133  becmod.f90
+pw.x               00000000009E91F1  becmod_mp_calbec_         398  becmod.f90
+pw.x               00000000007ACD7F  h_psi__                   233  h_psi.f90
+pw.x               00000000007ABD66  h_psi_                     71  h_psi.f90
+pw.x               000000000086DDE3  pcegterg_                1021  cegterg.f90
+pw.x               0000000000687E53  diag_bands_IP_dia        1028  c_bands.f90
+pw.x               000000000068663C  diag_bands_               322  c_bands.f90
+pw.x               0000000000685075  c_bands_                  132  c_bands.f90
+pw.x               000000000040DEAE  electrons_scf_            689  electrons.f90
+pw.x               000000000040B14D  electrons_                192  electrons.f90
+pw.x               00000000005888D2  run_pwscf_                189  run_pwscf.f90
+pw.x               00000000004084B4  MAIN__                     85  pwscf.f90
+pw.x               000000000040831E  Unknown               Unknown  Unknown
+libc-2.17.so       00002B20D491CC05  __libc_start_main     Unknown  Unknown
+pw.x               0000000000408229  Unknown               Unknown  Unknown
+forrtl: error (78): process killed (SIGTERM)
+Image              PC                Routine            Line        Source             
+pw.x               00000000010225FA  Unknown               Unknown  Unknown
+libpthread-2.17.s  00002B2C03ADD5E0  Unknown               Unknown  Unknown
+libmpi.so.12.0     00002B2C02AAF390  Unknown               Unknown  Unknown
+libmpi.so.12.0     00002B2C02AB00C5  Unknown               Unknown  Unknown
+libmpi.so.12       00002B2C02AB3C2D  MPI_Barrier           Unknown  Unknown
+libmpifort.so.12.  00002B2C0264972C  pmpi_barrier          Unknown  Unknown
+pw.x               0000000000F5A759  reduce_base_real_          60  mp_base.f90
+pw.x               0000000000F46152  mp_mp_mp_sum_cm_         1758  mp.f90
+pw.x               00000000009E7755  becmod_mp_calbec_        1133  becmod.f90
+pw.x               00000000009E91F1  becmod_mp_calbec_         398  becmod.f90
+pw.x               00000000007ACD7F  h_psi__                   233  h_psi.f90
+pw.x               00000000007ABD66  h_psi_                     71  h_psi.f90
+pw.x               000000000086DDE3  pcegterg_                1021  cegterg.f90
+pw.x               0000000000687E53  diag_bands_IP_dia        1028  c_bands.f90
+pw.x               000000000068663C  diag_bands_               322  c_bands.f90
+pw.x               0000000000685075  c_bands_                  132  c_bands.f90
+pw.x               000000000040DEAE  electrons_scf_            689  electrons.f90
+pw.x               000000000040B14D  electrons_                192  electrons.f90
+pw.x               00000000005888D2  run_pwscf_                189  run_pwscf.f90
+pw.x               00000000004084B4  MAIN__                     85  pwscf.f90
+pw.x               000000000040831E  Unknown               Unknown  Unknown
+libc-2.17.so       00002B2C043B1C05  __libc_start_main     Unknown  Unknown
+pw.x               0000000000408229  Unknown               Unknown  Unknown
+forrtl: error (78): process killed (SIGTERM)
+Image              PC                Routine            Line        Source             
+pw.x               00000000010225FA  Unknown               Unknown  Unknown
+libpthread-2.17.s  00002B903E92C5E0  Unknown               Unknown  Unknown
+libmpi.so.12.0     00002B903D8FE3AA  Unknown               Unknown  Unknown
+libmpi.so.12.0     00002B903D8FF0C5  Unknown               Unknown  Unknown
+libmpi.so.12       00002B903D902C2D  MPI_Barrier           Unknown  Unknown
+libmpifort.so.12.  00002B903D49872C  pmpi_barrier          Unknown  Unknown
+pw.x               0000000000F5A759  reduce_base_real_          60  mp_base.f90
+pw.x               0000000000F46152  mp_mp_mp_sum_cm_         1758  mp.f90
+pw.x               00000000009E7755  becmod_mp_calbec_        1133  becmod.f90
+pw.x               00000000009E91F1  becmod_mp_calbec_         398  becmod.f90
+pw.x               00000000007ACD7F  h_psi__                   233  h_psi.f90
+pw.x               00000000007ABD66  h_psi_                     71  h_psi.f90
+pw.x               000000000086DDE3  pcegterg_                1021  cegterg.f90
+pw.x               0000000000687E53  diag_bands_IP_dia        1028  c_bands.f90
+pw.x               000000000068663C  diag_bands_               322  c_bands.f90
+pw.x               0000000000685075  c_bands_                  132  c_bands.f90
+pw.x               000000000040DEAE  electrons_scf_            689  electrons.f90
+pw.x               000000000040B14D  electrons_                192  electrons.f90
+pw.x               00000000005888D2  run_pwscf_                189  run_pwscf.f90
+pw.x               00000000004084B4  MAIN__                     85  pwscf.f90
+pw.x               000000000040831E  Unknown               Unknown  Unknown
+libc-2.17.so       00002B903F200C05  __libc_start_main     Unknown  Unknown
+pw.x               0000000000408229  Unknown               Unknown  Unknown
