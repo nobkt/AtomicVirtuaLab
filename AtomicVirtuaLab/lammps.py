@@ -998,6 +998,67 @@ def mk_npt_input_dpdata(cell,dt,thermo_step,eq_step,md_step,nout,Teq,P,seed,mol=
     f.write('jump SELF loop'+'\n')
     f.close()
 
+def mk_nvt_input_dpdata(cell,dt,thermo_step,eq_step,md_step,nout,Teq,seed,mol=False):
+    from AtomicVirtuaLab.io import cell2atomlist, mk_lammpsdata
+    from ase import Atom
+    mk_lammpsdata(cell,False,force_skew=True,mol=mol)
+    symbols = cell2atomlist(cell)
+    f = open('lammps.lmp','w')
+    f.write('units metal'+'\n')
+    f.write('boundary p p p'+'\n')
+    f.write('atom_style atomic'+'\n')
+    f.write('read_data lammps.data'+'\n')
+    i = 1
+    for symbol in symbols:
+        a = Atom(symbol)
+        f.write('mass '+str(i)+' '+str(a.mass)+'\n')
+        i = i + 1
+    f.write('pair_style deepmd graph.pb'+'\n')
+    f.write('pair_coeff * * ')
+    for symbol in symbols:
+        f.write(' '+str(symbol))
+    f.write('\n')
+    f.write('variable mype equal pe'+'\n')
+    f.write('variable mytemp equal temp'+'\n')
+    f.write('variable myenthalpy equal enthalpy'+'\n')
+    f.write('variable mydensity equal density'+'\n')
+    f.write('variable myvol equal vol'+'\n')
+    f.write('variable mycella equal cella'+'\n')
+    f.write('variable mycellb equal cellb'+'\n')
+    f.write('variable mycellc equal cellc'+'\n')
+    f.write('variable mycellalpha equal cellalpha'+'\n')
+    f.write('variable mycellbeta equal cellbeta'+'\n')
+    f.write('variable mycellgamma equal cellgamma'+'\n')
+    #f.write('dump dmp all custom '+str(dmp_step)+' traj_npt.lammpstrj id type element x y z ix iy iz'+'\n')
+    #f.write('dump_modify dmp element')
+    #for symbol in symbols:
+    #    f.write(' '+str(symbol))
+    #f.write('\n')
+    f.write('thermo_style custom step etotal enthalpy pe ke temp press vol density cella cellb cellc cellalpha cellbeta cellgamma'+'\n')
+    f.write('thermo '+str(thermo_step)+'\n')
+    f.write('\n')
+    f.write('timestep '+str(dt)+'\n')
+    f.write('velocity all create '+str(Teq)+' '+str(seed)+'\n')
+    #f.write('velocity all create 300 '+str(seed)+'\n')
+    f.write('fix fmom all momentum 1 linear 1 1 1'+'\n')
+    f.write('fix fxnvt all nvt temp '+str(Teq)+' '+str(Teq)+' $(dt*100.0)'+'\n')
+    #f.write('fix fxnpt all npt temp 300 300 $(dt*100.0) '+'tri '+str(P)+' '+str(P)+' $(dt*1000.0)'+'\n')
+    f.write('run '+str(eq_step)+'\n')
+    f.write('unfix fxnvt'+'\n')
+    f.write('label loop'+'\n')
+    f.write('  variable a loop '+str(nout)+'\n')
+    f.write('  reset_timestep 0'+'\n')
+    f.write('  dump myDump all custom '+str(md_step)+' dump${a}.lammpstrj.* id type fx fy fz'+'\n')
+    f.write('  fix fxnvt all nvt temp '+str(Teq)+' '+str(Teq)+' $(dt*100.0)'+'\n')
+    f.write('  run '+str(md_step)+'\n')
+    f.write('  print "step ${a} Potential Energy: ${mype}"'+'\n')
+    f.write('  write_data result${a}.data'+'\n')
+    f.write('  undump myDump'+'\n')
+    f.write('  unfix fxnvt'+'\n')
+    f.write('  next a'+'\n')
+    f.write('jump SELF loop'+'\n')
+    f.close()
+
 def mk_opt_input_deepmd(cell,dmp_step,thermo_step,mol=False,fixlay=None):
     from AtomicVirtuaLab.io import cell2atomlist, mk_lammpsdata
     from ase import Atom

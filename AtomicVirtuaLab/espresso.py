@@ -40,7 +40,7 @@ def mk_qe_input_scf(cell,xc,pot,level='low',estep=1000,ecutwfc=25,ecutrho=225,mi
                 ecutrho_ = float(json_load[symbol]['cutoff_rho'])
     os.makedirs('./pseudo',exist_ok=True)
     for symbol in pseudo:
-        shutil.copy(g.qepot+'/'+str(level)+'/'+str(pseudo[symbol]),'./pseudo')
+        shutil.copy(g.qepot+'/'+str(level)+'_'+str(xc)+'/'+str(pseudo[symbol]),'./pseudo')
     input_data={\
         'calculation'      : 'scf',\
         'restart_mode'     : 'from_scratch',\
@@ -65,12 +65,12 @@ def mk_qe_input_scf(cell,xc,pot,level='low',estep=1000,ecutwfc=25,ecutrho=225,mi
             input_data[option] = options[option]
     if nspin == True:
         input_data['nspin'] = 2
-        valence, magmom = get_valence(cell,pseudo,level)
+        valence, magmom = get_valence(cell,pseudo,level,xc)
         cell.set_initial_magnetic_moments(magmom)
         nbnd = int(valence/2.0*2.0)
         input_data['nbnd'] = nbnd
     else:
-        valence, magmom = get_valence(cell,pseudo,level)
+        valence, magmom = get_valence(cell,pseudo,level,xc)
         nbnd = int(valence/2.0)
         #print('valence/2 = ', nbnd)
     cell.write('qe_scf.pwi',input_data=input_data,pseudopotentials=pseudo,kpts=kpts,crystal_coordinates=False)
@@ -117,7 +117,7 @@ def mk_qe2yambo_input_scf(cell,xc,pot,level='low',estep=1000,ecutwfc=25,ecutrho=
                 ecutrho_ = float(json_load[symbol]['cutoff_rho'])
     os.makedirs('./pseudo',exist_ok=True)
     for symbol in pseudo:
-        shutil.copy(g.qepot+'/'+str(level)+'/'+str(pseudo[symbol]),'./pseudo')
+        shutil.copy(g.qepot+'/'+str(level)+'_'+str(xc)+'/'+str(pseudo[symbol]),'./pseudo')
     input_data={\
         'calculation'      : 'scf',\
         'restart_mode'     : 'from_scratch',\
@@ -143,12 +143,12 @@ def mk_qe2yambo_input_scf(cell,xc,pot,level='low',estep=1000,ecutwfc=25,ecutrho=
             input_data[option] = options[option]
     if nspin == True:
         input_data['nspin'] = 2
-        valence, magmom = get_valence(cell,pseudo,level)
+        valence, magmom = get_valence(cell,pseudo,level,xc)
         cell.set_initial_magnetic_moments(magmom)
         nbnd = int(valence/2.0*2.0)
         input_data['nbnd'] = nbnd
     else:
-        valence, magmom = get_valence(cell,pseudo,level)
+        valence, magmom = get_valence(cell,pseudo,level,xc)
         nbnd = int(valence/2.0)
         print('valence/2 = ', nbnd)
     cell.write('qe_scf.pwi',input_data=input_data,pseudopotentials=pseudo,kpts=kpts,koffset=(1,1,1),crystal_coordinates=False)
@@ -195,7 +195,7 @@ def mk_qe2yambo_input_scf_gaupbe(cell,xc,pot,level='low',estep=1000,ecutwfc=25,e
                 ecutrho_ = float(json_load[symbol]['cutoff_rho'])
     os.makedirs('./pseudo',exist_ok=True)
     for symbol in pseudo:
-        shutil.copy(g.qepot+'/'+str(level)+'/'+str(pseudo[symbol]),'./pseudo')
+        shutil.copy(g.qepot+'/'+str(level)+'_'+str(xc)+'/'+str(pseudo[symbol]),'./pseudo')
     input_data={\
         'calculation'      : 'scf',\
         'restart_mode'     : 'from_scratch',\
@@ -232,12 +232,12 @@ def mk_qe2yambo_input_scf_gaupbe(cell,xc,pot,level='low',estep=1000,ecutwfc=25,e
             input_data[option] = options[option]
     if nspin == True:
         input_data['nspin'] = 2
-        valence, magmom = get_valence(cell,pseudo,level)
+        valence, magmom = get_valence(cell,pseudo,level,xc)
         cell.set_initial_magnetic_moments(magmom)
         nbnd = int(valence/2.0*2.0)
         input_data['nbnd'] = nbnd
     else:
-        valence, magmom = get_valence(cell,pseudo,level)
+        valence, magmom = get_valence(cell,pseudo,level,xc)
         nbnd = int(valence/2.0)
         print('valence/2 = ', nbnd)
     cell.write('qe_scf.pwi',input_data=input_data,pseudopotentials=pseudo,kpts=kpts,koffset=(1,1,1),crystal_coordinates=False)
@@ -285,7 +285,7 @@ def mk_qe2yambo_input_nscf(cell,xc,pot,level='low',estep=1000,ecutwfc=25,ecutrho
                 ecutrho_ = float(json_load[symbol]['cutoff_rho'])
     os.makedirs('./pseudo',exist_ok=True)
     for symbol in pseudo:
-        shutil.copy(g.qepot+'/'+str(level)+'/'+str(pseudo[symbol]),'./pseudo')
+        shutil.copy(g.qepot+'/'+str(level)+'_'+str(xc)+'/'+str(pseudo[symbol]),'./pseudo')
     input_data={\
         'calculation'      : 'nscf',\
         'restart_mode'     : 'from_scratch',\
@@ -311,12 +311,12 @@ def mk_qe2yambo_input_nscf(cell,xc,pot,level='low',estep=1000,ecutwfc=25,ecutrho
             input_data[option] = options[option]
     if nspin == True:
         input_data['nspin'] = 2
-        valence, magmom = get_valence(cell,pseudo,level)
+        valence, magmom = get_valence(cell,pseudo,level,xc)
         cell.set_initial_magnetic_moments(magmom)
         nbnd = int(valence/2.0*2.0)
         input_data['nbnd'] = nbnd
     else:
-        valence, magmom = get_valence(cell,pseudo,level)
+        valence, magmom = get_valence(cell,pseudo,level,xc)
         nbnd = int(valence/2.0)
         print('valence/2 = ', nbnd)
     cell.write('qe_nscf.pwi',input_data=input_data,pseudopotentials=pseudo,kpts=kpts,crystal_coordinates=False)
@@ -364,7 +364,7 @@ def mk_qe_input_dos(cell,xc,pot,level='low',estep=1000,ecutwfc=25,ecutrho=225,mi
                 ecutrho_ = float(json_load[symbol]['cutoff_rho'])
     os.makedirs('./pseudo',exist_ok=True)
     for symbol in pseudo:
-        shutil.copy(g.qepot+'/'+str(level)+'/'+str(pseudo[symbol]),'./pseudo')
+        shutil.copy(g.qepot+'/'+str(level)+'_'+str(xc)+'/'+str(pseudo[symbol]),'./pseudo')
     input_data={\
         'verbosity'        : 'high',\
         'calculation'      : 'nscf',\
@@ -390,12 +390,12 @@ def mk_qe_input_dos(cell,xc,pot,level='low',estep=1000,ecutwfc=25,ecutrho=225,mi
             input_data[option] = options[option]
     if nspin == True:
         input_data['nspin'] = 2
-        valence, magmom = get_valence(cell,pseudo,level)
+        valence, magmom = get_valence(cell,pseudo,level,xc)
         cell.set_initial_magnetic_moments(magmom)
         nbnd = int(valence/2.0*2.0)
         input_data['nbnd'] = nbnd
     else:
-        valence, magmom = get_valence(cell,pseudo,level)
+        valence, magmom = get_valence(cell,pseudo,level,xc)
         nbnd = int(valence/2.0*2.0)
         input_data['nbnd'] = nbnd
     cell.write('qe_nscf_dos.pwi',input_data=input_data,pseudopotentials=pseudo,kpts=kpts,crystal_coordinates=False)
@@ -463,7 +463,7 @@ def mk_qe_input_band(cell,xc,pot,level='low',estep=1000,ecutwfc=25,ecutrho=225,m
                 ecutrho_ = float(json_load[symbol]['cutoff_rho'])
     os.makedirs('./pseudo',exist_ok=True)
     for symbol in pseudo:
-        shutil.copy(g.qepot+'/'+str(level)+'/'+str(pseudo[symbol]),'./pseudo')
+        shutil.copy(g.qepot+'/'+str(level)+'_'+str(xc)+'/'+str(pseudo[symbol]),'./pseudo')
     input_data={\
         'verbosity'        : 'high',\
         'calculation'      : 'bands',\
@@ -488,12 +488,12 @@ def mk_qe_input_band(cell,xc,pot,level='low',estep=1000,ecutwfc=25,ecutrho=225,m
             input_data[option] = options[option]
     if nspin == True:
         input_data['nspin'] = 2
-        valence, magmom = get_valence(cell,pseudo,level)
+        valence, magmom = get_valence(cell,pseudo,level,xc)
         cell.set_initial_magnetic_moments(magmom)
         nbnd = int(valence/2.0*2.0)
         input_data['nbnd'] = nbnd
     else:
-        valence, magmom = get_valence(cell,pseudo,level)
+        valence, magmom = get_valence(cell,pseudo,level,xc)
         nbnd = int(valence/2.0*2.0)
         input_data['nbnd'] = nbnd
     lat = cell.cell.get_bravais_lattice()
@@ -599,7 +599,7 @@ def mk_qe_input_relax(cell,xc,pot,level='low',estep=1000,nstep=1000,nosym=False,
                 ecutrho_ = float(json_load[symbol]['cutoff_rho'])
     os.makedirs('./pseudo',exist_ok=True)
     for symbol in pseudo:
-        shutil.copy(g.qepot+'/'+str(level)+'/'+str(pseudo[symbol]),'./pseudo')
+        shutil.copy(g.qepot+'/'+str(level)+'_'+str(xc)+'/'+str(pseudo[symbol]),'./pseudo')
     input_data={\
         'calculation'      : 'relax',\
         'restart_mode'     : 'from_scratch',\
@@ -625,7 +625,7 @@ def mk_qe_input_relax(cell,xc,pot,level='low',estep=1000,nstep=1000,nosym=False,
             input_data[option] = options[option]
     if nspin == True:
         input_data['nspin'] = 2
-        valence, magmom = get_valence(cell,pseudo,level)
+        valence, magmom = get_valence(cell,pseudo,level,xc)
         cell.set_initial_magnetic_moments(magmom)
         nbnd = int(valence/2.0*2.0)
         input_data['nbnd'] = nbnd
@@ -673,7 +673,7 @@ def mk_qe_input_vcrelax(cell,xc,pot,level='low',estep=1000,nstep=1000,nosym=Fals
                 ecutrho_ = float(json_load[symbol]['cutoff_rho'])
     os.makedirs('./pseudo',exist_ok=True)
     for symbol in pseudo:
-        shutil.copy(g.qepot+'/'+str(level)+'/'+str(pseudo[symbol]),'./pseudo')
+        shutil.copy(g.qepot+'/'+str(level)+'_'+str(xc)+'/'+str(pseudo[symbol]),'./pseudo')
     input_data={\
         'calculation'      : 'vc-relax',\
         'restart_mode'     : 'from_scratch',\
@@ -700,7 +700,7 @@ def mk_qe_input_vcrelax(cell,xc,pot,level='low',estep=1000,nstep=1000,nosym=Fals
             input_data[option] = options[option]
     if nspin == True:
         input_data['nspin'] = 2
-        valence, magmom = get_valence(cell,pseudo,level)
+        valence, magmom = get_valence(cell,pseudo,level,xc)
         cell.set_initial_magnetic_moments(magmom)
         nbnd = int(valence/2.0*2.0)
         input_data['nbnd'] = nbnd
@@ -748,7 +748,7 @@ def mk_qe_input_nvt(cell,xc,pot,tempw,tolp,dt=0.5,level='low',estep=1000,nstep=1
                 ecutrho_ = float(json_load[symbol]['cutoff_rho'])
     os.makedirs('./pseudo',exist_ok=True)
     for symbol in pseudo:
-        shutil.copy(g.qepot+'/'+str(level)+'/'+str(pseudo[symbol]),'./pseudo')
+        shutil.copy(g.qepot+'/'+str(level)+'_'+str(xc)+'/'+str(pseudo[symbol]),'./pseudo')
     input_data={\
         'calculation'      : 'md',\
         'dt'               : dt*1.0e-15/4.8378e-17,\
@@ -781,7 +781,7 @@ def mk_qe_input_nvt(cell,xc,pot,tempw,tolp,dt=0.5,level='low',estep=1000,nstep=1
             input_data[option] = options[option]
     if nspin == True:
         input_data['nspin'] = 2
-        valence, magmom = get_valence(cell,pseudo,level)
+        valence, magmom = get_valence(cell,pseudo,level,xc)
         cell.set_initial_magnetic_moments(magmom)
         nbnd = int(valence/2.0*2.0)
         input_data['nbnd'] = nbnd
@@ -829,7 +829,7 @@ def mk_qe_input_npt(cell,xc,pot,tempw,tolp,press,dt=0.5,level='low',estep=1000,n
                 ecutrho_ = float(json_load[symbol]['cutoff_rho'])
     os.makedirs('./pseudo',exist_ok=True)
     for symbol in pseudo:
-        shutil.copy(g.qepot+'/'+str(level)+'/'+str(pseudo[symbol]),'./pseudo')
+        shutil.copy(g.qepot+'/'+str(level)+'_'+str(xc)+'/'+str(pseudo[symbol]),'./pseudo')
     input_data={\
         'calculation'      : 'vc-md',\
         'dt'               : dt*1.0e-15/4.8378e-17,\
@@ -865,7 +865,7 @@ def mk_qe_input_npt(cell,xc,pot,tempw,tolp,press,dt=0.5,level='low',estep=1000,n
             input_data[option] = options[option]
     if nspin == True:
         input_data['nspin'] = 2
-        valence, magmom0 = get_valence(cell,pseudo,level)
+        valence, magmom0 = get_valence(cell,pseudo,level,xc)
         if magElm is not None:
             i = 0
             magmom=[]
@@ -2052,118 +2052,226 @@ def set_qepot(cell,xc,pot0,level):
              'Zn' : 'Zn_ONCV_PBE-1.2.upf',\
              'Zr' : 'Zr_ONCV_PBE-1.2.upf'}
     elif level == 'SSSP_precision':
-        pseudo = \
-            {'Ac' : 'Ac.us.z_11.ld1.psl.v1.0.0-high.upf',\
-             'Ag' : 'Ag_ONCV_PBE-1.0.oncvpsp.upf',\
-             'Al' : 'Al.pbe-n-kjpaw_psl.1.0.0.UPF',\
-             'Am' : 'Am.paw.z_17.ld1.uni-marburg.v0.upf',\
-             'Ar' : 'Ar.paw.z_8.ld1.psl.v1.0.0-high.upf',\
-             'As' : 'As.nc.z_15.oncvpsp3.dojo.v4-std.upf',\
-             'At' : 'At.us.z_17.ld1.psl.v1.0.0-high.upf',\
-             'Au' : 'Au_ONCV_PBE-1.0.oncvpsp.upf',\
-             'B'  : 'B_pbe_v1.01.uspp.F.UPF',\
-             'Ba' : 'Ba.nc.z_10.oncvpsp4.dojo.v4-sp.upf',\
-             'Be' : 'Be_ONCV_PBE-1.0.oncvpsp.upf',\
-             'Bi' : 'Bi_pbe_v1.uspp.F.UPF',\
-             'Bk' : 'Bk.paw.z_19.ld1.uni-marburg.v0.upf',\
-             'C'  : 'C.pbe-n-kjpaw_psl.1.0.0.UPF',\
-             'Ca' : 'Ca_pbe_v1.uspp.F.UPF',\
-             'Cd' : 'Cd.paw.z_20.ld1.psl.v1.0.0-high.upf',\
-             'Ce' : 'Ce.paw.z_12.atompaw.wentzcovitch.v1.2.upf',\
-             'Cf' : 'Cf.paw.z_20.ld1.uni-marburg.v0.upf',\
-             'Cl' : 'Cl.pbe-n-rrkjus_psl.1.0.0.UPF',\
-             'Cm' : 'Cm.paw.z_18.ld1.uni-marburg.v0.upf',\
-             'Co' : 'Co_pbe_v1.2.uspp.F.UPF',\
-             'Cs' : 'Cs.nc.z_9.oncvpsp3.dojo.v4-str.upf',\
-             'Cu' : 'Cu.paw.z_11.ld1.psl.v1.0.0-low.upf',\
-             'Dy' : 'Dy.paw.z_20.atompaw.wentzcovitch.v1.2.upf',\
-             'Er' : 'Er.paw.z_22.atompaw.wentzcovitch.v1.2.upf',\
-             'Es' : 'Es.paw.z_21.ld1.uni-marburg.v0.upf',\
-             'Eu' : 'Eu.paw.z_17.atompaw.wentzcovitch.v1.2.upf',\
-             'F'  : 'F.oncvpsp.upf',\
-             'Fe' : 'Fe.pbe-spn-kjpaw_psl.0.2.1.UPF',\
-             'Fm' : 'Fm.paw.z_22.ld1.uni-marburg.v0.upf',\
-             'Fr' : 'Fr.paw.z_19.ld1.psl.v1.0.0-high.upf',\
-             'Ga' : 'Ga.pbe-dn-kjpaw_psl.1.0.0.UPF',\
-             'Gd' : 'Gd.paw.z_18.atompaw.wentzcovitch.v1.2.upf',\
-             'H'  : 'H_ONCV_PBE-1.0.oncvpsp.upf',\
-             'He' : 'He_ONCV_PBE-1.0.oncvpsp.upf',\
-             'Hf' : 'Hf-sp.oncvpsp.upf',\
-             'Hg' : 'Hg.us.z_12.uspp.gbrv.v1.upf',\
-             'Ho' : 'Ho.paw.z_21.atompaw.wentzcovitch.v1.2.upf',\
-             'I'  : 'I.nc.z_17.oncvpsp4.sg15.v0.upf',\
-             'In' : 'In.pbe-dn-rrkjus_psl.0.2.2.UPF',\
-             'Ir' : 'Ir.us.z_31.ld1.psl.v1.0.0-high.upf',\
-             'K'  : 'K.pbe-spn-kjpaw_psl.1.0.0.UPF',\
-             'Kr' : 'Kr.paw.z_18.ld1.psl.v1.0.0-high.upf',\
-             'La' : 'La.paw.z_11.atompaw.wentzcovitch.v1.2.upf',\
-             'Lr' : 'Lr.paw.z_25.ld1.uni-marburg.v0.upf',\
-             'Lu' : 'Lu.paw.z_25.atompaw.wentzcovitch.v1.2.upf',\
-             'Md' : 'Md.paw.z_23.ld1.uni-marburg.v0.upf',\
-             'Mo' : 'Mo_ONCV_PBE-1.0.oncvpsp.upf',\
-             'N'  : 'N.oncvpsp.upf',\
-             'Na' : 'Na.paw.z_9.ld1.psl.v1.0.0-low.upf',\
-             'Nb' : 'Nb.pbe-spn-kjpaw_psl.0.3.0.UPF',\
-             'Nd' : 'Nd.paw.z_14.atompaw.wentzcovitch.v1.2.upf',\
-             'Ne' : 'Ne.paw.z_8.ld1.psl.v1.0.0-high.upf',\
-             'No' : 'No.paw.z_24.ld1.uni-marburg.v0.upf',\
-             'Np' : 'Np.paw.z_15.ld1.uni-marburg.v0.upf',\
-             'O'  : 'O.pbe-n-kjpaw_psl.0.1.UPF',\
-             'Os' : 'Os_pbe_v1.2.uspp.F.UPF',\
-             'P'  : 'P.pbe-n-rrkjus_psl.1.0.0.UPF',\
-             'Pa' : 'Pa.paw.z_13.ld1.uni-marburg.v0.upf',\
-             'Pb' : 'Pb.pbe-dn-kjpaw_psl.0.2.2.UPF',\
-             'Pd' : 'Pd_ONCV_PBE-1.0.oncvpsp.upf',\
-             'Pm' : 'Pm.paw.z_15.atompaw.wentzcovitch.v1.2.upf',\
-             'Po' : 'Po.pbe-dn-rrkjus_psl.1.0.0.UPF',\
-             'Pr' : 'Pr.paw.z_13.atompaw.wentzcovitch.v1.2.upf',\
-             'Pt' : 'Pt.pbe-spfn-rrkjus_psl.1.0.0.UPF',\
-             'Pu' : 'Pu.paw.z_16.ld1.uni-marburg.v0.upf',\
-             'Ra' : 'Ra.paw.z_20.ld1.psl.v1.0.0-high.upf',\
-             'Rb' : 'Rb_ONCV_PBE-1.0.oncvpsp.upf',\
-             'Re' : 'Re_pbe_v1.2.uspp.F.UPF',\
-             'Rh' : 'Rh_ONCV_PBE-1.0.oncvpsp.upf',\
-             'Rn' : 'Rn.paw.z_18.ld1.psl.v1.0.0-high.upf',\
-             'Ru' : 'Ru_ONCV_PBE-1.0.oncvpsp.upf',\
-             'Sc' : 'Sc.pbe-spn-kjpaw_psl.0.2.3.UPF',\
-             'Se' : 'Se_pbe_v1.uspp.F.UPF',\
-             'Si' : 'Si.pbe-n-rrkjus_psl.1.0.0.UPF',\
-             'Sm' : 'Sm.paw.z_16.atompaw.wentzcovitch.v1.2.upf',\
-             'Sn' : 'Sn_pbe_v1.uspp.F.UPF',\
-             'Sr' : 'Sr_pbe_v1.uspp.F.UPF',\
-             'Ta' : 'Ta_pbe_v1.uspp.F.UPF',\
-             'Tb' : 'Tb.paw.z_19.atompaw.wentzcovitch.v1.2.upf',\
-             'Tc' : 'Tc_ONCV_PBE-1.0.oncvpsp.upf',\
-             'Te' : 'Te.us.z_6.ld1.psl.v1.0.0-low.upf',\
-             'Th' : 'Th.paw.z_12.ld1.uni-marburg.v0.upf',\
-             'Tl' : 'Tl_pbe_v1.2.uspp.F.UPF',\
-             'Tm' : 'Tm.paw.z_23.atompaw.wentzcovitch.v1.2.upf',\
-             'U'  : 'U.paw.z_14.ld1.uni-marburg.v0.upf',\
-             'W'  : 'W_pbe_v1.2.uspp.F.UPF',\
-             'Xe' : 'Xe.paw.z_18.ld1.psl.v1.0.0-high.upf',\
-             'Y'  : 'Y_pbe_v1.uspp.F.UPF',\
-             'Yb' : 'Yb.paw.z_24.atompaw.wentzcovitch.v1.2.upf',\
-             'Zn' : 'Zn_pbe_v1.uspp.F.UPF',\
-             'Zr' : 'Zr_pbe_v1.uspp.F.UPF',\
-             'Br' : 'br_pbe_v1.4.uspp.F.UPF',\
-             'Cr' : 'cr_pbe_v1.5.uspp.F.UPF',\
-             'Ge' : 'ge_pbe_v1.4.uspp.F.UPF',\
-             'Li' : 'li_pbe_v1.4.uspp.F.UPF',\
-             'Mg' : 'mg_pbe_v1.4.uspp.F.UPF',\
-             'Mn' : 'mn_pbe_v1.5.uspp.F.UPF',\
-             'Ni' : 'ni_pbe_v1.4.uspp.F.UPF',\
-             'S'  : 's_pbe_v1.4.uspp.F.UPF',\
-             'Sb' : 'sb_pbe_v1.4.uspp.F.UPF',\
-             'Ti' : 'ti_pbe_v1.4.uspp.F.UPF',\
-             'V'  : 'v_pbe_v1.4.uspp.F.UPF'}
+        if xc == 'pbe':
+            pseudo = \
+                {'Ac' : 'Ac.us.z_11.ld1.psl.v1.0.0-high.upf',\
+                 'Ag' : 'Ag_ONCV_PBE-1.0.oncvpsp.upf',\
+                 'Al' : 'Al.pbe-n-kjpaw_psl.1.0.0.UPF',\
+                 'Am' : 'Am.paw.z_17.ld1.uni-marburg.v0.upf',\
+                 'Ar' : 'Ar.paw.z_8.ld1.psl.v1.0.0-high.upf',\
+                 'As' : 'As.nc.z_15.oncvpsp3.dojo.v4-std.upf',\
+                 'At' : 'At.us.z_17.ld1.psl.v1.0.0-high.upf',\
+                 'Au' : 'Au_ONCV_PBE-1.0.oncvpsp.upf',\
+                 'B'  : 'B_pbe_v1.01.uspp.F.UPF',\
+                 'Ba' : 'Ba.nc.z_10.oncvpsp4.dojo.v4-sp.upf',\
+                 'Be' : 'Be_ONCV_PBE-1.0.oncvpsp.upf',\
+                 'Bi' : 'Bi_pbe_v1.uspp.F.UPF',\
+                 'Bk' : 'Bk.paw.z_19.ld1.uni-marburg.v0.upf',\
+                 'C'  : 'C.pbe-n-kjpaw_psl.1.0.0.UPF',\
+                 'Ca' : 'Ca_pbe_v1.uspp.F.UPF',\
+                 'Cd' : 'Cd.paw.z_20.ld1.psl.v1.0.0-high.upf',\
+                 'Ce' : 'Ce.paw.z_12.atompaw.wentzcovitch.v1.2.upf',\
+                 'Cf' : 'Cf.paw.z_20.ld1.uni-marburg.v0.upf',\
+                 'Cl' : 'Cl.pbe-n-rrkjus_psl.1.0.0.UPF',\
+                 'Cm' : 'Cm.paw.z_18.ld1.uni-marburg.v0.upf',\
+                 'Co' : 'Co_pbe_v1.2.uspp.F.UPF',\
+                 'Cs' : 'Cs.nc.z_9.oncvpsp3.dojo.v4-str.upf',\
+                 'Cu' : 'Cu.paw.z_11.ld1.psl.v1.0.0-low.upf',\
+                 'Dy' : 'Dy.paw.z_20.atompaw.wentzcovitch.v1.2.upf',\
+                 'Er' : 'Er.paw.z_22.atompaw.wentzcovitch.v1.2.upf',\
+                 'Es' : 'Es.paw.z_21.ld1.uni-marburg.v0.upf',\
+                 'Eu' : 'Eu.paw.z_17.atompaw.wentzcovitch.v1.2.upf',\
+                 'F'  : 'F.oncvpsp.upf',\
+                 'Fe' : 'Fe.pbe-spn-kjpaw_psl.0.2.1.UPF',\
+                 'Fm' : 'Fm.paw.z_22.ld1.uni-marburg.v0.upf',\
+                 'Fr' : 'Fr.paw.z_19.ld1.psl.v1.0.0-high.upf',\
+                 'Ga' : 'Ga.pbe-dn-kjpaw_psl.1.0.0.UPF',\
+                 'Gd' : 'Gd.paw.z_18.atompaw.wentzcovitch.v1.2.upf',\
+                 'H'  : 'H_ONCV_PBE-1.0.oncvpsp.upf',\
+                 'He' : 'He_ONCV_PBE-1.0.oncvpsp.upf',\
+                 'Hf' : 'Hf-sp.oncvpsp.upf',\
+                 'Hg' : 'Hg.us.z_12.uspp.gbrv.v1.upf',\
+                 'Ho' : 'Ho.paw.z_21.atompaw.wentzcovitch.v1.2.upf',\
+                 'I'  : 'I.nc.z_17.oncvpsp4.sg15.v0.upf',\
+                 'In' : 'In.pbe-dn-rrkjus_psl.0.2.2.UPF',\
+                 'Ir' : 'Ir.us.z_31.ld1.psl.v1.0.0-high.upf',\
+                 'K'  : 'K.pbe-spn-kjpaw_psl.1.0.0.UPF',\
+                 'Kr' : 'Kr.paw.z_18.ld1.psl.v1.0.0-high.upf',\
+                 'La' : 'La.paw.z_11.atompaw.wentzcovitch.v1.2.upf',\
+                 'Lr' : 'Lr.paw.z_25.ld1.uni-marburg.v0.upf',\
+                 'Lu' : 'Lu.paw.z_25.atompaw.wentzcovitch.v1.2.upf',\
+                 'Md' : 'Md.paw.z_23.ld1.uni-marburg.v0.upf',\
+                 'Mo' : 'Mo_ONCV_PBE-1.0.oncvpsp.upf',\
+                 'N'  : 'N.oncvpsp.upf',\
+                 'Na' : 'Na.paw.z_9.ld1.psl.v1.0.0-low.upf',\
+                 'Nb' : 'Nb.pbe-spn-kjpaw_psl.0.3.0.UPF',\
+                 'Nd' : 'Nd.paw.z_14.atompaw.wentzcovitch.v1.2.upf',\
+                 'Ne' : 'Ne.paw.z_8.ld1.psl.v1.0.0-high.upf',\
+                 'No' : 'No.paw.z_24.ld1.uni-marburg.v0.upf',\
+                 'Np' : 'Np.paw.z_15.ld1.uni-marburg.v0.upf',\
+                 'O'  : 'O.pbe-n-kjpaw_psl.0.1.UPF',\
+                 'Os' : 'Os_pbe_v1.2.uspp.F.UPF',\
+                 'P'  : 'P.pbe-n-rrkjus_psl.1.0.0.UPF',\
+                 'Pa' : 'Pa.paw.z_13.ld1.uni-marburg.v0.upf',\
+                 'Pb' : 'Pb.pbe-dn-kjpaw_psl.0.2.2.UPF',\
+                 'Pd' : 'Pd_ONCV_PBE-1.0.oncvpsp.upf',\
+                 'Pm' : 'Pm.paw.z_15.atompaw.wentzcovitch.v1.2.upf',\
+                 'Po' : 'Po.pbe-dn-rrkjus_psl.1.0.0.UPF',\
+                 'Pr' : 'Pr.paw.z_13.atompaw.wentzcovitch.v1.2.upf',\
+                 'Pt' : 'Pt.pbe-spfn-rrkjus_psl.1.0.0.UPF',\
+                 'Pu' : 'Pu.paw.z_16.ld1.uni-marburg.v0.upf',\
+                 'Ra' : 'Ra.paw.z_20.ld1.psl.v1.0.0-high.upf',\
+                 'Rb' : 'Rb_ONCV_PBE-1.0.oncvpsp.upf',\
+                 'Re' : 'Re_pbe_v1.2.uspp.F.UPF',\
+                 'Rh' : 'Rh_ONCV_PBE-1.0.oncvpsp.upf',\
+                 'Rn' : 'Rn.paw.z_18.ld1.psl.v1.0.0-high.upf',\
+                 'Ru' : 'Ru_ONCV_PBE-1.0.oncvpsp.upf',\
+                 'Sc' : 'Sc.pbe-spn-kjpaw_psl.0.2.3.UPF',\
+                 'Se' : 'Se_pbe_v1.uspp.F.UPF',\
+                 'Si' : 'Si.pbe-n-rrkjus_psl.1.0.0.UPF',\
+                 'Sm' : 'Sm.paw.z_16.atompaw.wentzcovitch.v1.2.upf',\
+                 'Sn' : 'Sn_pbe_v1.uspp.F.UPF',\
+                 'Sr' : 'Sr_pbe_v1.uspp.F.UPF',\
+                 'Ta' : 'Ta_pbe_v1.uspp.F.UPF',\
+                 'Tb' : 'Tb.paw.z_19.atompaw.wentzcovitch.v1.2.upf',\
+                 'Tc' : 'Tc_ONCV_PBE-1.0.oncvpsp.upf',\
+                 'Te' : 'Te.us.z_6.ld1.psl.v1.0.0-low.upf',\
+                 'Th' : 'Th.paw.z_12.ld1.uni-marburg.v0.upf',\
+                 'Tl' : 'Tl_pbe_v1.2.uspp.F.UPF',\
+                 'Tm' : 'Tm.paw.z_23.atompaw.wentzcovitch.v1.2.upf',\
+                 'U'  : 'U.paw.z_14.ld1.uni-marburg.v0.upf',\
+                 'W'  : 'W_pbe_v1.2.uspp.F.UPF',\
+                 'Xe' : 'Xe.paw.z_18.ld1.psl.v1.0.0-high.upf',\
+                 'Y'  : 'Y_pbe_v1.uspp.F.UPF',\
+                 'Yb' : 'Yb.paw.z_24.atompaw.wentzcovitch.v1.2.upf',\
+                 'Zn' : 'Zn_pbe_v1.uspp.F.UPF',\
+                 'Zr' : 'Zr_pbe_v1.uspp.F.UPF',\
+                 'Br' : 'br_pbe_v1.4.uspp.F.UPF',\
+                 'Cr' : 'cr_pbe_v1.5.uspp.F.UPF',\
+                 'Ge' : 'ge_pbe_v1.4.uspp.F.UPF',\
+                 'Li' : 'li_pbe_v1.4.uspp.F.UPF',\
+                 'Mg' : 'mg_pbe_v1.4.uspp.F.UPF',\
+                 'Mn' : 'mn_pbe_v1.5.uspp.F.UPF',\
+                 'Ni' : 'ni_pbe_v1.4.uspp.F.UPF',\
+                 'S'  : 's_pbe_v1.4.uspp.F.UPF',\
+                 'Sb' : 'sb_pbe_v1.4.uspp.F.UPF',\
+                 'Ti' : 'ti_pbe_v1.4.uspp.F.UPF',\
+                 'V'  : 'v_pbe_v1.4.uspp.F.UPF'}
+        elif xc == 'pbesol':
+            pseudo = \
+                {'Ac' : 'Ac.us.z_11.ld1.psl.v1.0.0-high.upf',\
+                 'Ag' : 'Ag_ONCV_PBEsol-1.0.upf',\
+                 'Al' : 'Al.pbesol-n-kjpaw_psl.1.0.0.UPF',\
+                 'Am' : 'Am.paw.z_17.ld1.uni-marburg.v0.upf',\
+                 'Ar' : 'Ar.paw.z_8.ld1.psl.v1.0.0-high.upf',\
+                 'As' : 'As.nc.z_15.oncvpsp3.dojo.v4-std.upf',\
+                 'At' : 'At.us.z_17.ld1.psl.v1.0.0-high.upf',\
+                 'Au' : 'Au_ONCV_PBEsol-1.0.upf',\
+                 'Ba' : 'Ba.nc.z_10.oncvpsp4.dojo.v4-sp.upf',\
+                 'Be' : 'Be_ONCV_PBEsol-1.0.upf',\
+                 'Bk' : 'Bk.paw.z_19.ld1.uni-marburg.v0.upf',\
+                 'C'  : 'C.pbesol-n-kjpaw_psl.1.0.0.UPF',\
+                 'Cd' : 'Cd.paw.z_20.ld1.psl.v1.0.0-high.upf',\
+                 'Ce' : 'Ce.paw.z_12.atompaw.wentzcovitch.v1.2.upf',\
+                 'Cf' : 'Cf.paw.z_20.ld1.uni-marburg.v0.upf',\
+                 'Cl' : 'Cl.pbesol-n-rrkjus_psl.1.0.0.UPF',\
+                 'Cm' : 'Cm.paw.z_18.ld1.uni-marburg.v0.upf',\
+                 'Cs' : 'Cs.nc.z_9.oncvpsp3.dojo.v4-str.upf',\
+                 'Cu' : 'Cu.paw.z_11.ld1.psl.v1.0.0-low.upf',\
+                 'Dy' : 'Dy.paw.z_20.atompaw.wentzcovitch.v1.2.upf',\
+                 'Er' : 'Er.paw.z_22.atompaw.wentzcovitch.v1.2.upf',\
+                 'Es' : 'Es.paw.z_21.ld1.uni-marburg.v0.upf',\
+                 'Eu' : 'Eu.paw.z_17.atompaw.wentzcovitch.v1.2.upf',\
+                 'F'  : 'F.oncvpsp.upf',\
+                 'Fe' : 'Fe.pbesol-spn-kjpaw_psl.0.2.1.UPF',\
+                 'Fm' : 'Fm.paw.z_22.ld1.uni-marburg.v0.upf',\
+                 'Fr' : 'Fr.paw.z_19.ld1.psl.v1.0.0-high.upf',\
+                 'Ga' : 'Ga.pbesol-dn-kjpaw_psl.1.0.0.UPF',\
+                 'Gd' : 'Gd.paw.z_18.atompaw.wentzcovitch.v1.2.upf',\
+                 'H'  : 'H_ONCV_PBEsol-1.0.upf',\
+                 'He' : 'He_ONCV_PBEsol-1.0.upf',\
+                 'Hf' : 'Hf-sp.oncvpsp.upf',\
+                 'Hg' : 'Hg.us.z_12.uspp.gbrv.v1.upf',\
+                 'Ho' : 'Ho.paw.z_21.atompaw.wentzcovitch.v1.2.upf',\
+                 'I'  : 'I.nc.z_17.oncvpsp4.sg15.v0.upf',\
+                 'In' : 'In.pbesol-dn-rrkjus_psl.0.2.2.UPF',\
+                 'Ir' : 'Ir.us.z_31.ld1.psl.v1.0.0-high.upf',\
+                 'K'  : 'K.pbesol-spn-kjpaw_psl.1.0.0.UPF',\
+                 'Kr' : 'Kr.paw.z_18.ld1.psl.v1.0.0-high.upf',\
+                 'La' : 'La.paw.z_11.atompaw.wentzcovitch.v1.2.upf',\
+                 'Lr' : 'Lr.paw.z_25.ld1.uni-marburg.v0.upf',\
+                 'Lu' : 'Lu.paw.z_25.atompaw.wentzcovitch.v1.2.upf',\
+                 'Md' : 'Md.paw.z_23.ld1.uni-marburg.v0.upf',\
+                 'Mo' : 'Mo_ONCV_PBEsol-1.0.upf',\
+                 'N'  : 'N.oncvpsp.upf',\
+                 'Na' : 'Na.paw.z_9.ld1.psl.v1.0.0-low.upf',\
+                 'Nb' : 'Nb.pbesol-spn-kjpaw_psl.0.3.0.UPF',\
+                 'Nd' : 'Nd.paw.z_14.atompaw.wentzcovitch.v1.2.upf',\
+                 'Ne' : 'Ne.paw.z_8.ld1.psl.v1.0.0-high.upf',\
+                 'No' : 'No.paw.z_24.ld1.uni-marburg.v0.upf',\
+                 'Np' : 'Np.paw.z_15.ld1.uni-marburg.v0.upf',\
+                 'O'  : 'O.pbesol-n-kjpaw_psl.0.1.UPF',\
+                 'P'  : 'P.pbesol-n-rrkjus_psl.1.0.0.UPF',\
+                 'Pa' : 'Pa.paw.z_13.ld1.uni-marburg.v0.upf',\
+                 'Pb' : 'Pb.pbesol-dn-kjpaw_psl.0.2.2.UPF',\
+                 'Pd' : 'Pd_ONCV_PBEsol-1.0.upf',\
+                 'Pm' : 'Pm.paw.z_15.atompaw.wentzcovitch.v1.2.upf',\
+                 'Po' : 'Po.pbesol-dn-rrkjus_psl.1.0.0.UPF',\
+                 'Pr' : 'Pr.paw.z_13.atompaw.wentzcovitch.v1.2.upf',\
+                 'Pt' : 'Pt.pbesol-spfn-rrkjus_psl.1.0.0.UPF',\
+                 'Pu' : 'Pu.paw.z_16.ld1.uni-marburg.v0.upf',\
+                 'Ra' : 'Ra.paw.z_20.ld1.psl.v1.0.0-high.upf',\
+                 'Rb' : 'Rb_ONCV_PBEsol-1.0.upf',\
+                 'Rh' : 'Rh_ONCV_PBEsol-1.0.upf',\
+                 'Rn' : 'Rn.paw.z_18.ld1.psl.v1.0.0-high.upf',\
+                 'Ru' : 'Ru_ONCV_PBEsol-1.0.upf',\
+                 'Sc' : 'Sc.pbesol-spn-kjpaw_psl.0.2.3.UPF',\
+                 'Si' : 'Si.pbesol-n-rrkjus_psl.1.0.0.UPF',\
+                 'Sm' : 'Sm.paw.z_16.atompaw.wentzcovitch.v1.2.upf',\
+                 'Tb' : 'Tb.paw.z_19.atompaw.wentzcovitch.v1.2.upf',\
+                 'Tc' : 'Tc_ONCV_PBEsol-1.0.upf',\
+                 'Te' : 'Te.us.z_6.ld1.psl.v1.0.0-low.upf',\
+                 'Th' : 'Th.paw.z_12.ld1.uni-marburg.v0.upf',\
+                 'Tm' : 'Tm.paw.z_23.atompaw.wentzcovitch.v1.2.upf',\
+                 'U'  : 'U.paw.z_14.ld1.uni-marburg.v0.upf',\
+                 'Xe' : 'Xe.paw.z_18.ld1.psl.v1.0.0-high.upf',\
+                 'Yb' : 'Yb.paw.z_24.atompaw.wentzcovitch.v1.2.upf',\
+                 'B'  : 'b_pbesol_v1.4.uspp.F.UPF',\
+                 'Bi' : 'bi_pbesol_v1.uspp.F.UPF',\
+                 'Br' : 'br_pbesol_v1.4.uspp.F.UPF',\
+                 'Ca' : 'ca_pbesol_v1.uspp.F.UPF',\
+                 'Co' : 'co_pbesol_v1.2.uspp.F.UPF',\
+                 'Cr' : 'cr_pbesol_v1.5.uspp.F.UPF',\
+                 'Ge' : 'ge_pbesol_v1.4.uspp.F.UPF',\
+                 'Li' : 'li_pbesol_v1.4.uspp.F.UPF',\
+                 'Mg' : 'mg_pbesol_v1.4.uspp.F.UPF',\
+                 'Mn' : 'mn_pbesol_v1.5.uspp.F.UPF',\
+                 'Ni' : 'ni_pbesol_v1.4.uspp.F.UPF',\
+                 'Os' : 'os_pbesol_v1.2.uspp.F.UPF',\
+                 'Re' : 're_pbesol_v1.2.uspp.F.UPF',\
+                 'S'  : 's_pbesol_v1.4.uspp.F.UPF',\
+                 'Sb' : 'sb_pbesol_v1.4.uspp.F.UPF',\
+                 'Se' : 'se_pbesol_v1.uspp.F.UPF',\
+                 'Sn' : 'sn_pbesol_v1.4.uspp.F.UPF',\
+                 'Sr' : 'sr_pbesol_v1.uspp.F.UPF',\
+                 'Ta' : 'ta_pbesol_v1.uspp.F.UPF',\
+                 'Ti' : 'ti_pbesol_v1.4.uspp.F.UPF',\
+                 'Tl' : 'tl_pbesol_v1.2.uspp.F.UPF',\
+                 'V'  : 'v_pbesol_v1.4.uspp.F.UPF',\
+                 'W'  : 'w_pbesol_v1.2.uspp.F.UPF',\
+                 'Y'  : 'y_pbesol_v1.4.uspp.F.UPF',\
+                 'Zn' : 'zn_pbesol_v1.uspp.F.UPF',\
+                 'Zr' : 'zr_pbesol_v1.uspp.F.UPF'}
     symbols = cell2atomlist(cell)
     pseudo0 = {}
     for symbol in symbols:
         pseudo0[symbol] = pseudo[symbol]
     return pseudo0
 
-def get_valence(cell,pseudo,level):
+def get_valence(cell,pseudo,level,xc):
     import AtomicVirtuaLab.globalv as g
+    if level == 'SSSP_precision':
+        level = level+'_'+xc
     z_valence={}
     for symbol in pseudo:
         fpot = g.qepot+'/'+str(level)+'/'+str(pseudo[symbol])

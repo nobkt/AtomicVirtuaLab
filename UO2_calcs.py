@@ -194,6 +194,8 @@ elm = 'Pu'
 os.makedirs(elm+'O2',exist_ok=True)
 os.chdir(elm+'O2')
 cell = read(g.cifs+'/'+elm+'O2.cif')
+#view(cell)
+#sys.exit()
 #magmom=[]
 #for atom in cell:
 #    if atom.symbol == 'O':
@@ -210,7 +212,7 @@ cell = read(g.cifs+'/'+elm+'O2.cif')
 lencut = [500]
 lkpts = [4]
 lplusU = [1.0,2.0,3.0,4.0,5.0,6.0,7.0,8.0,9.0]
-lplusJ = [0.0,0.25,0.5,0.75,1.0]
+lplusJ = [0.0]
 
 os.makedirs('optcell',exist_ok=True)
 os.chdir('optcell')
@@ -221,42 +223,58 @@ for encut in lencut:
     for kk in lkpts:
         os.makedirs('kpt_'+str(kk),exist_ok=True)
         os.chdir('kpt_'+str(kk))
-        for plusU in lplusU:
-            os.makedirs('plusU_'+str(plusU),exist_ok=True)
-            os.chdir('plusU_'+str(plusU))
-            for plusJ in lplusJ:
-                os.makedirs('plusJ_'+str(plusJ),exist_ok=True)
-                os.chdir('plusJ_'+str(plusJ))
-                ldau_luj={elm: {'L': 3, 'U': plusU, 'J': plusJ}}
-                kpts=[kk,kk,kk]
-                Vasp(xc='scan',
-                     ismear=0,
-                     sigma = 0.05,
-                     lsorbit=True,
-                     ispin=2,
-                     ncore=4,
-                     lreal='Auto',
-                     algo='Normal',
-                     prec='Accurate',
-                     lasph=True,
-                     isym=-1,
-                     ibrion=2,
-                     isif=3,
-                     nsw=10000,
-                     nelm=10000,
-                     amix=0.1,
-                     encut=encut,
-                     ldau_luj=ldau_luj,
-                     lmaxmix=6,
-                     ldauprint=0,
-                     ldautype=1,
-                     kpts=kpts,
-                     gamma=True).write_input(cell)
-                f = open('INCAR','a')
-                #f.write(' MAGMOM = 1.0 1.0 1.0 -1.0 -1.0 1.0 -1.0 1.0 -1.0 1.0 -1.0 -1.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0'+'\n')
-                #f.write(' MAGMOM = 1.0 1.0 1.0 1.0 -1.0 -1.0 -1.0 -1.0 1.0 -1.0 1.0 -1.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0'+'\n')
-                f.write(' MAGMOM = 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0'+'\n')
-                f.close()
+        for mag in ['dm', 'l_3k_afm', 't_a_1k_afm', 't_b_1k_afm', 'fm']:
+            os.makedirs(mag,exist_ok=True)
+            os.chdir(mag)
+            for plusU in lplusU:
+                os.makedirs('plusU_'+str(plusU),exist_ok=True)
+                os.chdir('plusU_'+str(plusU))
+                for plusJ in lplusJ:
+                    os.makedirs('plusJ_'+str(plusJ),exist_ok=True)
+                    os.chdir('plusJ_'+str(plusJ))
+                    ldau_luj={elm: {'L': 3, 'U': plusU, 'J': plusJ}}
+                    kpts=[kk,kk,kk]
+                    Vasp(xc='scan',
+                        ismear=0,
+                        sigma = 0.05,
+                        lsorbit=True,
+                        ispin=2,
+                        ncore=4,
+                        lreal='Auto',
+                        algo='Normal',
+                        prec='Accurate',
+                        lasph=True,
+                        isym=-1,
+                        ibrion=2,
+                        isif=3,
+                        nsw=10000,
+                        nelm=10000,
+                        amix=0.1,
+                        encut=encut,
+                        ldau_luj=ldau_luj,
+                        lmaxmix=6,
+                        ldauprint=0,
+                        ldautype=2,
+                        kpts=kpts,
+                        gamma=True).write_input(cell)
+                    f = open('INCAR','a')
+                    if mag == 'dm':
+                        # diamagnetic
+                        f.write(' MAGMOM = 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0'+'\n')
+                    elif mag == 'l_3k_afm':
+                        # Longitudinal 3k AFM
+                        f.write(' MAGMOM = 1.0 1.0 1.0 -1.0 -1.0 1.0 -1.0 1.0 -1.0 1.0 -1.0 -1.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0'+'\n')
+                    elif mag == 't_a_1k_afm':
+                        #  Transverce Domain A 3k AFM
+                        f.write(' MAGMOM = 1.0 1.0 1.0 1.0 -1.0 -1.0 -1.0 -1.0 1.0 -1.0 1.0 -1.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0'+'\n')
+                    elif mag == 't_b_1k_afm':
+                        #  Transverce Domain B 3k AFM
+                        f.write(' MAGMOM = 1.0 1.0 1.0 -1.0 1.0 -1.0 1.0 -1.0 -1.0 -1.0 -1.0 1.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0'+'\n')
+                    elif mag == 'fm':
+                        # FM
+                        f.write(' MAGMOM = 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0'+'\n')
+                    f.close()
+                    os.chdir('../')
                 os.chdir('../')
             os.chdir('../')
         os.chdir('../')

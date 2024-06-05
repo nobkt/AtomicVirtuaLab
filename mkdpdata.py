@@ -29,6 +29,10 @@ d_cifs = {
     'Si' : [2,2,2]
 }
 
+dpexedir='/home/modules/applications/cpu/deepmd-kit-2.2.10/bin'
+restart = False
+ntrain0 = 1
+ntraj0 = 151
 init_skip = False
 ninit = 500
 nout = 10
@@ -41,10 +45,13 @@ final_accept = 99.0
 
 maxset = 100
 
-l_temp = [300, 500, 1000, 2000, 3000, 4000]
+l_temp = [300, 1000, 2000, 3000, 4000, 5000]
 #l_temp = [1000]
 l_press = [0]
 
+Tsta=100
+Tend=3000
+Tstep=100
 
 #os.environ['CUDA_VISIBLE_DEVICES'] = "0"
 os.makedirs('mkdpdatas',exist_ok=True)
@@ -70,8 +77,11 @@ for fcif in d_cifs:
 nset=1
 d_dppath={}
 for strc in d_strc:
-    ftrain = open('train_'+strc+'.out','w')
-    ftrain.write('ntrain ntry naccept accept_rate'+'\n')
+    if restart:
+      ftrain = open('train_'+strc+'.out','a')
+    else:
+      ftrain = open('train_'+strc+'.out','w')
+      ftrain.write('ntrain ntry naccept accept_rate'+'\n')
     os.makedirs(strc,exist_ok=True)
     os.chdir(strc)
     ntraj=1
@@ -157,6 +167,11 @@ for strc in d_strc:
         if runflg == 1:
             nset=1            
             break
+        if restart:
+            if ntrain <= ntrain0:
+              nset = nset + 1
+              ntraj = ntraj0
+              continue
 #
 # 3.1 make lammps trajectory
 #
@@ -168,7 +183,7 @@ for strc in d_strc:
         naccpept = 0
         ntry = 0
         nlmpset=1
-        for temp in range(100,3100,100):
+        for temp in range(Tsta,Tend+Tstep,Tstep):
             for press in l_press:
                 os.makedirs('lmpset'+str(nlmpset),exist_ok=True)
                 os.chdir('lmpset'+str(nlmpset))
@@ -179,7 +194,7 @@ for strc in d_strc:
                 #print('seed = ',seed,flush=True)
                 mk_npt_input_dpdata(cell,0.00005,100,20000,200,nout,temp,press,seed,mol=False)
                 os.system('cp '+forcefield_path+'/set'+str(nset-1)+'/graph.pb .')
-                os.system('lmp -in lammps.lmp 1> log_lmp 2> err_lmp')
+                os.system(dpexedir+'/mpirun -np '+str(ncore)+' lmp -in lammps.lmp 1> log_lmp 2> err_lmp')
                 symbols = cell2atomlist(cell)
                 ntype=1
                 Z_of_type={}

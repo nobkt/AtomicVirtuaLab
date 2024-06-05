@@ -34,27 +34,31 @@ os.chdir('./crosslink_test')
 #
 # Input Moleclues
 #
+#'mol1' : 'OC(COC(=O)C=C)COC(=O)C=C'
+#'mol2' : 'OCC(COC(=O)C=C)(COC(=O)C=C)COC(=O)C=C'
+#'mol3' : 'OCC(COCC(COC(=O)C=C)(COC(=O)C=C)COC(=O)C=C)(COC(=O)C=C)COC(=O)C=C'
+
 l_smiles = {
-    'mol1' : 'OC(COC(=O)C=C)COC(=O)C=C'
+    'mol1' : 'OCC(COCC(COC(=O)C=C)(COC(=O)C=C)COC(=O)C=C)(COC(=O)C=C)COC(=O)C=C'
     }
 
 l_mols = {
     'mol1' : 100
 }
 
-xbox = 50.0
-ybox = 50.0
-zbox = 50.0
+xbox = 70.0
+ybox = 70.0
+zbox = 70.0
 
 l_reax_atom_type = {
     'reax1' : {
-        'mol1' : [7,8,13,14]
+        'mol1' : [12,13,18,19,24,25,30,31,36,37]
     }
 }
 
 l_reax_bond_type = {
     'reax1' : {
-        'mol1' : [7,13]
+        'mol1' : [12,18,24,30,36]
     }
 }
 
@@ -148,15 +152,15 @@ lat[1][1] = ybox
 lat[2][2] = zbox
 cell.set_cell(lat)
 cell = sortmol(cell,sort_atom=False)
-mk_nvt_input_uff_rigid_scale(cell,0.0005,200,200,xbox/2.0+2.0,20000,20000,400,12345)
+mk_nvt_input_uff_rigid_scale(cell,0.0005,200,200,xbox/2.0+4.0,20000,20000,400,12345)
 os.system('mpirun -np 16 lmp -in lammps.lmp > log_lmp')
 tmp = read('result.data',format='lammps-data',sort_by_id=True)
 pos = tmp.get_positions(wrap=True)
 cell.set_positions(pos)
-lat[0][0] = xbox/2.0+2.0
-lat[1][1] = ybox/2.0+2.0
-lat[2][2] = zbox/2.0+2.0
-xbox = xbox/2.0+2.0
+lat[0][0] = xbox/2.0+4.0
+lat[1][1] = ybox/2.0+4.0
+lat[2][2] = zbox/2.0+4.0
+xbox = lat[0][0]*3.0/4.0
 cell.set_cell(lat)
 cell.arrays['mol-id'] = l_molids
 view(cell)
@@ -302,7 +306,7 @@ while True:
     #    print(d12)
     #    break        
     for d in sorted_d:
-        if (d[0] < xbox/2.0) and (cell.arrays['mol-id'][rid1-1] == cell.arrays['mol-id'][d[1]-1]):
+        if (d[0] < xbox) and (cell.arrays['mol-id'][rid1-1] == cell.arrays['mol-id'][d[1]-1]):
             #print(d[0],d[1])
             continue
         rid2 = d[1]
