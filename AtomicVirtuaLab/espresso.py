@@ -631,7 +631,7 @@ def mk_qe_input_relax(cell,xc,pot,level='low',estep=1000,nstep=1000,nosym=False,
         input_data['nbnd'] = nbnd
     cell.write('qe_relax.pwi',input_data=input_data,pseudopotentials=pseudo,kpts=kpts,crystal_coordinates=False)
 
-def mk_qe_input_vcrelax(cell,xc,pot,level='low',estep=1000,nstep=1000,nosym=False,ecutwfc=25,ecutrho=225,mixing_beta=0.2,kpts=None,ecut='manual',options={},nspin=False):
+def mk_qe_input_vcrelax(cell,xc,pot,level='low',estep=1000,nstep=1000,nosym=False,ecutwfc=25,ecutrho=225,mixing_beta=0.2,kpts=None,ecut='manual',options={},cell_dofree='all',nspin=False):
     from ase.io import write
     import AtomicVirtuaLab.globalv as g
     import shutil
@@ -690,7 +690,7 @@ def mk_qe_input_vcrelax(cell,xc,pot,level='low',estep=1000,nstep=1000,nosym=Fals
         'diagonalization'  : 'david',\
         'mixing_beta'      : mixing_beta,\
         'nosym'            : nosym,\
-        'cell_dofree'      : 'all',\
+        'cell_dofree'      : cell_dofree,\
         'electron_maxstep' : estep,\
         'ecutwfc'          : ecutwfc_,\
         'ecutrho'          : ecutrho_\

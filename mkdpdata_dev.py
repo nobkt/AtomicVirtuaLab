@@ -1,7 +1,7 @@
 from AtomicVirtuaLab.deepmd import qe2dp, get_deepmd_list, wt_deepmd_json
 import AtomicVirtuaLab.globalv as g
 from AtomicVirtuaLab.espresso import mk_qe_input_npt, mk_qe_input_scf, mk_qe_input_nvt
-from AtomicVirtuaLab.lammps import mk_npt_input_dpdata, mk_nvt_input_dpdata
+from AtomicVirtuaLab.lammps import mk_npt_input_dpdata, mk_nvt_input_dpdata, mk_npt_slab_input_dpdata
 from AtomicVirtuaLab.io import rd_cif, cell2atomlist
 from ase.io import read
 from ase.visualize import view
@@ -27,7 +27,7 @@ dpexedir='/home/modules/applications/gpu/deepmd-kit-2.2.7-cuda10.2/bin'
 qeexedir='/home/modules/applications/cpu/qe/7.3'
 
 d_cifs = {
-    'MgAl2O4_primitive' : [3,3,3],
+    'MgAl2O4_primitive' : [2,2,2],
     'MgAl2O4_slab100_1' : [1,1,1],
     'MgAl2O4_slab100_2' : [1,1,1],
     'MgAl2O4_slab110_1' : [1,1,1],
@@ -49,7 +49,8 @@ d_input = {
         'Tsta' : 100,
         'Tend' : 5000,
         'Tstep' : 100,
-        'mode' : 'npt'
+        'mode' : 'npt',
+        'cell_dofree' : 'all'
     },
     'MgAl2O4_slab100_1' : {
         'ninit' : 500,
@@ -60,7 +61,8 @@ d_input = {
         'Tsta' : 100,
         'Tend' : 5000,
         'Tstep' : 100,
-        'mode' : 'nvt'
+        'mode' : 'npt',
+        'cell_dofree' : 'c'
     },
     'MgAl2O4_slab100_2' : {
         'ninit' : 500,
@@ -71,7 +73,8 @@ d_input = {
         'Tsta' : 100,
         'Tend' : 5000,
         'Tstep' : 100,
-        'mode' : 'nvt'
+        'mode' : 'npt',
+        'cell_dofree' : 'c'
     },
     'MgAl2O4_slab110_1' : {
         'ninit' : 500,
@@ -82,7 +85,8 @@ d_input = {
         'Tsta' : 100,
         'Tend' : 5000,
         'Tstep' : 100,
-        'mode' : 'nvt'
+        'mode' : 'npt',
+        'cell_dofree' : 'c'
     },
     'MgAl2O4_slab110_2' : {
         'ninit' : 500,
@@ -93,7 +97,8 @@ d_input = {
         'Tsta' : 100,
         'Tend' : 5000,
         'Tstep' : 100,
-        'mode' : 'nvt'
+        'mode' : 'npt',
+        'cell_dofree' : 'c'
     },
     'MgAl2O4_slab111_1' : {
         'ninit' : 500,
@@ -104,7 +109,8 @@ d_input = {
         'Tsta' : 100,
         'Tend' : 5000,
         'Tstep' : 100,
-        'mode' : 'nvt'
+        'mode' : 'npt',
+        'cell_dofree' : 'c'
     },
     'MgAl2O4_slab111_2' : {
         'ninit' : 500,
@@ -115,7 +121,8 @@ d_input = {
         'Tsta' : 100,
         'Tend' : 5000,
         'Tstep' : 100,
-        'mode' : 'nvt'
+        'mode' : 'npt',
+        'cell_dofree' : 'c'
     },
     'MgAl2O4_slab111_3' : {
         'ninit' : 500,
@@ -126,7 +133,8 @@ d_input = {
         'Tsta' : 100,
         'Tend' : 5000,
         'Tstep' : 100,
-        'mode' : 'nvt'
+        'mode' : 'npt',
+        'cell_dofree' : 'c'
     },
     'MgAl2O4_slab111_4' : {
         'ninit' : 500,
@@ -137,7 +145,8 @@ d_input = {
         'Tsta' : 100,
         'Tend' : 5000,
         'Tstep' : 100,
-        'mode' : 'nvt'
+        'mode' : 'npt',
+        'cell_dofree' : 'c'
     }
 }
 
@@ -246,6 +255,7 @@ for strc in d_strc:
     ninit = d_input[strc]['ninit']
     kpts = d_input[strc]['kpts']
     mode = d_input[strc]['mode']
+    cell_dofree = d_input[strc]['cell_dofree']
     for temp in l_temp:
         for press in l_press:
             os.makedirs('qe',exist_ok=True)
@@ -271,7 +281,7 @@ for strc in d_strc:
                 #for atoms in traj:
                 #    trajs.append(atoms)
                 if mode == 'npt':
-                    mk_qe_input_npt(cell,xc,'paw',temp,100,press,dt=0.5,level='SSSP_precision',estep=9999,nstep=ninit,ecutwfc=25,ecutrho=225,mixing_beta=0.2,kpts=kpts,ecut='auto',cell_dofree='all',options=options,nspin=False,magElm=None)
+                    mk_qe_input_npt(cell,xc,'paw',temp,100,press,dt=0.5,level='SSSP_precision',estep=9999,nstep=ninit,ecutwfc=25,ecutrho=225,mixing_beta=0.2,kpts=kpts,ecut='auto',cell_dofree='all',options=options,cell_dofree=cell_dofree,nspin=False,magElm=None)
                     if usepbs:
                         os.system("echo 'source "+str(dpexedir)+"/activate;source "+str(qeexedir)+"/qe_profile.sh;cd $PBS_O_WORKDIR;mpirun -np "+str(ncore)+" pw.x < qe_npt.pwi 1> qe_npt.pwo 2> qe_npt.err' | qsub -l select=1:mem="+str(mem)+"gb:host="+str(host)+":ncpus="+str(ncore)+" -o finishjob")
                         while True:
@@ -365,6 +375,7 @@ for ntrain in range(maxset):
         ninit = d_input[strc]['ninit']
         kpts = d_input[strc]['kpts']
         mode = d_input[strc]['mode']
+        cell_dofree = d_input[strc]['cell_dofree']
         os.makedirs(strc,exist_ok=True)
         os.chdir(strc)
         strc_path = os.getcwd()
@@ -386,7 +397,10 @@ for ntrain in range(maxset):
                 seed=random.randint(10000, 99999)
                 #print('seed = ',seed,flush=True)
                 if mode == 'npt':
-                    mk_npt_input_dpdata(cell,0.00005,100,20000,200,nout,temp,press,seed,mol=False)
+                    if cell_dofree == 'all':
+                        mk_npt_input_dpdata(cell,0.00005,100,20000,200,nout,temp,press,seed,mol=False)
+                    else:
+                        mk_npt_slab_input_dpdata(cell,0.00005,100,20000,200,nout,temp,press,seed,mol=False)
                 elif mode == 'nvt':
                     mk_nvt_input_dpdata(cell,0.00005,100,20000,200,nout,temp,seed,mol=False)
                 os.system('cp '+forcefield_path+'/set'+str(nset-1)+'/graph.pb .')
